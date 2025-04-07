@@ -44,7 +44,7 @@ Here's how you can implement it in code:
 ```python
 from deepteam import red_team
 from deepteam.vulnerabilities import Bias
-from deepteam.attacks import PromptInjection
+from deepteam.attacks.single_turn import PromptInjection
 
 def model_callback(input: str) -> str:
     # Replace this with your LLM application
