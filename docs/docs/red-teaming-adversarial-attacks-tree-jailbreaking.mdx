@@ -33,26 +33,7 @@ The search continues until the most successful path is found within the specifie
 
 ## Usage
 
-```python
-from deepteam.attacks.multi_turn import CrescendoJailbreaking
-
-crescendo_jailbreaking = CrescendoJailbreaking()
-```
-
-There are **THREE** optional parameters when creating a `CrescendoJailbreaking` attack:
-
-- [Optional] `weight`: an integer that determines this attack method's selection probability, proportional to the total weight sum of all `attacks` during red teaming. Defaulted to `1`.
-- [Optional] `max_rounds`: an integer that specifies the number of rounds to use in attempt to jailbreak your LLM system. Defaulted to `10`.
-- [Optional] `max_backtracks`: an integer that specifies the number of rounds to use in attempt to jailbreak your LLM system. Defaulted to `10`.
-
-To use the `CrescendoJailbreaking` attack method, supply it to the `red_team()` method:
-
-```python
-from deepteam import red_team
-...
-
-red_team(attacks=[crescendo_jailbreaking], model_callback=..., vulnerabilities=...)
-```
+_to be documented..._
 
 ## Example
 
