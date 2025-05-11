@@ -29,9 +29,8 @@ class MockAttack(BaseAttack):
 
 @pytest.fixture
 def mock_vulnerability_type():
-    mock_type = MagicMock()
-    mock_type.value = "mock_vulnerability_type"
-    return mock_type
+    from deepteam.vulnerabilities.types import BiasType
+    return BiasType.GENDER
 
 
 @pytest.fixture
