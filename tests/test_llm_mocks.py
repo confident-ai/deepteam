@@ -30,6 +30,14 @@ class MockLLM(DeepEvalBaseLLM):
         """Mock asynchronous generation."""
         self.call_history.append({"prompt": prompt, "kwargs": kwargs})
         return self.responses.get(prompt, f"Mock async response to: {prompt}")
+        
+    def get_model_name(self):
+        """Return the model name."""
+        return "mock-model"
+        
+    def load_model(self):
+        """Load the model."""
+        return self
 
 
 @pytest.fixture
