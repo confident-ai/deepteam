@@ -63,4 +63,10 @@ jobs:
         run: uv sync --locked --group dev
 
       - name: Run unit tests with coverage
-        run: uv run --frozen pytest -svv
+        run: uv run --frozen pytest -svv --cov=deepteam --cov-report=xml --cov-report=term
+        
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
