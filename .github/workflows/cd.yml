@@ -53,8 +53,8 @@ jobs:
             **/pyproject.toml
             **/uv.lock
 
-      - name: Install dependencies
-        run: uv sync --locked --group build
+      - name: Update lockfile and install dependencies
+        run: uv lock && uv sync --group build
 
       - name: Build package distribution
         run: uv build
