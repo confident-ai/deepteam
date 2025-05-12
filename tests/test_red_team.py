@@ -1,4 +1,5 @@
 import pytest
+import os
 from unittest.mock import AsyncMock, MagicMock, patch
 from typing import List
 
@@ -7,6 +8,7 @@ from deepteam.red_teamer import RedTeamer
 from deepteam.vulnerabilities import BaseVulnerability
 from deepteam.attacks import BaseAttack
 from deepteam.red_teamer.risk_assessment import RiskAssessment
+from deepteam.vulnerabilities.types import BiasType
 
 
 class MockVulnerability(BaseVulnerability):
@@ -25,11 +27,15 @@ class MockAttack(BaseAttack):
         return "MockAttack"
 
 
+@pytest.fixture(autouse=True)
+def mock_openai_api_key():
+    """Mock OpenAI API key for testing."""
+    with patch.dict(os.environ, {"OPENAI_API_KEY": "test-api-key"}):
+        yield
+
 @pytest.fixture
 def mock_vulnerability():
-    mock_type = MagicMock()
-    mock_type.value = "mock_vulnerability_type"
-    return MockVulnerability(types=[mock_type])
+    return MockVulnerability(types=[BiasType.GENDER])
 
 
 @pytest.fixture

@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import MagicMock, patch
 import asyncio
+import os
 
 from deepeval.models import DeepEvalBaseLLM
 from deepteam.metrics.base_red_teaming_metric import BaseRedTeamingMetric
@@ -84,25 +85,33 @@ class TestLLMMocks:
         assert len(mock_llm_with_responses.call_history) == 3
 
 
-@pytest.fixture
-def patch_initialize_model():
-    """Fixture to patch the initialize_model function."""
-    with patch("deepteam.metrics.utils.initialize_model") as mock_initialize:
-        mock_llm = MockLLM()
-        mock_initialize.return_value = (mock_llm, None)
-        yield mock_initialize, mock_llm
+@pytest.fixture(autouse=True)
+def mock_openai_api_key():
+    """Mock OpenAI API key for testing."""
+    with patch.dict(os.environ, {"OPENAI_API_KEY": "test-api-key"}):
+        yield
 
 
 class TestMetricWithMockLLM:
-    @patch("deepteam.metrics.base_red_teaming_metric.initialize_model")
+    @patch("deepeval.metrics.utils.initialize_model")
     def test_metric_with_mock_llm(self, mock_initialize):
         """Test a metric with a mock LLM."""
         mock_llm = MockLLM()
         mock_initialize.return_value = (mock_llm, None)
         
         class TestMetric(BaseRedTeamingMetric):
+            def __init__(self, model=None, async_mode=False):
+                super().__init__()
+                self.model = mock_llm
+                self.async_mode = async_mode
+                
             def measure(self, test_case):
                 response = self.model.generate(test_case.input)
+                self.score = 1 if "good" in response.lower() else 0
+                self.reason = f"Score is {self.score}"
+                
+            async def a_measure(self, test_case):
+                response = await self.model.a_generate(test_case.input)
                 self.score = 1 if "good" in response.lower() else 0
                 self.reason = f"Score is {self.score}"
         
@@ -122,13 +131,17 @@ class TestMetricWithMockLLM:
 
 
 class TestAttackSimulatorWithMockLLM:
-    @patch("deepteam.attacks.attack_simulator.attack_simulator.initialize_model")
+    @patch("deepeval.metrics.utils.initialize_model")
     def test_attack_simulator_with_mock_llm(self, mock_initialize):
         """Test the AttackSimulator with a mock LLM."""
         mock_llm = MockLLM()
         mock_initialize.return_value = (mock_llm, None)
         
-        simulator = AttackSimulator(simulator_model="mock-model")
+        simulator = AttackSimulator(
+            simulator_model="mock-model",
+            purpose="test purpose",
+            max_concurrent=5
+        )
         
         mock_llm.responses["Test prompt"] = '{"attack": "Test attack"}'
         
