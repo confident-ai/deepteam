@@ -35,6 +35,13 @@ def mock_openai_api_key():
     with patch.dict(os.environ, {"OPENAI_API_KEY": "test-api-key"}):
         yield
 
+@pytest.fixture(autouse=True)
+def mock_gpt_model_validation():
+    """Mock GPT model validation to allow mock-model."""
+    with patch("deepeval.models.llms.openai_model.get_actual_model_name", return_value="gpt-4"):
+        with patch("deepeval.models.llms.openai_model.valid_gpt_models", ["gpt-4", "mock-model"]):
+            yield
+
 @pytest.fixture
 def mock_vulnerability_type():
     from deepteam.vulnerabilities.types import BiasType
@@ -133,9 +140,16 @@ class TestRedTeamer:
         
         red_teamer = MagicMock(spec=RedTeamer)
         red_teamer.async_mode = False
+        red_teamer.max_concurrent = 10
         red_teamer.get_red_teaming_metrics_map.return_value = mock_metrics_map
         red_teamer.attack_simulator = MagicMock()
         red_teamer.attack_simulator.simulate.return_value = mock_simulated_attacks
+        
+        red_teamer.__gt__ = lambda self, other: False
+        red_teamer.__lt__ = lambda self, other: False
+        red_teamer.__ge__ = lambda self, other: False
+        red_teamer.__le__ = lambda self, other: False
+        red_teamer.__eq__ = lambda self, other: False
         
         RedTeamer.red_team(red_teamer, 
                           model_callback=mock_sync_callback,
@@ -176,9 +190,16 @@ class TestRedTeamer:
         
         red_teamer = MagicMock(spec=RedTeamer)
         red_teamer.async_mode = True
+        red_teamer.max_concurrent = 10
         red_teamer.get_red_teaming_metrics_map.return_value = mock_metrics_map
         red_teamer.attack_simulator = MagicMock()
         red_teamer.attack_simulator.a_simulate = AsyncMock(return_value=mock_simulated_attacks)
+        
+        red_teamer.__gt__ = lambda self, other: False
+        red_teamer.__lt__ = lambda self, other: False
+        red_teamer.__ge__ = lambda self, other: False
+        red_teamer.__le__ = lambda self, other: False
+        red_teamer.__eq__ = lambda self, other: False
         
         await RedTeamer.a_red_team(red_teamer, 
                                   model_callback=mock_async_callback,
@@ -202,7 +223,8 @@ class TestRedTeamer:
     async def test_a_attack(self, mock_initialize_model, mock_llm_test_case, 
                            mock_async_callback, mock_vulnerability_type, 
                            mock_simulated_attack):
-        mock_initialize_model.return_value = (MagicMock(), None)
+        mock_model = MagicMock()
+        mock_initialize_model.return_value = (mock_model, None)
         
         mock_metrics_map = {mock_vulnerability_type: MagicMock}
         mock_metric_instance = MagicMock()
@@ -212,13 +234,11 @@ class TestRedTeamer:
         mock_metrics_map[mock_vulnerability_type].return_value = mock_metric_instance
         
         with patch("deepteam.red_teamer.red_teamer.AttackSimulator"):
-            red_teamer = RedTeamer(
-                simulator_model="mock-model",
-                evaluation_model="mock-eval-model",
-                target_purpose="test purpose",
-                async_mode=True,
-                max_concurrent=5
-            )
+            with patch.object(RedTeamer, "__init__", return_value=None):
+                red_teamer = RedTeamer()
+                red_teamer.evaluation_model = mock_model
+                red_teamer.async_mode = True
+                red_teamer.max_concurrent = 5
         
         result = await red_teamer._a_attack(
             model_callback=mock_async_callback,
@@ -239,16 +259,18 @@ class TestRedTeamer:
 
     @patch("deepeval.metrics.utils.initialize_model")
     def test_get_red_teaming_metrics_map(self, mock_initialize_model):
-        mock_initialize_model.return_value = (MagicMock(), None)
+        mock_model = MagicMock()
+        mock_initialize_model.return_value = (mock_model, None)
         
         with patch("deepteam.red_teamer.red_teamer.AttackSimulator"):
-            red_teamer = RedTeamer(
-                simulator_model="mock-model",
-                evaluation_model="mock-eval-model",
-                target_purpose="test purpose"
-            )
+            with patch.object(RedTeamer, "__init__", return_value=None):
+                red_teamer = RedTeamer()
+                red_teamer.evaluation_model = mock_model
+                red_teamer.target_purpose = "test purpose"
         
-        metrics_map = red_teamer.get_red_teaming_metrics_map()
+        with patch("deepteam.red_teamer.red_teamer.BiasMetric", return_value=MagicMock()):
+            with patch("deepteam.red_teamer.red_teamer.ToxicityMetric", return_value=MagicMock()):
+                metrics_map = red_teamer.get_red_teaming_metrics_map()
         
         assert len(metrics_map) > 0
         
