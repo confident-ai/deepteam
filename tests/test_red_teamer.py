@@ -1,5 +1,6 @@
 import pytest
 import asyncio
+import os
 from unittest.mock import AsyncMock, MagicMock, patch
 from typing import List, Dict, Any
 
@@ -9,6 +10,7 @@ from deepteam.attacks import BaseAttack
 from deepteam.attacks.attack_simulator import SimulatedAttack
 from deepteam.red_teamer.risk_assessment import RiskAssessment, RedTeamingTestCase
 from deepteam.vulnerabilities.types import VulnerabilityType
+from deepeval.test_case import LLMTestCase
 
 
 class MockVulnerability(BaseVulnerability):
@@ -26,6 +28,12 @@ class MockAttack(BaseAttack):
     def get_name(self) -> str:
         return "MockAttack"
 
+
+@pytest.fixture(autouse=True)
+def mock_openai_api_key():
+    """Mock OpenAI API key for testing."""
+    with patch.dict(os.environ, {"OPENAI_API_KEY": "test-api-key"}):
+        yield
 
 @pytest.fixture
 def mock_vulnerability_type():
@@ -190,9 +198,12 @@ class TestRedTeamer:
 
     @pytest.mark.asyncio
     @patch("deepteam.red_teamer.red_teamer.LLMTestCase")
-    async def test_a_attack(self, mock_llm_test_case, 
+    @patch("deepeval.metrics.utils.initialize_model")
+    async def test_a_attack(self, mock_initialize_model, mock_llm_test_case, 
                            mock_async_callback, mock_vulnerability_type, 
                            mock_simulated_attack):
+        mock_initialize_model.return_value = (MagicMock(), None)
+        
         mock_metrics_map = {mock_vulnerability_type: MagicMock}
         mock_metric_instance = MagicMock()
         mock_metric_instance.a_measure = AsyncMock()
@@ -200,7 +211,14 @@ class TestRedTeamer:
         mock_metric_instance.reason = "Test reason"
         mock_metrics_map[mock_vulnerability_type].return_value = mock_metric_instance
         
-        red_teamer = RedTeamer(async_mode=True)
+        with patch("deepteam.red_teamer.red_teamer.AttackSimulator"):
+            red_teamer = RedTeamer(
+                simulator_model="mock-model",
+                evaluation_model="mock-eval-model",
+                target_purpose="test purpose",
+                async_mode=True,
+                max_concurrent=5
+            )
         
         result = await red_teamer._a_attack(
             model_callback=mock_async_callback,
@@ -217,11 +235,18 @@ class TestRedTeamer:
         assert result.reason == "Test reason"
         
         mock_async_callback.assert_called_once_with(mock_simulated_attack.input)
-        
         mock_metric_instance.a_measure.assert_called_once()
 
-    def test_get_red_teaming_metrics_map(self):
-        red_teamer = RedTeamer()
+    @patch("deepeval.metrics.utils.initialize_model")
+    def test_get_red_teaming_metrics_map(self, mock_initialize_model):
+        mock_initialize_model.return_value = (MagicMock(), None)
+        
+        with patch("deepteam.red_teamer.red_teamer.AttackSimulator"):
+            red_teamer = RedTeamer(
+                simulator_model="mock-model",
+                evaluation_model="mock-eval-model",
+                target_purpose="test purpose"
+            )
         
         metrics_map = red_teamer.get_red_teaming_metrics_map()
         
