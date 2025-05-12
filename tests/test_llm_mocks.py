@@ -91,6 +91,13 @@ def mock_openai_api_key():
     with patch.dict(os.environ, {"OPENAI_API_KEY": "test-api-key"}):
         yield
 
+@pytest.fixture(autouse=True)
+def mock_gpt_model_validation():
+    """Mock GPT model validation to allow mock-model."""
+    with patch("deepeval.models.llms.openai_model.get_actual_model_name", return_value="gpt-4"):
+        with patch("deepeval.models.llms.openai_model.valid_gpt_models", ["gpt-4", "mock-model"]):
+            yield
+
 
 class TestMetricWithMockLLM:
     @patch("deepeval.metrics.utils.initialize_model")
