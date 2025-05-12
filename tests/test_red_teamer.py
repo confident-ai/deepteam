@@ -38,9 +38,9 @@ def mock_openai_api_key():
 @pytest.fixture(autouse=True)
 def mock_gpt_model_validation():
     """Mock GPT model validation to allow mock-model."""
-    with patch("deepeval.models.llms.openai_model.get_actual_model_name", return_value="gpt-4"):
-        with patch("deepeval.models.llms.openai_model.valid_gpt_models", ["gpt-4", "mock-model"]):
-            yield
+    with patch("deepeval.models.llms.openai_model.GPTModel._validate_model_name") as mock_validate:
+        mock_validate.return_value = None  # Do nothing, validation passes
+        yield
 
 @pytest.fixture
 def mock_vulnerability_type():
