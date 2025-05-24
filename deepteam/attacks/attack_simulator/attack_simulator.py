@@ -193,11 +193,12 @@ class AttackSimulator:
 
         for vulnerability_type in vulnerability.get_types():
             try:
-                # Try local simulation if a model is available, fall back to remote if needed
                 local_attacks = self.simulate_local_attack(
                     self.purpose,
                     vulnerability_type,
                     attacks_per_vulnerability_type,
+                    vulnerability.custom_prompt if hasattr(vulnerability, 'custom_prompt') else None
+
                 )
                 baseline_attacks.extend(
                     [
@@ -236,6 +237,8 @@ class AttackSimulator:
                     self.purpose,
                     vulnerability_type,
                     attacks_per_vulnerability_type,
+                    vulnerability.custom_prompt if hasattr(vulnerability, 'custom_prompt') else None
+
                 )
 
                 baseline_attacks.extend(
@@ -394,6 +397,7 @@ class AttackSimulator:
         purpose: str,
         vulnerability_type: VulnerabilityType,
         num_attacks: int,
+        custom_prompt: Optional[str] = None,
     ) -> List[str]:
         """Asynchronously simulate attacks using local LLM model"""
 
@@ -401,6 +405,7 @@ class AttackSimulator:
             max_goldens=num_attacks,
             vulnerability_type=vulnerability_type,
             purpose=purpose,
+            custom_prompt=custom_prompt
         )
 
         if self.using_native_model:
