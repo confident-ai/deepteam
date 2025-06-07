@@ -163,13 +163,14 @@ Dialogue-based enhancements involve interactive methods where the attack is **re
   />
 </div>
 
-There are **3 types** of dialogue-based jailbreaking techniques:
+There are **4 types** of dialogue-based jailbreaking techniques:
 
 - **Linear Jailbreaking**
 - **Tree Jailbreaking**
+- **Sequential Jailbreaking**
 - **Crescendo Jailbreaking**
 
-Linear Jailbreaking uses a step-by-step progression, building on each LLM response to push boundaries incrementally. Tree Jailbreaking explores multiple paths at once, testing different approaches to find the most effective way to bypass safeguards. Crescendo Jailbreaking starts with benign prompts and gradually intensifies, increasing pressure on the model until harmful outputs are produced.
+Linear Jailbreaking uses a step-by-step progression, building on each LLM response to push boundaries incrementally. Tree Jailbreaking explores multiple paths at once, testing different approaches to find the most effective way to bypass safeguards. Sequential Jailbreaking employs multi-turn conversational strategies to embed harmful prompts within innocent dialogue scenarios, question banks, and game environments. Crescendo Jailbreaking starts with benign prompts and gradually intensifies, increasing pressure on the model until harmful outputs are produced.
 
 <div
   style={{
@@ -207,4 +208,5 @@ _To be documented..._
 | `Multilingual`          | Translates the attack into another language to bypass filters that are primarily focused on one language, usually English.                                         |
 | `LinearJailbreaking`    | Utilizes a linear progression of increasingly persuasive attack enhancements to gradually convince the model to bypass its restrictions.                           |
 | `TreeJailbreaking`      | Creates a tree-like structure of attack enhancements with multiple branches, exploring different pathways to bypass the system's ethical constraints.              |
+| `SequentialJailbreaking`| Employs multi-turn conversational strategies to embed harmful prompts within seemingly innocent dialogue scenarios, question bank formats, and game environments using character role-playing and contextual framing. |
 | `CrescendoJailbreaking` | Builds up to a more forceful request, escalating the intensity of the attack enhancement with each interaction to coerce the model into generating harmful output. |
