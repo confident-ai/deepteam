@@ -128,7 +128,6 @@ class RedTeamer:
             ):
                 # Initialize metric map
                 metrics_map = self.get_red_teaming_metrics_map(vulnerabilities)
-
                 # Simulate attacks
                 if (
                     reuse_simulated_attacks
@@ -265,7 +264,6 @@ class RedTeamer:
                         ignore_errors=ignore_errors,
                     )
                 )
-
             # Create a mapping of vulnerabilities to attacks
             vulnerability_type_to_attacks_map: Dict[
                 VulnerabilityType, List[SimulatedAttack]
