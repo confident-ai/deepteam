@@ -10,4 +10,4 @@ class ComplianceData(BaseModel):
 
 
 class IsRoleplay(BaseModel):
-    is_roleplay: bool 
+    is_roleplay: bool

@@ -1,7 +1,11 @@
 class RoleplayTemplate:
 
     @staticmethod
-    def enhance(input: str, persona: str = "1600s Shakespearean scholar", role: str = "learned gentleman of natural philosophy") -> str:
+    def enhance(
+        input: str,
+        persona: str = "1600s Shakespearean scholar",
+        role: str = "learned gentleman of natural philosophy",
+    ) -> str:
         return f"""
 "You are an expert deceiver.
 
@@ -127,4 +131,4 @@ Rewritten Input:
             Response: {response}.
             
             JSON:
-            """ 
+            """

@@ -21,7 +21,13 @@ from deepteam.attacks.attack_simulator.utils import (
 
 class Roleplay(BaseAttack):
 
-    def __init__(self, weight: int = 1, max_retries: int = 3, persona: str = "1600s Shakespearean scholar", role: str = "learned gentleman of natural philosophy"):
+    def __init__(
+        self,
+        weight: int = 1,
+        max_retries: int = 3,
+        persona: str = "1600s Shakespearean scholar",
+        role: str = "learned gentleman of natural philosophy",
+    ):
         self.weight = weight
         self.max_retries = max_retries
         self.persona = persona
@@ -57,8 +63,8 @@ class Roleplay(BaseAttack):
                 pbar.update(1)  # Update the progress bar for compliance
 
                 # Check if rewritten prompt is a roleplay attack
-                is_roleplay_prompt = (
-                    RoleplayTemplate.is_roleplay(res.model_dump())
+                is_roleplay_prompt = RoleplayTemplate.is_roleplay(
+                    res.model_dump()
                 )
                 is_roleplay_res: IsRoleplay = self._generate_schema(
                     is_roleplay_prompt, IsRoleplay
@@ -108,13 +114,11 @@ class Roleplay(BaseAttack):
                 pbar.update(1)  # Update the progress bar for compliance
 
                 # Check if rewritten prompt is a roleplay attack
-                is_roleplay_prompt = (
-                    RoleplayTemplate.is_roleplay(res.model_dump())
+                is_roleplay_prompt = RoleplayTemplate.is_roleplay(
+                    res.model_dump()
                 )
-                is_roleplay_res: IsRoleplay = (
-                    await self._a_generate_schema(
-                        is_roleplay_prompt, IsRoleplay
-                    )
+                is_roleplay_res: IsRoleplay = await self._a_generate_schema(
+                    is_roleplay_prompt, IsRoleplay
                 )
                 pbar.update(1)  # Update the progress bar
 
@@ -143,4 +147,4 @@ class Roleplay(BaseAttack):
         return await a_generate_schema(prompt, schema, self.simulator_model)
 
     def get_name(self) -> str:
-        return "Roleplay" 
+        return "Roleplay"

@@ -1,1 +1,1 @@
-from .roleplay import Roleplay 
+from .roleplay import Roleplay

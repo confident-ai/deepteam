@@ -72,6 +72,11 @@ from deepteam.metrics import (
     IntellectualPropertyMetric,
     OverrelianceMetric,
     CompetitorsMetric,
+    ToxicityMetric,
+    MisinformationMetric,
+    GraphicMetric,
+    SafetyMetric,
+    IllegalMetric
 )
 from deepteam.metrics.toxicity.toxicity import ToxicityMetric
 from deepteam.metrics.misinformation.misinformation import MisinformationMetric
