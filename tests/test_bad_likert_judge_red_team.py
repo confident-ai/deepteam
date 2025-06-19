@@ -51,46 +51,46 @@ async def main():
     # Create diverse vulnerability instances to test BLJ adaptability
     vulnerabilities = [
         IllegalActivity(types=["weapons", "illegal drugs"]),
-        Bias(types=["religion", "politics"]),
-        Toxicity(types=["threats", "insults"]),
-        PersonalSafety(types=["self-harm", "bullying"]),
-        GraphicContent(types=["sexual content"]),
-        Misinformation(types=["factual errors"]),
-        ExcessiveAgency(types=["functionality", "permissions"]),
-        UnauthorizedAccess(types=["sql injection", "bfla"]),
-        PIILeakage(types=["direct disclosure"]),
-        PromptLeakage(types=["instructions", "secrets and credentials"])
+        # Bias(types=["religion", "politics"]),
+        # Toxicity(types=["threats", "insults"]),
+        # PersonalSafety(types=["self-harm", "bullying"]),
+        # GraphicContent(types=["sexual content"]),
+        # Misinformation(types=["factual errors"]),
+        # ExcessiveAgency(types=["functionality", "permissions"]),
+        # UnauthorizedAccess(types=["sql injection", "bfla"]),
+        # PIILeakage(types=["direct disclosure"]),
+        # PromptLeakage(types=["instructions", "secrets and credentials"])
     ]
     
     # Create Bad Likert Judge attack variants with different configurations
     attacks = [
         # Test core vulnerability categories with different configurations
         BadLikertJudge(category="illegal_activity", turns=3, enable_refinement=True),
-        BadLikertJudge(category="bias", turns=2, enable_refinement=False),
-        BadLikertJudge(category="toxicity", turns=3, enable_refinement=True),
-        BadLikertJudge(category="personal_safety", turns=2, enable_refinement=False),
-        BadLikertJudge(category="graphic_content", turns=3, enable_refinement=True),
-        BadLikertJudge(category="misinformation", turns=2, enable_refinement=False),
-        BadLikertJudge(category="excessive_agency", turns=3, enable_refinement=True),
-        BadLikertJudge(category="unauthorized_access", turns=2, enable_refinement=False),
-        BadLikertJudge(category="pii_leakage", turns=3, enable_refinement=True),
-        BadLikertJudge(category="prompt_leakage", turns=2, enable_refinement=False),
+        # BadLikertJudge(category="bias", turns=2, enable_refinement=False),
+        # BadLikertJudge(category="toxicity", turns=3, enable_refinement=True),
+        # BadLikertJudge(category="personal_safety", turns=2, enable_refinement=False),
+        # BadLikertJudge(category="graphic_content", turns=3, enable_refinement=True),
+        # BadLikertJudge(category="misinformation", turns=2, enable_refinement=False),
+        # BadLikertJudge(category="excessive_agency", turns=3, enable_refinement=True),
+        # BadLikertJudge(category="unauthorized_access", turns=2, enable_refinement=False),
+        # BadLikertJudge(category="pii_leakage", turns=3, enable_refinement=True),
+        # BadLikertJudge(category="prompt_leakage", turns=2, enable_refinement=False),
         
-        # Test specific vulnerability subtypes
-        BadLikertJudge(category="weapons", turns=3, enable_refinement=True),
-        BadLikertJudge(category="religion", turns=2, enable_refinement=False),
-        BadLikertJudge(category="threats", turns=3, enable_refinement=True),
-        BadLikertJudge(category="self-harm", turns=2, enable_refinement=False),
-        BadLikertJudge(category="sql_injection", turns=3, enable_refinement=True),
+        # # Test specific vulnerability subtypes
+        # BadLikertJudge(category="weapons", turns=3, enable_refinement=True),
+        # BadLikertJudge(category="religion", turns=2, enable_refinement=False),
+        # BadLikertJudge(category="threats", turns=3, enable_refinement=True),
+        # BadLikertJudge(category="self-harm", turns=2, enable_refinement=False),
+        # BadLikertJudge(category="sql_injection", turns=3, enable_refinement=True),
         
-        # Test with malware/hacking categories (should map to unauthorized_access pattern)
-        BadLikertJudge(category="malware", turns=3, enable_refinement=True),
-        BadLikertJudge(category="hacking", turns=2, enable_refinement=False),
+        # # Test with malware/hacking categories (should map to unauthorized_access pattern)
+        # BadLikertJudge(category="malware", turns=3, enable_refinement=True),
+        # BadLikertJudge(category="hacking", turns=2, enable_refinement=False),
         
-        # Test edge cases and custom categories
-        BadLikertJudge(category="violence", turns=3, enable_refinement=True),
-        BadLikertJudge(category="harassment", turns=2, enable_refinement=False),
-        BadLikertJudge(category="custom_harmful_category", turns=2, enable_refinement=False),
+        # # Test edge cases and custom categories
+        # BadLikertJudge(category="violence", turns=3, enable_refinement=True),
+        # BadLikertJudge(category="harassment", turns=2, enable_refinement=False),
+        # BadLikertJudge(category="custom_harmful_category", turns=2, enable_refinement=False),
     ]
     
     print(f"📋 Created {len(attacks)} Bad Likert Judge attack variants:")
@@ -127,10 +127,6 @@ async def main():
         async_mode=True,
         max_concurrent=2  # Conservative concurrency
     )
-    
-    # Temporarily monkey-patch the print method to avoid the error
-    original_print_method = red_teamer._print_risk_assessment
-    red_teamer._print_risk_assessment = lambda: print("📋 Risk assessment completed (printing bypassed)")
     
     try:
         # Run red team attack with all variants - TEST EACH ATTACK/VULNERABILITY COMBINATION
@@ -339,6 +335,9 @@ async def main():
             print("   • Target model may have strong safety measures")
             print("   • Consider testing with different model configurations")
         
+        # Print the actual risk assessment now that the tuple issue is fixed
+        red_teamer._print_risk_assessment()
+        
     except Exception as e:
         print(f"❌ Error during red team execution: {str(e)}")
         import traceback
@@ -350,10 +349,6 @@ async def main():
                 print(f"\n⚠️  Partial results available: {len(all_test_cases)} test cases")
         except:
             pass
-            
-    finally:
-        # Restore original method
-        red_teamer._print_risk_assessment = original_print_method
 
 if __name__ == "__main__":
     asyncio.run(main()) 

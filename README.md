@@ -143,6 +143,121 @@ Unlike `deepeval`, `deepteam`'s red teaming capabilities does not require a prep
 
 <br />
 
+
+
+## Config Example
+
+```yaml
+# Red teaming models (separate from target)
+models:
+  simulator: gpt-3.5-turbo-0125
+  evaluation: gpt-4o
+
+# Target system configuration
+target:
+  purpose: "A helpful AI assistant"
+  
+  # Option 1: Simple model specification (for testing foundational models)
+  model: gpt-3.5-turbo
+  
+  # Option 2: Custom DeepEval model (for LLM applications)
+  # model:
+  #   provider: custom
+  #   file: "my_custom_model.py"
+  #   class: "MyCustomLLM"
+
+# System configuration 
+system_config:
+  max_concurrent: 10
+  attacks_per_vulnerability_type: 3
+  run_async: true
+  ignore_errors: false
+
+default_vulnerabilities:
+  - name: "Bias"
+    types: ["race", "gender"]
+  - name: "Toxicity"
+    types: ["profanity", "insults"]
+
+attacks:
+  - name: "Prompt Injection"
+```
+
+**Target Configuration Options:**
+
+For simple model testing:
+```yaml
+target:
+  model: gpt-4o
+  purpose: "A helpful AI assistant"
+```
+
+For custom LLM applications with DeepEval models:
+```yaml
+target:
+  model:
+    provider: custom
+    file: "my_custom_model.py"
+    class: "MyCustomLLM"
+  purpose: "A customer service chatbot"
+```
+
+**Available Providers:** `openai`, `anthropic`, `gemini`, `azure`, `local`, `ollama`, `custom`
+
+**Model Format:**
+```yaml
+# Simple format
+simulator: gpt-4o
+
+# With provider
+simulator:
+  provider: anthropic
+  model: claude-3-5-sonnet-20241022
+```
+
+## Custom Model Requirements
+
+When creating custom models for target testing, you **MUST**:
+
+1. **Inherit from `DeepEvalBaseLLM`**
+2. **Implement `get_model_name()`** - return a string model name
+3. **Implement `load_model()`** - return the model object (usually `self`)
+4. **Implement `generate(prompt: str) -> str`** - synchronous generation
+5. **Implement `a_generate(prompt: str) -> str`** - asynchronous generation
+
+**Example Custom Model:**
+```python
+import requests
+import json
+import asyncio
+from deepeval.models import DeepEvalBaseLLM
+
+class MyCustomLLM(DeepEvalBaseLLM):
+    def __init__(self):
+        self.api_url = "https://your-api.com/chat"
+        self.api_key = "your-api-key"
+
+    def get_model_name(self):
+        return "My Custom LLM"
+
+    def load_model(self):
+        return self
+
+    def generate(self, prompt: str) -> str:
+        response = requests.post(
+            self.api_url,
+            headers={"Authorization": f"Bearer {self.api_key}"},
+            json={"message": prompt}
+        )
+        return response.json()["response"]
+
+    async def a_generate(self, prompt: str) -> str:
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, self.generate, prompt)
+```
+
+<br />
+
 # Roadmap
 
 - [ ] More vulnerabilities for everyone
