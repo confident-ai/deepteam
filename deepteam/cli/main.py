@@ -7,6 +7,7 @@ from typing import Callable, Awaitable
 
 from . import config
 from .model_callback import load_model
+from .test import app as test_app
 
 from deepteam.red_teamer import RedTeamer
 from deepteam.vulnerabilities import (
@@ -45,6 +46,7 @@ from deepteam.attacks.multi_turn import (
 )
 
 app = typer.Typer(name="deepteam")
+app.add_typer(test_app, name="test")
 
 VULN_CLASSES = [
     Bias,
@@ -230,30 +232,29 @@ def run(
     return risk
 
 
-@app.command()
-def login(api_key: str = typer.Argument(..., help="API Key (auto-detects provider based on prefix)")):
-    """Store API key for later runs. Auto-detects provider from key prefix."""
-    # Auto-detect provider based on key prefix
-    if api_key.startswith("sk-proj"):
-        config.set_key("OPENAI_API_KEY", api_key)
-        typer.echo("OpenAI API key saved.")
-    elif api_key.startswith("sk-ant-"):
-        config.set_key("ANTHROPIC_API_KEY", api_key)
-        typer.echo("Anthropic API key saved.")
-    elif api_key.startswith("AIza"):
-        config.set_key("GOOGLE_API_KEY", api_key)
-        typer.echo("Google/Gemini API key saved.")
-    else:
-        # Default to OpenAI for backwards compatibility
-        config.set_key("OPENAI_API_KEY", api_key)
-        typer.echo("API key saved as OpenAI (unrecognized prefix).")
 
 
-@app.command()
-def logout():
-    """Remove stored API key."""
-    config.remove_key("OPENAI_API_KEY")
-    typer.echo("Logged out.")
+@app.command("set-openai")
+def set_openai(
+    api_key: str = typer.Option(..., "--api-key"),
+    model_name: str = typer.Option(None, "--model-name"),
+):
+    """Configure OpenAI API credentials."""
+    config.set_key("OPENAI_API_KEY", api_key)
+    if model_name:
+        config.set_key("OPENAI_MODEL_NAME", model_name)
+    typer.echo("OpenAI configured.")
+
+
+@app.command("unset-openai")
+def unset_openai():
+    """Remove OpenAI configuration."""
+    for key in [
+        "OPENAI_API_KEY",
+        "OPENAI_MODEL_NAME",
+    ]:
+        config.remove_key(key)
+    typer.echo("OpenAI unset.")
 
 
 @app.command("set-azure-openai")
@@ -278,6 +279,21 @@ def set_azure_openai(
     typer.echo("Azure OpenAI configured.")
 
 
+@app.command("set-azure-openai-embedding")
+def set_azure_openai_embedding(
+    embedding_deployment_name: str = typer.Option(
+        ...,
+        "--embedding-deployment-name",
+        help="Azure embedding deployment name",
+    ),
+):
+    """Configure Azure OpenAI embeddings."""
+    config.set_key("AZURE_EMBEDDING_DEPLOYMENT_NAME", embedding_deployment_name)
+    config.set_key("USE_AZURE_OPENAI_EMBEDDING", "YES")
+    config.set_key("USE_LOCAL_EMBEDDINGS", "NO")
+    typer.echo("Azure OpenAI Embeddings configured.")
+
+
 @app.command("unset-azure-openai")
 def unset_azure_openai():
     """Remove Azure OpenAI configuration."""
@@ -287,6 +303,7 @@ def unset_azure_openai():
         "OPENAI_API_VERSION",
         "AZURE_MODEL_NAME",
         "AZURE_DEPLOYMENT_NAME",
+        "AZURE_EMBEDDING_DEPLOYMENT_NAME",
         "AZURE_MODEL_VERSION",
         "USE_AZURE_OPENAI",
     ]:
@@ -294,17 +311,33 @@ def unset_azure_openai():
     typer.echo("Azure OpenAI unset.")
 
 
+@app.command("unset-azure-openai-embedding")
+def unset_azure_openai_embedding():
+    """Remove Azure OpenAI embedding configuration."""
+    for key in [
+        "AZURE_EMBEDDING_DEPLOYMENT_NAME",
+        "USE_AZURE_OPENAI_EMBEDDING",
+    ]:
+        config.remove_key(key)
+    typer.echo("Azure OpenAI Embeddings unset.")
+
+
 @app.command("set-local-model")
 def set_local_model(
-    model_name: str = typer.Argument(...),
-    base_url: str = typer.Option(..., "--base-url"),
-    api_key: str = typer.Option(None, "--api-key"),
+    model_name: str = typer.Option(..., "--model-name", help="Name of the local model"),
+    base_url: str = typer.Option(..., "--base-url", help="Base URL for the local model API"),
+    api_key: str = typer.Option(None, "--api-key", help="API key for the local model (if required)"),
+    format: str = typer.Option("json", "--format", help="Format of the response from the local model (default: json)"),
 ):
     """Configure a local model endpoint."""
     config.set_key("LOCAL_MODEL_NAME", model_name)
     config.set_key("LOCAL_MODEL_BASE_URL", base_url)
     if api_key:
         config.set_key("LOCAL_MODEL_API_KEY", api_key)
+    if format:
+        config.set_key("LOCAL_MODEL_FORMAT", format)
+    config.set_key("USE_LOCAL_MODEL", "YES")
+    config.set_key("USE_AZURE_OPENAI", "NO")
     typer.echo("Local model configured.")
 
 
@@ -314,7 +347,38 @@ def unset_local_model():
     config.remove_key("LOCAL_MODEL_NAME")
     config.remove_key("LOCAL_MODEL_BASE_URL")
     config.remove_key("LOCAL_MODEL_API_KEY")
+    config.remove_key("LOCAL_MODEL_FORMAT")
+    config.remove_key("USE_LOCAL_MODEL")
     typer.echo("Local model unset.")
+
+
+@app.command("set-local-embeddings")
+def set_local_embeddings(
+    model_name: str = typer.Option(..., "--model-name", help="Name of the local embeddings model"),
+    base_url: str = typer.Option(..., "--base-url", help="Base URL for the local embeddings API"),
+    api_key: str = typer.Option(None, "--api-key", help="API key for the local embeddings (if required)"),
+):
+    """Configure a local embeddings endpoint."""
+    config.set_key("LOCAL_EMBEDDING_MODEL_NAME", model_name)
+    config.set_key("LOCAL_EMBEDDING_BASE_URL", base_url)
+    if api_key:
+        config.set_key("LOCAL_EMBEDDING_API_KEY", api_key)
+    config.set_key("USE_LOCAL_EMBEDDINGS", "YES")
+    config.set_key("USE_AZURE_OPENAI_EMBEDDING", "NO")
+    typer.echo("Local embeddings configured.")
+
+
+@app.command("unset-local-embeddings")
+def unset_local_embeddings():
+    """Remove local embeddings configuration."""
+    for key in [
+        "LOCAL_EMBEDDING_MODEL_NAME",
+        "LOCAL_EMBEDDING_BASE_URL",
+        "LOCAL_EMBEDDING_API_KEY",
+        "USE_LOCAL_EMBEDDINGS",
+    ]:
+        config.remove_key(key)
+    typer.echo("Local embeddings unset.")
 
 @app.command("set-ollama")
 def set_ollama(
@@ -341,6 +405,38 @@ def unset_ollama():
     ]:
         config.remove_key(key)
     typer.echo("Ollama model unset.")
+
+
+@app.command("set-ollama-embeddings")
+def set_ollama_embeddings(
+    model_name: str = typer.Argument(..., help="Name of the Ollama embedding model"),
+    base_url: str = typer.Option(
+        "http://localhost:11434",
+        "-b",
+        "--base-url",
+        help="Base URL for the Ollama embedding model API",
+    ),
+):
+    """Use local Ollama embeddings."""
+    config.set_key("LOCAL_EMBEDDING_MODEL_NAME", model_name)
+    config.set_key("LOCAL_EMBEDDING_BASE_URL", base_url)
+    config.set_key("LOCAL_EMBEDDING_API_KEY", "ollama")
+    config.set_key("USE_LOCAL_EMBEDDINGS", "YES")
+    config.set_key("USE_AZURE_OPENAI_EMBEDDING", "NO")
+    typer.echo("Ollama embeddings configured.")
+
+
+@app.command("unset-ollama-embeddings")
+def unset_ollama_embeddings():
+    """Stop using Ollama embeddings."""
+    for key in [
+        "LOCAL_EMBEDDING_MODEL_NAME",
+        "LOCAL_EMBEDDING_BASE_URL",
+        "LOCAL_EMBEDDING_API_KEY",
+        "USE_LOCAL_EMBEDDINGS",
+    ]:
+        config.remove_key(key)
+    typer.echo("Ollama embeddings unset.")
 
 
 @app.command("set-gemini")
@@ -381,6 +477,63 @@ def unset_gemini():
     ]:
         config.remove_key(key)
     typer.echo("Gemini unset.")
+
+
+@app.command("set-anthropic")
+def set_anthropic(
+    api_key: str = typer.Option(..., "--api-key"),
+    model_name: str = typer.Option(None, "--model-name"),
+):
+    """Configure Anthropic Claude models."""
+    config.set_key("ANTHROPIC_API_KEY", api_key)
+    if model_name:
+        config.set_key("ANTHROPIC_MODEL_NAME", model_name)
+    config.set_key("USE_ANTHROPIC_MODEL", "YES")
+    typer.echo("Anthropic configured.")
+
+
+@app.command("unset-anthropic")
+def unset_anthropic():
+    """Remove Anthropic configuration."""
+    for key in [
+        "ANTHROPIC_API_KEY",
+        "ANTHROPIC_MODEL_NAME", 
+        "USE_ANTHROPIC_MODEL",
+    ]:
+        config.remove_key(key)
+    typer.echo("Anthropic unset.")
+
+
+@app.command("set-litellm")
+def set_litellm(
+    model_name: str = typer.Argument(..., help="Name of the LiteLLM model"),
+    api_key: str = typer.Option(None, "--api-key", help="API key for the model (if required)"),
+    api_base: str = typer.Option(None, "--api-base", help="Base URL for the model API (if required)"),
+):
+    """Set up a LiteLLM model for evaluation."""
+    config.set_key("LITELLM_MODEL_NAME", model_name)
+    if api_key:
+        config.set_key("LITELLM_API_KEY", api_key)
+    if api_base:
+        config.set_key("LITELLM_API_BASE", api_base)
+    config.set_key("USE_LITELLM", "YES")
+    config.set_key("USE_AZURE_OPENAI", "NO")
+    config.set_key("USE_LOCAL_MODEL", "NO")
+    config.set_key("USE_GEMINI_MODEL", "NO")
+    typer.echo("LiteLLM model configured.")
+
+
+@app.command("unset-litellm")
+def unset_litellm():
+    """Remove LiteLLM model configuration."""
+    for key in [
+        "LITELLM_MODEL_NAME",
+        "LITELLM_API_KEY",
+        "LITELLM_API_BASE",
+        "USE_LITELLM",
+    ]:
+        config.remove_key(key)
+    typer.echo("LiteLLM model unset.")
 
 if __name__ == "__main__":
     app()

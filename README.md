@@ -143,48 +143,7 @@ Unlike `deepeval`, `deepteam`'s red teaming capabilities does not require a prep
 
 <br />
 
-# 🖥️ Command Line Interface
 
-Use the CLI to run red teaming with YAML configs:
-
-```bash
-# Basic usage
-deepteam run config.yaml
-
-# With options
-deepteam run config.yaml -c 20 -a 5
-```
-
-**Options:**
-- `-c, --max-concurrent`: Maximum concurrent operations (overrides config)
-- `-a, --attacks-per-vuln`: Number of attacks per vulnerability type (overrides config)
-
-Use `deepteam --help` to see all available commands and options.
-
-## API Keys
-
-```bash
-# Auto-detects provider from prefix
-deepteam login sk-proj-abc123...  # OpenAI
-deepteam login sk-ant-abc123...   # Anthropic  
-deepteam login AIzabc123...       # Google
-
-deepteam logout
-```
-
-## Provider Setup
-
-```bash
-# Azure OpenAI
-deepteam set-azure-openai --openai-api-key "key" --openai-endpoint "endpoint" --openai-api-version "version" --openai-model-name "model" --deployment-name "deployment"
-
-# Local/Ollama
-deepteam set-local-model model-name --base-url "http://localhost:8000"
-deepteam set-ollama llama2
-
-# Gemini
-deepteam set-gemini --google-api-key "key"
-```
 
 ## Config Example
 
@@ -222,12 +181,6 @@ default_vulnerabilities:
 
 attacks:
   - name: "Prompt Injection"
-```
-**CLI Overrides:**
-The `-c` and `-a` CLI options override YAML config values:
-```bash
-# Override max_concurrent and attacks_per_vuln from CLI
-deepteam run config.yaml -c 20 -a 5
 ```
 
 **Target Configuration Options:**
