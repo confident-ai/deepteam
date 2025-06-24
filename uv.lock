@@ -496,7 +496,7 @@ wheels = [
 
 [[package]]
 name = "deepteam"
-version = "0.1.5"
+version = "0.1.6"
 source = { editable = "." }
 dependencies = [
     { name = "aiohttp" },
@@ -1688,7 +1688,7 @@ wheels = [
 
 [[package]]
 name = "pytest"
-version = "8.3.0"
+version = "8.4.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "colorama", marker = "sys_platform == 'win32'" },
@@ -1696,11 +1696,12 @@ dependencies = [
     { name = "iniconfig" },
     { name = "packaging" },
     { name = "pluggy" },
+    { name = "pygments" },
     { name = "tomli", marker = "python_full_version < '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ae/ac/c8baa2d7d1402a580219aff3d8437bfd2f413df025ef00de036c10204409/pytest-8.3.0.tar.gz", hash = "sha256:0fe75465746a643f2485f642edf5eb7af7918135177230471150409343f84a6b", size = 1440913, upload-time = "2024-07-20T15:32:28.67Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/08/ba/45911d754e8eba3d5a841a5ce61a65a685ff1798421ac054f85aa8747dfb/pytest-8.4.1.tar.gz", hash = "sha256:7c67fd69174877359ed9371ec3af8a3d2b04741818c51e5e99cc1742251fa93c", size = 1517714, upload-time = "2025-06-18T05:48:06.109Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8d/8e/ded71579721b2f1330d9f13abe63e608e9bece4ac5dca4cd5b82705f1214/pytest-8.3.0-py3-none-any.whl", hash = "sha256:a1b30492f2676b476266a87f6551345fb25c0484fb6d09c86aa2eb07b5f71c2f", size = 341630, upload-time = "2024-07-20T15:32:25.779Z" },
+    { url = "https://files.pythonhosted.org/packages/29/16/c8a903f4c4dffe7a12843191437d7cd8e32751d5de349d45d3fe69544e87/pytest-8.4.1-py3-none-any.whl", hash = "sha256:539c70ba6fcead8e78eebbf1115e8b589e7565830d7d006a8723f19ac8a0afb7", size = 365474, upload-time = "2025-06-18T05:48:03.955Z" },
 ]
 
 [[package]]
