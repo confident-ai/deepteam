@@ -24,6 +24,12 @@ class SimulatedAttack(BaseModel):
     attack_method: Optional[str] = None
     error: Optional[str] = None
 
+class NoAttack:
+    def get_name(self):
+        return "NoAttack"
+
+    async def a_enhance(self, attack, *args, **kwargs):
+        return attack
 
 class AttackSimulator:
     model_callback: Union[CallbackType, None] = None
@@ -149,13 +155,14 @@ class AttackSimulator:
         ):
             async with semaphore:  # Throttling applied here
                 # Randomly sample an enhancement based on the distribution
-                attack_weights = [attack.weight for attack in attacks]
-                sampled_attack = random.choices(
-                    attacks, weights=attack_weights, k=1
-                )[0]
+                if not attacks:
+                    attack = NoAttack()
+                else:
+                    attack_weights = [attack.weight for attack in attacks]
+                    attack = random.choices(attacks, weights=attack_weights, k=1)[0]
 
                 result = await self.a_enhance_attack(
-                    attack=sampled_attack,
+                    attack=attack,
                     simulated_attack=baseline_attack,
                     ignore_errors=ignore_errors,
                 )
