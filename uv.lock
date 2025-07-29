@@ -463,7 +463,7 @@ wheels = [
 
 [[package]]
 name = "deepeval"
-version = "3.2.6"
+version = "3.3.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -495,14 +495,14 @@ dependencies = [
     { name = "typer" },
     { name = "wheel" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/0d/b2/216aa2ffa6fa635335dc52e6a0185b09e3b810344e3acdc2aa802515634b/deepeval-3.2.6.tar.gz", hash = "sha256:66b6675151a5fb666ea923e29fa6bebd4f73bec0394a788c5e2bdfb3fc5f8ffe", size = 365940, upload-time = "2025-07-11T18:26:37.26Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7e/0a/4bc364ce6d04bf962051a908323cb874484a8143142a87d4647aedd81e25/deepeval-3.3.2.tar.gz", hash = "sha256:3eaf2e58b5f4388be7e0b68171eb966e7e5ebaa2b3d3b30a5717bc6ed334868e", size = 358866, upload-time = "2025-07-23T20:53:17.568Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/da/4c/cbb6bdba051bd8eecff45455e887eb421d6d0af139aaf197a0586ce3f848/deepeval-3.2.6-py3-none-any.whl", hash = "sha256:d43a0637e926fdaf17ba0e8afc4a6681603215a1ad5281b048b719bad209010d", size = 582137, upload-time = "2025-07-11T18:26:34.983Z" },
+    { url = "https://files.pythonhosted.org/packages/ec/82/a90d293b4062d67307f35f690e0e82d711a66a873c01e3916c74c23d9403/deepeval-3.3.2-py3-none-any.whl", hash = "sha256:7ea0fdf411924d7c816dce1081bb7c3b47c827aae9e391403f18a56de240852d", size = 537693, upload-time = "2025-07-23T20:53:15.027Z" },
 ]
 
 [[package]]
 name = "deepteam"
-version = "0.1.8"
+version = "0.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "aiohttp" },
