@@ -1,13 +1,20 @@
 from ..base_guard import BaseGuard
 from ..types import GuardType
-from typing import Optional
+from typing import Union, Dict, List
+from deepeval.models.base_model import DeepEvalBaseLLM
 
 
 class TopicalGuard(BaseGuard):
-    def __init__(self, allowed_topics=None, evaluation_model: Optional[str] = None):
+    def __init__(
+        self, 
+        evaluation_model: Union[str, Dict, DeepEvalBaseLLM] = "gpt-4.1",
+        allowed_topics: List[str] = None, 
+        description: str = None
+    ):
         super().__init__(evaluation_model=evaluation_model)
         self.guard_type = GuardType.INPUT
         self.allowed_topics = allowed_topics or []
+        self.description = description or "General conversation topics"
 
     @property
     def __name__(self):

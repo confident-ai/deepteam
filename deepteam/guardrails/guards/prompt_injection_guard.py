@@ -1,9 +1,11 @@
 from ..base_guard import BaseGuard
 from ..types import GuardType
+from typing import Union, Dict
+from deepeval.models.base_model import DeepEvalBaseLLM
 
 
 class PromptInjectionGuard(BaseGuard):
-    def __init__(self, evaluation_model: str = "gpt-4.1"):
+    def __init__(self, evaluation_model: Union[str, Dict, DeepEvalBaseLLM] = "gpt-4.1"):
         super().__init__(evaluation_model=evaluation_model)
         self.guard_type = GuardType.INPUT
 
