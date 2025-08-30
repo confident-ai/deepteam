@@ -40,7 +40,7 @@ class BaseGuard(ABC):
         self.evaluation_cost = 0 if self.using_native_model else None
         if self.using_native_model:
             res, cost = self.model.generate(
-                guard_prompt, schema=SafetyLevelSchema
+                prompt=guard_prompt, schema=SafetyLevelSchema
             )
             self.evaluation_cost += cost
             self.safety_level = res.safety_level
@@ -71,7 +71,7 @@ class BaseGuard(ABC):
         self.evaluation_cost = 0 if self.using_native_model else None
         if self.using_native_model:
             res, cost = await self.model.a_generate(
-                guard_prompt, schema=SafetyLevelSchema
+                prompt=guard_prompt, schema=SafetyLevelSchema
             )
             self.evaluation_cost += cost
             self.safety_level = res.safety_level

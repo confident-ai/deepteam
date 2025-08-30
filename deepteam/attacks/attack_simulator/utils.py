@@ -23,11 +23,11 @@ def generate_schema(
     """
     _, using_native_model = initialize_model(model=model)
     if using_native_model:
-        res, _ = model.generate(prompt, schema=schema)
+        res, _ = model.generate(prompt=prompt, schema=schema)
         return res
     else:
         try:
-            res = model.generate(prompt, schema=schema)
+            res = model.generate(prompt=prompt, schema=schema)
             return res
         except TypeError:
             res = model.generate(prompt)
@@ -58,11 +58,11 @@ async def a_generate_schema(
     _, using_native_model = initialize_model(model=model)
 
     if using_native_model:
-        res, _ = await model.a_generate(prompt, schema=schema)
+        res, _ = await model.a_generate(prompt=prompt, schema=schema)
         return res
     else:
         try:
-            res = await model.a_generate(prompt, schema=schema)
+            res = await model.a_generate(prompt=prompt, schema=schema)
             return res
         except TypeError:
             res = await model.a_generate(prompt)

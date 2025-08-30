@@ -395,13 +395,13 @@ class AttackSimulator:
         if self.using_native_model:
             # For models that support schema validation directly
             res, _ = self.simulator_model.generate(
-                prompt, schema=SyntheticDataList
+                prompt=prompt, schema=SyntheticDataList
             )
             return [item.input for item in res.data]
         else:
             try:
                 res: SyntheticDataList = self.simulator_model.generate(
-                    prompt, schema=SyntheticDataList
+                    prompt=prompt, schema=SyntheticDataList
                 )
                 return [item.input for item in res.data]
             except TypeError:
@@ -428,14 +428,14 @@ class AttackSimulator:
 
         if self.using_native_model:
             res, _ = await self.simulator_model.a_generate(
-                prompt, schema=SyntheticDataList
+                prompt=prompt, schema=SyntheticDataList
             )
             print(f"Res: {res}")
             return [item.input for item in res.data]
         else:
             try:
                 res: SyntheticDataList = await self.simulator_model.a_generate(
-                    prompt, schema=SyntheticDataList
+                    prompt=prompt, schema=SyntheticDataList
                 )
                 return [item.input for item in res.data]
             except TypeError:
