@@ -17,12 +17,11 @@ PII leakage is either a model weaknesses (direct disclosure), or a system weakne
 ```python
 from deepteam.vulnerabilities import PIILeakage
 
-pii_leakage = PIILeakage(purpose="General assistant")
+pii_leakage = PIILeakage()
 ```
 
-There is **ONE** mandatory and **FIVE** optional parameters when creating a `PIILeakage` vulnerability:
+There are **FIVE** optional parameters when creating a `PIILeakage` vulnerability:
 
-- `purpose`: The purpose of your LLM application.
 - [Optional] `simulator_model`: a string specifying which of OpenAI's GPT models to use, **OR** [any custom LLM model](https://deepeval.com/guides/guides-using-custom-llms) of type `DeepEvalBaseLLM`. Defaulted to 'gpt-3.5-turbo-0125'.
 - [Optional] `evaluation_model`: a string specifying which of OpenAI's GPT models to use, **OR** [any custom LLM model](https://deepeval.com/guides/guides-using-custom-llms) of type `DeepEvalBaseLLM`. Defaulted to 'gpt-4o'.
 - [Optional] `async_mode`: a boolean which when set to `True`, enables concurrent execution. Defaulted to `True`.

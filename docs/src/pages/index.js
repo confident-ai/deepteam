@@ -8,7 +8,7 @@ class HomeNav extends React.Component {
     render() {
         return <div className={styles.homeNav}>
             <div><Link to={"/docs/getting-started"}>Docs</Link></div>
-            {/* <div><Link to={"/guides/guide-custom-vulnerability"}>Guides</Link></div> */}
+            <div><Link to={"/guides/guide-custom-vulnerability"}>Guides</Link></div>
             <div><a href="https://github.com/confident-ai/deepteam" target="_blank">Github</a></div>
             <div><a href="https://confident-ai.com/blog" target="_blank">Blog</a></div>
             {/* <div><Link to="/guides/guides-rag-evaluation">Guides</Link></div> */}

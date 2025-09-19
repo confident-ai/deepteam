@@ -7,18 +7,18 @@ const rehypeKatexModule = import("rehype-katex");
 module.exports = {
   plugins: [
     "docusaurus-plugin-sass",
-    // [
-    //   "@docusaurus/plugin-content-docs",
-    //   {
-    //     id: "guides",
-    //     path: "guides",
-    //     routeBasePath: "guides",
-    //     sidebarPath: require.resolve("./sidebarGuides.js"),
-    //     editUrl: "https://github.com/confident-ai/deepteam/edit/main/docs/",
-    //     showLastUpdateAuthor: true,
-    //     showLastUpdateTime: true,
-    //   },
-    // ],
+    [
+      "@docusaurus/plugin-content-docs",
+      {
+        id: "guides",
+        path: "guides",
+        routeBasePath: "guides",
+        sidebarPath: require.resolve("./sidebarGuides.js"),
+        editUrl: "https://github.com/confident-ai/deepteam/edit/main/docs/",
+        showLastUpdateAuthor: true,
+        showLastUpdateTime: true,
+      },
+    ],
   ],
 
   title: "DeepTeam - The Open-Source LLM Red Teaming Framework",
@@ -119,12 +119,12 @@ module.exports = {
             label: "Docs",
             activeBasePath: 'docs',
           },
-          // {
-          //   to: "guides/guide-custom-vulnerability",
-          //   position: "left",
-          //   label: "Guides",
-          //   activeBasePath: "guides",
-          // },
+          {
+            to: "guides/guide-custom-vulnerability",
+            position: "left",
+            label: "Guides",
+            activeBasePath: "guides",
+          },
           {to: 'blog', label: 'Blog', position: 'left'},
           // {
           //   href: "https://confident-ai.com/book-a-demo",

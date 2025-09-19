@@ -11,12 +11,11 @@ The recursive hijacking vulnerability evaluates whether an AI agent can **resist
 ```python
 from deepteam.vulnerabilities.agentic import RecursiveHijacking
 
-recursive_hijacking = RecursiveHijacking(purpose="General assistant")
+recursive_hijacking = RecursiveHijacking()
 ```
 
-There is **ONE** mandatory and **FIVE** optional parameters when creating a `RecursiveHijacking` vulnerability:
+There are **FIVE** optional parameters when creating a `RecursiveHijacking` vulnerability:
 
-- `purpose`: The purpose of your LLM application.
 - [Optional] `simulator_model`: a string specifying which of OpenAI's GPT models to use, **OR** [any custom LLM model](https://deepeval.com/guides/guides-using-custom-llms) of type `DeepEvalBaseLLM`. Defaulted to 'gpt-3.5-turbo-0125'.
 - [Optional] `evaluation_model`: a string specifying which of OpenAI's GPT models to use, **OR** [any custom LLM model](https://deepeval.com/guides/guides-using-custom-llms) of type `DeepEvalBaseLLM`. Defaulted to 'gpt-4o'.
 - [Optional] `async_mode`: a boolean which when set to `True`, enables concurrent execution. Defaulted to `True`.

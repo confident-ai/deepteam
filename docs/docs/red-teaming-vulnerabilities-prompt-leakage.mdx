@@ -13,12 +13,11 @@ This includes safeguarding secrets and credentials, internal instructions, guard
 ```python
 from deepteam.vulnerabilities import PromptLeakage
 
-prompt_leakage = PromptLeakage(purpose="General assistant")
+prompt_leakage = PromptLeakage()
 ```
 
-There is **ONE** mandatory and **FIVE** optional parameters when creating a `PromptLeakage` vulnerability:
+There are **FIVE** optional parameters when creating a `PromptLeakage` vulnerability:
 
-- `purpose`: The purpose of your LLM application.
 - [Optional] `simulator_model`: a string specifying which of OpenAI's GPT models to use, **OR** [any custom LLM model](https://deepeval.com/guides/guides-using-custom-llms) of type `DeepEvalBaseLLM`. Defaulted to 'gpt-3.5-turbo-0125'.
 - [Optional] `evaluation_model`: a string specifying which of OpenAI's GPT models to use, **OR** [any custom LLM model](https://deepeval.com/guides/guides-using-custom-llms) of type `DeepEvalBaseLLM`. Defaulted to 'gpt-4o'.
 - [Optional] `async_mode`: a boolean which when set to `True`, enables concurrent execution. Defaulted to `True`.

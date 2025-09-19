@@ -22,13 +22,12 @@ api_security = CustomVulnerability(
 )
 ```
 
-There are **THREE** mandatory and **SIX** optional parameter when creating a `CustomVulnerability`:
+There are **THREE** mandatory and **FIVE** optional parameter when creating a `CustomVulnerability`:
 
 - `name`: A string that identifies your custom vulnerability. This should clearly reflect the specific security concern you're red teaming.
 - `criteria`: A string that defines what should be evaluated - this is the rule or requirement that the AI should follow or violate.
 - `types`: A list of strings that specifies the specific aspects of the vulnerability you wish to red team on. You can define as many types as possible that make sense for your use case.
 - [Optional] `custom_prompt`: A string that defines a custom template for generating attack scenarios. If not provided, a default template will be used.
-- [Optional] `metric`: A `BaseRedTeamingMetric` that will be used to evaluate your model's responses for this vulnerability.
 - [Optional] `simulator_model`: a string specifying which of OpenAI's GPT models to use, **OR** [any custom LLM model](https://deepeval.com/guides/guides-using-custom-llms) of type `DeepEvalBaseLLM`. Defaulted to 'gpt-3.5-turbo-0125'.
 - [Optional] `evaluation_model`: a string specifying which of OpenAI's GPT models to use, **OR** [any custom LLM model](https://deepeval.com/guides/guides-using-custom-llms) of type `DeepEvalBaseLLM`. Defaulted to 'gpt-4o'.
 - [Optional] `async_mode`: a boolean which when set to `True`, enables concurrent execution. Defaulted to `True`.
