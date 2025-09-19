@@ -19,7 +19,7 @@ class ROT13(BaseSingleTurnAttack):
 
     async def a_enhance(self, attack: str) -> str:
         return self.enhance(attack)
-    
+
     def get_enhanced_attacks(self, vulnerability: BaseVulnerability) -> dict:
         simulated_attacks = group_attacks_by_vulnerability_type(
             vulnerability.simulate_attacks()
@@ -33,7 +33,9 @@ class ROT13(BaseSingleTurnAttack):
 
         return result
 
-    async def a_get_enhanced_attacks(self, vulnerability: BaseVulnerability) -> dict:
+    async def a_get_enhanced_attacks(
+        self, vulnerability: BaseVulnerability
+    ) -> dict:
         simulated_attacks = await vulnerability.a_simulate_attacks()
         grouped_attacks = group_attacks_by_vulnerability_type(simulated_attacks)
 

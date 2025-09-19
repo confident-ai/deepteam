@@ -4,6 +4,7 @@ import asyncio
 from deepteam.red_teamer.utils import group_attacks_by_vulnerability_type
 from deepteam.vulnerabilities import BaseVulnerability
 
+
 class Base64(BaseSingleTurnAttack):
     def __init__(self, weight: int = 1):
         self.weight = weight
@@ -11,7 +12,7 @@ class Base64(BaseSingleTurnAttack):
     def enhance(self, attack: str) -> str:
         """Enhance the attack using Base64 encoding."""
         return base64.b64encode(attack.encode()).decode()
-    
+
     def get_enhanced_attacks(self, vulnerability: BaseVulnerability) -> dict:
         simulated_attacks = group_attacks_by_vulnerability_type(
             vulnerability.simulate_attacks()
@@ -25,7 +26,9 @@ class Base64(BaseSingleTurnAttack):
 
         return result
 
-    async def a_get_enhanced_attacks(self, vulnerability: BaseVulnerability) -> dict:
+    async def a_get_enhanced_attacks(
+        self, vulnerability: BaseVulnerability
+    ) -> dict:
         simulated_attacks = await vulnerability.a_simulate_attacks()
         grouped_attacks = group_attacks_by_vulnerability_type(simulated_attacks)
 
