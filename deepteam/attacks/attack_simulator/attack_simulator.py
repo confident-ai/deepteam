@@ -16,8 +16,6 @@ from deepteam.attacks import BaseAttack
 from deepteam.vulnerabilities import BaseVulnerability
 from deepteam.vulnerabilities.types import VulnerabilityType
 from deepteam.attacks.multi_turn.types import CallbackType
-from deepteam.attacks.attack_simulator.template import AttackSimulatorTemplate
-from deepteam.attacks.attack_simulator.schema import SyntheticDataList
 from deepteam.errors import ModelRefusalError
 
 
@@ -179,7 +177,6 @@ class AttackSimulator:
                     simulated_attack=baseline_attack,
                     ignore_errors=ignore_errors,
                 )
-                print("1111111", result)
                 pbar.update(1)
                 return result
 
