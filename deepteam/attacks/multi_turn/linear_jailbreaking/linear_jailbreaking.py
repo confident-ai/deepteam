@@ -64,62 +64,15 @@ class LinearJailbreaking(BaseAttack):
         if current_attack is None:
             raise ValueError("No user turns found in conversation history")
 
-        # Simple logic based on last turn
-        if len(turns) > 0 and turns[-1].role == "assistant":
-            # Last turn is assistant - find the last user turn before it
-            user_turn_content = None
-            for turn in reversed(turns[:-1]):  # Skip the last assistant turn
-                if turn.role == "user":
-                    user_turn_content = turn.content
-                    break
-
-            if user_turn_content is not None:
-                # We have a user turn before the assistant, generate score + improvement
-                target_response = turns[-1].content
-                current_attack = user_turn_content
-
-                judge_prompt = JailBreakingTemplate.linear_judge(
-                    original_attack, current_attack, target_response
-                )
-                feedback: Feedback = generate(
-                    judge_prompt, Feedback, self.simulator_model
-                )
-
-                if feedback.jailbroken:
-                    pbar.close()
-                    return turns
-
-                improvement_prompt = JailBreakingTemplate.improvement_prompt(
-                    turns, feedback.suggestion
-                )
-                improvement: Improvement = generate(
-                    improvement_prompt, Improvement, self.simulator_model
-                )
-                next_attack = improvement.new_prompt
-
-                non_refusal_prompt = BaseMultiTurnTemplate.non_refusal(
-                    original_attack, next_attack
-                )
-                non_refusal_res: NonRefusal = generate(
-                    non_refusal_prompt, NonRefusal, self.simulator_model
-                )
-
-                if non_refusal_res.classification == "Refusal":
-                    pbar.close()
-                    raise ModelRefusalError(entity=self.get_name())
-
-                current_attack = next_attack
-        else:
-            # Last turn is user - call model callback first
+        # If the last turn is from user, we need a model response before simulation
+        if len(turns) == 0 or turns[-1].role == "user":
             target_response = model_callback(current_attack, turns)
             turns.append(RTTurn(role="assistant", content=target_response))
+        else:
+            target_response = turns[-1].content
 
         # Main simulation loop
-        for i in range(self.num_turns):
-            target_response = model_callback(current_attack, turns)
-            turns.append(RTTurn(role="user", content=current_attack))
-            turns.append(RTTurn(role="assistant", content=target_response))
-
+        for _ in range(self.num_turns):
             judge_prompt = JailBreakingTemplate.linear_judge(
                 original_attack, current_attack, target_response
             )
@@ -153,6 +106,10 @@ class LinearJailbreaking(BaseAttack):
                 raise ModelRefusalError(entity=self.get_name())
 
             current_attack = next_attack
+            target_response = model_callback(current_attack, turns)
+            turns.append(RTTurn(role="user", content=current_attack))
+            turns.append(RTTurn(role="assistant", content=target_response))
+
             pbar.update(1)
 
         pbar.close()
@@ -160,27 +117,44 @@ class LinearJailbreaking(BaseAttack):
 
     async def a_enhance(
         self,
-        attack: str,
         model_callback: CallbackType,
+        turns: Optional[List[RTTurn]] = None,
         simulator_model: Optional[Union[DeepEvalBaseLLM, str]] = None,
-        turn_history: Optional[List[Turn]] = None,
-    ) -> str:
+    ) -> List[RTTurn]:
+        if turns is None:
+            turns = []
+
         self.simulator_model, _ = initialize_model(simulator_model)
 
         pbar = tqdm(
-            total=self.turns, desc="...... ⛓️  Linear Jailbreaking", leave=False
+            total=self.num_turns,
+            desc="...... ⛓️  Linear Jailbreaking",
+            leave=False,
         )
 
-        # Initialize conversation history for tracking attempts
-        current_attack = attack
-        turns = turn_history or []
+        # Get current attack from last user turn (simple reverse search)
+        current_attack = None
+        original_attack = None
+        for turn in reversed(turns):
+            if turn.role == "user":
+                current_attack = turn.content
+                original_attack = turn.content
+                break
 
-        for i in range(self.turns):
+        if current_attack is None:
+            raise ValueError("No user turns found in conversation history")
+
+        # If last turn is user, generate a model response before the loop
+        if len(turns) == 0 or turns[-1].role == "user":
             target_response = await model_callback(current_attack, turns)
-            turns = update_turn_history(turns, current_attack, target_response)
+            turns.append(RTTurn(role="assistant", content=target_response))
+        else:
+            target_response = turns[-1].content
 
+        # Main simulation loop
+        for _ in range(self.num_turns):
             judge_prompt = JailBreakingTemplate.linear_judge(
-                attack, current_attack, target_response
+                original_attack, current_attack, target_response
             )
             feedback: Feedback = await a_generate(
                 judge_prompt, Feedback, self.simulator_model
@@ -200,25 +174,26 @@ class LinearJailbreaking(BaseAttack):
             next_attack = improvement.new_prompt
 
             non_refusal_prompt = BaseMultiTurnTemplate.non_refusal(
-                attack, next_attack
+                original_attack, next_attack
             )
             non_refusal_res: NonRefusal = await a_generate(
                 non_refusal_prompt, NonRefusal, self.simulator_model
             )
-            classification = non_refusal_res.classification
-            if classification == "Refusal":
+
+            if non_refusal_res.classification == "Refusal":
                 pbar.n = pbar.total
                 pbar.close()
                 raise ModelRefusalError(entity=self.get_name())
-            else:
-                current_attack = next_attack
-                if i == self.turns - 1:
-                    turns.append(Turn(role="user", content=current_attack))
+
+            current_attack = next_attack
+
+            target_response = await model_callback(current_attack, turns)
+            turns.append(RTTurn(role="user", content=current_attack))
+            turns.append(RTTurn(role="assistant", content=target_response))
 
             pbar.update(1)
 
         pbar.close()
-
         return turns
 
     def get_name(self) -> str:

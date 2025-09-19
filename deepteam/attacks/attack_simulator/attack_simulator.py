@@ -16,8 +16,6 @@ from deepteam.attacks import BaseAttack
 from deepteam.vulnerabilities import BaseVulnerability
 from deepteam.vulnerabilities.types import VulnerabilityType
 from deepteam.attacks.multi_turn.types import CallbackType
-from deepteam.attacks.attack_simulator.template import AttackSimulatorTemplate
-from deepteam.attacks.attack_simulator.schema import SyntheticDataList
 from deepteam.errors import ModelRefusalError
 
 
@@ -179,7 +177,6 @@ class AttackSimulator:
                     simulated_attack=baseline_attack,
                     ignore_errors=ignore_errors,
                 )
-                print("1111111", result)
                 pbar.update(1)
                 return result
 
@@ -266,6 +263,73 @@ class AttackSimulator:
         simulated_attack: SimulatedAttack,
         ignore_errors: bool,
     ):
+        from deepteam.attacks.multi_turn import (
+            BadLikertJudge,
+            CrescendoJailbreaking,
+            LinearJailbreaking,
+            SequentialJailbreak,
+            TreeJailbreaking,
+        )
+        from deepteam.test_case.test_case import RTTurn
+
+        MULTI_TURN_ATTACKS = [
+            BadLikertJudge,
+            CrescendoJailbreaking,
+            LinearJailbreaking,
+            TreeJailbreaking,
+            SequentialJailbreak,
+        ]
+
+        if type(attack) in MULTI_TURN_ATTACKS:
+            # This is multi-turn attack
+            attack_input = simulated_attack.input
+            if attack_input is None:
+                return simulated_attack
+
+            simulated_attack.attack_method = attack.get_name()
+            sig = inspect.signature(attack.a_enhance)
+            turns = [RTTurn(role="user", content=attack_input)]
+
+            try:
+                res = None
+                if (
+                    "simulator_model" in sig.parameters
+                    and "model_callback" in sig.parameters
+                    and "turns" in sig.parameters
+                ):
+                    res = attack.enhance(
+                        self.model_callback, turns, self.simulator_model
+                    )
+                elif "simulator_model" in sig.parameters:
+                    res = attack.enhance(
+                        attack=attack_input,
+                        simulator_model=self.simulator_model,
+                    )
+                elif "model_callback" in sig.parameters:
+                    res = attack.enhance(
+                        attack=attack_input,
+                        model_callback=self.model_callback,
+                    )
+                else:
+                    res = attack.enhance(attack=attack_input)
+
+                simulated_attack.turn_history = res
+
+            except ModelRefusalError as e:
+                if ignore_errors:
+                    simulated_attack.error = e.message
+                    return simulated_attack
+                else:
+                    raise
+            except:
+                if ignore_errors:
+                    simulated_attack.error = "Error enhancing attack"
+                    return simulated_attack
+                else:
+                    raise
+
+            return simulated_attack
+
         attack_input = simulated_attack.input
         if attack_input is None:
             return simulated_attack
@@ -296,15 +360,7 @@ class AttackSimulator:
             else:
                 res = attack.enhance(attack=attack_input)
 
-            if isinstance(res, list):
-                if all(isinstance(x, Turn) for x in res):
-                    simulated_attack.turn_history = res
-                else:
-                    raise ValueError(
-                        "Turn history is not a list of Turn objects"
-                    )
-            else:
-                simulated_attack.input = res
+            simulated_attack.input = res
 
         except ModelRefusalError as e:
             if ignore_errors:
@@ -327,6 +383,73 @@ class AttackSimulator:
         simulated_attack: SimulatedAttack,
         ignore_errors: bool,
     ):
+        from deepteam.attacks.multi_turn import (
+            BadLikertJudge,
+            CrescendoJailbreaking,
+            LinearJailbreaking,
+            SequentialJailbreak,
+            TreeJailbreaking,
+        )
+        from deepteam.test_case.test_case import RTTurn
+
+        MULTI_TURN_ATTACKS = [
+            BadLikertJudge,
+            CrescendoJailbreaking,
+            LinearJailbreaking,
+            TreeJailbreaking,
+            SequentialJailbreak,
+        ]
+
+        if type(attack) in MULTI_TURN_ATTACKS:
+            # This is multi-turn attack
+            attack_input = simulated_attack.input
+            if attack_input is None:
+                return simulated_attack
+
+            simulated_attack.attack_method = attack.get_name()
+            sig = inspect.signature(attack.a_enhance)
+            turns = [RTTurn(role="user", content=attack_input)]
+
+            try:
+                res = None
+                if (
+                    "simulator_model" in sig.parameters
+                    and "model_callback" in sig.parameters
+                    and "turns" in sig.parameters
+                ):
+                    res = await attack.a_enhance(
+                        self.model_callback, turns, self.simulator_model
+                    )
+                elif "simulator_model" in sig.parameters:
+                    res = await attack.a_enhance(
+                        attack=attack_input,
+                        simulator_model=self.simulator_model,
+                    )
+                elif "model_callback" in sig.parameters:
+                    res = await attack.a_enhance(
+                        attack=attack_input,
+                        model_callback=self.model_callback,
+                    )
+                else:
+                    res = await attack.a_enhance(attack=attack_input)
+
+                simulated_attack.turn_history = res
+
+            except ModelRefusalError as e:
+                if ignore_errors:
+                    simulated_attack.error = e.message
+                    return simulated_attack
+                else:
+                    raise
+            except:
+                if ignore_errors:
+                    simulated_attack.error = "Error enhancing attack"
+                    return simulated_attack
+                else:
+                    raise
+
+            return simulated_attack
+
         attack_input = simulated_attack.input
         if attack_input is None:
             return simulated_attack
@@ -358,15 +481,7 @@ class AttackSimulator:
             else:
                 res = await attack.a_enhance(attack=attack_input)
 
-            if isinstance(res, list):
-                if all(isinstance(x, Turn) for x in res):
-                    simulated_attack.turn_history = res
-                else:
-                    raise ValueError(
-                        "Turn history is not a list of Turn objects"
-                    )
-            else:
-                simulated_attack.input = res
+            simulated_attack.input = res
 
         except ModelRefusalError as e:
             if ignore_errors:

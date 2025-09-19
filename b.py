@@ -14,8 +14,8 @@ async def model_callback(attack, turn_history):
 
 
 red_team(
-    attacks=[LinearJailbreaking(turns=2)],
-    vulnerabilities=[Bias(types=["race"])],
+    attacks=[LinearJailbreaking(num_turns=3)],
+    vulnerabilities=[Bias(types=["race"], simulator_model="gpt-4o")],
     model_callback=model_callback,
-    ignore_errors=True,
+    ignore_errors=False,
 )
