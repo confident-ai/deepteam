@@ -8,73 +8,96 @@ import AttackTagsDisplayer from "@site/src/components/AttackTagsDisplayer";
 
 <AttackTagsDisplayer multiTurn={true} llmSimulated={true} />
 
-Sequential Jailbreaking employs **multi-turn conversational strategies** to embed harmful prompts within seemingly innocent dialogue scenarios. This method leverages the natural flow of conversation to gradually guide the model toward providing prohibited information. The attack transforms harmful prompts into three distinct formats: **dialogue completion** between fictional characters, **question bank scenarios** disguised as VR game development, and **game environment challenges** presented as multi-level detective scenarios.
+The `SequentialJailbreaking` attack uses _multi-turn conversational scaffolding_ to guide a target LLM toward generating restricted or harmful outputs. Instead of issuing a direct request, **it reframes the harmful prompt into a structured dialogue or scenario** that gradually escalates in complexity or specificity over several turns — exploiting the model’s consistency and role adherence in conversation.
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }}
->
-  <img
-    src="https://confident-bucket.s3.amazonaws.com/attack_enhancements_jailbreaking_sequential.svg"
-    alt="Sequential Jailbreaking"
-    style={{
-      marginTop: "20px",
-      marginBottom: "40px",
-      height: "auto",
-      maxHeight: "700px",
-    }}
-  />
-</div>
+![Sequential Jailbreaking Intro](./images/sequential-jailbreaking.png)
 
-
-The attack operates by first rewriting harmful prompts into contextually appropriate scenarios, then embedding them within structured templates that encourage detailed responses. Each attack type targets different psychological triggers: dialogue scenarios exploit character role-playing tendencies, question banks leverage educational contexts, and game environments utilize problem-solving frameworks. The process continues until the target model provides a harmful response or the attack is determined unsuccessful through binary classification evaluation.
-
-:::info
-The process continues until the target model provides a harmful response or the attack is determined unsuccessful through binary classification evaluation.
+:::caution IMPORTANT
+Sequential Jailbreaking relies on **narrative context and psychological framing** — harmful prompts are embedded in formats designed to reduce the model's guardrails over time.
 :::
-
-There are **THREE optional parameters** when creating a SequentialJailbreak attack:
-
-**[Optional] ** `weight`: an integer that determines this attack method's selection probability, proportional to the total weight sum of all attacks during red teaming. Defaulted to 1.
-
-**[Optional] ** `type`: a string that specifies the attack category - `"dialogue"`, `"question_bank"`, or `"game_environment"`. Defaulted to `"dialogue"`.
-
-- `"dialogue"`: Embeds harmful prompts within character role-playing conversations between fictional personas
-- `"question_bank"`: Disguises harmful requests as educational questions in VR game development scenarios  
-- `"game_environment"`: Conceals harmful prompts as challenges within multi-level detective game narratives
-
-**[Optional] **`persona`: a string that determines the character type for dialogue attacks - `"prisoner"`, `"student"`, `"researcher"`, or `"generic"`. Only applicable when `type="dialogue"`. Defaulted to `"student"`.
 
 ## Usage
 
-```python
-from deepteam.attacks.multi_turn import SequentialJailbreak
-
-sequential_jailbreak = SequentialJailbreak()
-```
-
-```python
+```python title="main.py"
 from deepteam import red_team
-...
+from deepteam.vulnerabilities import Bias
+from deepteam.attacks.single_turn import Roleplay
+from deepteam.attacks.multi_turn import SequentialJailbreak
+from somewhere import your_callback
 
-red_team(attacks=[sequential_jailbreak], model_callback=..., vulnerabilities=...)
+sequential_jailbreaking = SequentialJailbreak(
+    weight=3,
+    type="dialogue",
+    persona="student"
+    num_turns=7,
+    turn_level_attacks=[Roleplay()]
+)
+
+red_team(
+    attacks=[sequential_jailbreaking],
+    vulnerabilities=[Bias()],
+    model_callback=your_callback
+)
 ```
 
-## Example
+There are **SIX** optional parameters when creating a `SequentialJailbreak` attack:
+
+- [Optional] `weight`: an integer that determines this attack method's selection probability, proportional to the total weight sum of all `attacks` during red teaming. Defaulted to `1`.
+- [Optional] `type`: a string that specifies the scenario type — `"dialogue"`, `"question_bank"`, or `"game_environment"`. Defaulted to `"dialogue"`.
+- [Optional] `persona`: a string that defines the character used in `"dialogue"` attacks. Must be one of `"prisoner"`, `"student"`, `"researcher"`, or `"generic"`. Only applies when `type="dialogue"`. Defaulted to `"student"`.
+- [Optional] `num_turns`: an integer that specifies the number of turns to use in the attempt to jailbreak your LLM system. Defaulted to `5`.
+- [Optional] `simulator_model`: a string specifying which of OpenAI's GPT models to use, **OR** [any custom LLM model](https://deepeval.com/guides/guides-using-custom-llms) of type `DeepEvalBaseLLM`. Defaulted to 'gpt-4o-mini'.
+- [Optional] `turn_level_attacks`: a list of [single-turn attacks](/docs/red-teaming-adversarial-attacks-prompt-injection) that will be randomly sampled to enhance an attack inside a turn.
+
+### As a standalone
+
+You can run the attack on a single vulnerability using the `enhance` method:
 
 ```python
 from deepteam.attacks.multi_turn import SequentialJailbreak
+from deepteam.attacks.single_turn import Roleplay
+from deepteam.vulnerabilities import Bias
+from somewhere import your_callback
 
-# Dialogue attacks with different personas
-prisoner_attack = SequentialJailbreak(type="dialogue", persona="prisoner")
-student_attack = SequentialJailbreak(type="dialogue", persona="student")
+bias = Bias()
+sequential_jailbreaking = SequentialJailbreak(
+    weight=3,
+    type="dialogue",
+    persona="student"
+    num_turns=7,
+    turn_level_attacks=[Roleplay()]
+)
 
-# Question bank attack
-qb_attack = SequentialJailbreak(type="question_bank")
-
-# Game environment attack  
-game_attack = SequentialJailbreak(type="game_environment")
+result = sequential_jailbreaking.enhance(vulnerability=bias, model_callback=your_callback)
+print(result)
 ```
+
+## How It Works
+
+`SequentialJailbreaking` is a **guided multi-turn attack** that embeds a harmful prompt within a plausible conversational narrative. It works in the following steps:
+
+1. **Start from a base vulnerability** — a harmful intent identified from the vulnerability (e.g. evasion, bias, refusal behavior).
+2. **Transform the harmful prompt** into a **scenario template**, such as a fictional conversation, quiz question, or game challenge.
+3. **Initiate a multi-turn dialogue**, with the LLM playing a role or responding to a structured task.
+4. **Escalate the scenario over turns**, gradually introducing more specificity that pushes toward the restricted output.
+5. **Monitor model outputs** and evaluate after each turn.
+6. **Stop** when a harmful response is generated or the dialogue ends unsuccessfully based on binary classification.
+
+![Sequential Jailbreaking Enhanced](./images/sequential-jailbreaking.png)
+
+If the `turn_level_attacks` is supplied with a list of single-turn attacks, `LinearJailbreaking` adds controlled variation:
+
+- At each turn, there's a **50% chance** of enhancing the current prompt with a **randomly selected attack** from the `turn_level_attacks` list (e.g., [`Roleplay`](/docs/red-teaming-adversarial-attacks-roleplay), [`PromptInjection`](/docs/red-teaming-adversarial-attacks-prompt-injection)).
+- These injected attacks are still part of the same sequential conversation but enhanced, they help explore alternate jailbreak angles without disrupting the overall structure.
+
+Each attack uses a **preset structure** tailored to the selected `type`, and leverages **psychological framing techniques** to reduce model resistance.
+
+### Attack Types
+
+| `type`               | Description                                                                       |
+| -------------------- | --------------------------------------------------------------------------------- |
+| `"dialogue"`         | Embeds the prompt inside a fictional conversation between personas.               |
+| `"question_bank"`    | Masks the request as an educational scenario from a VR game design context.       |
+| `"game_environment"` | Presents the prompt as a challenge within a multi-level detective or puzzle game. |
+
+If `type="dialogue"` is selected, the optional `persona` parameter configures the tone and context of the conversation — e.g., `"prisoner"` might involve secretive exchanges, while `"student"` might center on tutoring or learning scenarios.

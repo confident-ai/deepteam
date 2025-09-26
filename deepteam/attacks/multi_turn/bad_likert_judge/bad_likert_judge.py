@@ -32,7 +32,7 @@ class BadLikertJudge(BaseAttack):
         num_turns: int = 5,
         enable_refinement: bool = True,
         attacks: Optional[List[BaseAttack]] = None,
-        simulator_model: Optional[Union[DeepEvalBaseLLM, str]] = None,
+        simulator_model: Optional[Union[DeepEvalBaseLLM, str]] = "gpt-4o-mini",
     ):
         self.weight = weight
         self.multi_turn = True

@@ -41,13 +41,20 @@ There are **THREE** mandatory and **FIVE** optional parameter when creating a `C
 You can assess your model for a single vulnerability through the `assess` method:
 
 ```python
-...
+from deepteam.vulnerabilities import Robustness
+from somewhere import your_callback
+
+api_security = CustomVulnerability(...)
 result = api_security.assess(model_callback=your_model_callback)
 
-for vulnerability_type in result.keys():
-    for assessment in result[vulnerability_type]:
-        print(f"{vulnerability_type}: {assessment}")
+for vuln_type, test_cases in result.items():
+    print(f"{vuln_type}: {test_cases}")
 ```
+
+The `assess` method has **ONE** mandatory and **ONE** optional parameters:
+
+- `model_callback`: a callback function of your target LLM that you are trying to evaluate if it's producing any harmful outputs, it's expected to take a string as input and return a string as output.
+- [Optional] `purpose`: a string specifying the purpose of your target LLM application, it is used to tailor the attacks generated to fit your LLM's use case.
 
 ### Custom prompts
 

@@ -37,7 +37,7 @@ class SequentialJailbreak(BaseAttack):
         persona: Optional[DialogueTypeLiteral] = None,
         num_turns: int = 5,
         attacks: Optional[List[BaseAttack]] = None,
-        simulator_model: Optional[Union[DeepEvalBaseLLM, str]] = None,
+        simulator_model: Optional[Union[DeepEvalBaseLLM, str]] = "gpt-4o-mini",
     ):
         self.weight = weight
         self.multi_turn = True
