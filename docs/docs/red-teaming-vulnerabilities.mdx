@@ -112,6 +112,24 @@ Apart from the breadth of vulnerabilities offered, `deepteam`'s vulnerabilities 
 
 ## How Does It Work?
 
+All vulnerabilities in `deepteam` follow a 3 step algorithm:
+
+- Simulate "baseline" attacks for each specified vulnerability type via the `simulator_model`
+- Probe your `model_callback` using each simulated attack, which is simply a wrapper around your LLM app
+- Evaluate your LLM app's output based on the vulnerability type at hand, returning a score of 0 or 1 (along with reasoning)
+
+<details>
+
+<summary>
+  How are "baseline" attacks different from adversarial attacks?
+</summary>
+
+"Baseline" attacks are attacks that are vulnerability specific, but in its simplest form. This means there is no "prompt injection", or "roleplay", or even "jailbreaking" techniques to turn a simple baseline attack into more advanced or even multi-turn ones.
+
+The thing to remember here is, an adversarial attack in `deepteam` enhances existing attacks, but are not vulnerability specific.
+
+</details>
+
 ## Create Your First Vulnerability
 
 ### Default
