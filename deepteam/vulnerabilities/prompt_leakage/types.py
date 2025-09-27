@@ -3,10 +3,10 @@ from typing import Literal
 
 
 class PromptLeakageType(Enum):
-    SECRETS_AND_CREDENTIALS = "secrets and credentials"
+    SECRETS_AND_CREDENTIALS = "secrets_and_credentials"
     INSTRUCTIONS = "instructions"
-    GUARD_EXPOSURE = "guard exposure"
-    PERMISSIONS_AND_ROLES = "permissions and roles"
+    GUARD_EXPOSURE = "guard_exposure"
+    PERMISSIONS_AND_ROLES = "permissions_and_roles"
 
 
 PromptLeakageTypes = Literal[

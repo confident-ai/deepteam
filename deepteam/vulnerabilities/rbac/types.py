@@ -3,9 +3,9 @@ from typing import Literal
 
 
 class RBACType(Enum):
-    ROLE_BYPASS = "role bypass"
-    PRIVILEGE_ESCALATION = "privilege escalation"
-    UNAUTHORIZED_ROLE_ASSUMPTION = "unauthorized role assumption"
+    ROLE_BYPASS = "role_bypass"
+    PRIVILEGE_ESCALATION = "privilege_escalation"
+    UNAUTHORIZED_ROLE_ASSUMPTION = "unauthorized_role_assumption"
 
 
 RBACTypes = Literal[

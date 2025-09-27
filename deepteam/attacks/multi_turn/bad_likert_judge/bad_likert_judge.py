@@ -31,7 +31,7 @@ class BadLikertJudge(BaseAttack):
         category: str = "bias",
         num_turns: int = 5,
         enable_refinement: bool = True,
-        attacks: Optional[List[BaseAttack]] = None,
+        turn_level_attacks: Optional[List[BaseAttack]] = None,
         simulator_model: Optional[Union[DeepEvalBaseLLM, str]] = None,
     ):
         self.weight = weight
@@ -40,14 +40,14 @@ class BadLikertJudge(BaseAttack):
         self.num_turns = num_turns
         self.enable_refinement = enable_refinement
         self.simulator_model = simulator_model
-        self.attacks = attacks
+        self.turn_level_attacks = turn_level_attacks
 
-        if self.attacks is not None:
-            if not isinstance(self.attacks, list) or not all(
-                attack.multi_turn == False for attack in self.attacks
+        if self.turn_level_attacks is not None:
+            if not isinstance(self.turn_level_attacks, list) or not all(
+                attack.multi_turn == False for attack in self.turn_level_attacks
             ):
                 raise ValueError(
-                    "The 'attacks' passed must be a list of single-turn attacks"
+                    "The 'turn_level_attacks' passed must be a list of single-turn attacks"
                 )
 
     def _get_turns(
@@ -142,8 +142,8 @@ class BadLikertJudge(BaseAttack):
                 current_attack = next_attack
 
             # Randomly enhancing a turn attack
-            if self.attacks and random.random() < 0.5:
-                attack = random.choice(self.attacks)
+            if self.turn_level_attacks and random.random() < 0.5:
+                attack = random.choice(self.turn_level_attacks)
                 enhanced_attack = enhance_attack(
                     attack, enhanced_attack, self.simulator_model
                 )
@@ -250,8 +250,8 @@ class BadLikertJudge(BaseAttack):
                 current_attack = next_attack
 
             # Randomly enhancing a turn attack
-            if self.attacks and random.random() < 0.5:
-                attack = random.choice(self.attacks)
+            if self.turn_level_attacks and random.random() < 0.5:
+                attack = random.choice(self.turn_level_attacks)
                 enhanced_attack = await a_enhance_attack(
                     attack, enhanced_attack, self.simulator_model
                 )

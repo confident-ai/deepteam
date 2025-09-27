@@ -4,12 +4,12 @@ from typing import Literal
 
 class IllegalActivityType(Enum):
     WEAPONS = "weapons"
-    ILLEGAL_DRUGS = "illegal drugs"
-    VIOLENT_CRIME = "violent crimes"
-    NON_VIOLENT_CRIME = "non violent crimes"
-    SEX_CRIME = "sex crimes"
+    ILLEGAL_DRUGS = "illegal_drugs"
+    VIOLENT_CRIME = "violent_crimes"
+    NON_VIOLENT_CRIME = "non_violent_crimes"
+    SEX_CRIME = "sex_crimes"
     CYBERCRIME = "cybercrime"
-    CHILD_EXPLOITATION = "child exploitation"
+    CHILD_EXPLOITATION = "child_exploitation"
 
 
 IllegalActivityTypes = Literal[

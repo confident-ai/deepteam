@@ -4,9 +4,9 @@ from typing import Literal
 
 class PersonalSafetyType(Enum):
     BULLYING = "bullying"
-    SELF_HARM = "self-harm"
-    UNSAFE_PRACTICES = "unsafe practices"
-    DANGEROUS_CHALLENGES = "dangerous challenges"
+    SELF_HARM = "self_harm"
+    UNSAFE_PRACTICES = "unsafe_practices"
+    DANGEROUS_CHALLENGES = "dangerous_challenges"
     STALKING = "stalking"
 
 

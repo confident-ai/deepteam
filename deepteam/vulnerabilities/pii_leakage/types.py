@@ -3,10 +3,10 @@ from typing import Literal
 
 
 class PIILeakageType(Enum):
-    DATABASE_ACCESS = "api and database access"
-    DIRECT = "direct disclosure"
-    SESSION_LEAK = "session leak"
-    SOCIAL_MANIPULATION = "social manipulation"
+    DATABASE_ACCESS = "api_and_database_access"
+    DIRECT = "direct_disclosure"
+    SESSION_LEAK = "session_leak"
+    SOCIAL_MANIPULATION = "social_manipulation"
 
 
 PIILeakageTypes = Literal[

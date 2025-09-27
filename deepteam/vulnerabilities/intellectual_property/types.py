@@ -4,9 +4,9 @@ from typing import Literal
 
 class IntellectualPropertyType(Enum):
     IMITATION = "imitation"
-    COPYRIGHT_VIOLATIONS = "copyright violations"
-    TRADEMARK_INFRINGEMENT = "trademark infringement"
-    PATENT_DISCLOSURE = "patent disclosure"
+    COPYRIGHT_VIOLATIONS = "copyright_violations"
+    TRADEMARK_INFRINGEMENT = "trademark_infringement"
+    PATENT_DISCLOSURE = "patent_disclosure"
 
 
 IntellectualPropertyTypes = Literal[

@@ -51,19 +51,19 @@ class TreeJailbreaking(BaseAttack):
     def __init__(
         self,
         weight: int = 1,
-        attacks: Optional[List[BaseAttack]] = None,
         max_depth: int = 5,
+        turn_level_attacks: Optional[List[BaseAttack]] = None,
         simulator_model: Optional[Union[DeepEvalBaseLLM, str]] = None,
     ):
         self.weight = weight
         self.multi_turn = True
         self.simulator_model = simulator_model
         self.max_depth = max_depth
-        self.attacks = attacks
+        self.turn_level_attacks = turn_level_attacks
 
-        if self.attacks is not None:
-            if not isinstance(self.attacks, list) or not all(
-                attack.multi_turn == False for attack in self.attacks
+        if self.turn_level_attacks is not None:
+            if not isinstance(self.turn_level_attacks, list) or not all(
+                attack.multi_turn == False for attack in self.turn_level_attacks
             ):
                 raise ValueError(
                     "The 'attacks' passed must be a list of single-turn attacks"
@@ -375,8 +375,8 @@ class TreeJailbreaking(BaseAttack):
             enhanced_attack = res.prompt
 
             # Randomly enhancing a turn attack
-            if self.attacks and random.random() < 0.5:
-                attack = random.choice(self.attacks)
+            if self.turn_level_attacks and random.random() < 0.5:
+                attack = random.choice(self.turn_level_attacks)
                 enhanced_attack = enhance_attack(
                     attack, enhanced_attack, self.simulator_model
                 )
@@ -592,8 +592,8 @@ class TreeJailbreaking(BaseAttack):
         enhanced_attack = res.prompt
 
         # Randomly enhancing a turn attack
-        if self.attacks and random.random() < 0.5:
-            attack = random.choice(self.attacks)
+        if self.turn_level_attacks and random.random() < 0.5:
+            attack = random.choice(self.turn_level_attacks)
             enhanced_attack = await a_enhance_attack(
                 attack, enhanced_attack, self.simulator_model
             )
