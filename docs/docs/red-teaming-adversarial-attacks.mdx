@@ -1,12 +1,22 @@
 ---
 id: red-teaming-adversarial-attacks
-title: Introduction
+title: Attacks Introduction
 sidebar_label: Introduction
 ---
 
+`deepteam` offers 10+ SOTA, research-backed attack methods such as prompt injection, linear jailbreaking, and leetspeak to expose undesirable vulnerabilities elicited from your LLM app. Attacks on its own are **not** specific to any vulnerability.
+
 ## Quick Summary
 
-`deepteam` offers 10+ attack methods such as prompt injection, jailbreaking, and leetspeak to expose undesirable vulnerabilities elicited from your LLM application.
+Attack methods in `deepteam` are all about **enhancing** or **progressing** existing "baseline" adversarial prompts. These "baseline" prompts, are usually simulated from a specific vulnerability.
+
+You would enhance a baseline attack for **single-turn** use cases, while progressing a single attack into a **multi-turn** one if you're building conversational use cases.
+
+:::info
+`deepteam` also allows you to combine single and multi-turn attack methods, where you would progress a baseline attack using a multi-turn attack like `LinearJailbreaking` while applying **turn-level enhancements** such as `Roleplay` for each step in the progression.
+:::
+
+## How Does It Work?
 
 It works by first simulating simplistic, "baseline" adversarial attacks, before progressively applying various attack methods such as prompt injection to create more sophisticated versions akin to what a malicious user would be doing. This is known as attack enhancement.
 
@@ -60,34 +70,18 @@ risk_assessment = red_team(attacks=[leetspeak, linaer_jailbreaking], model_callb
 `deepteam` randomly samples each attack method per vulnerability type during red teaming.
 :::
 
-## Single vs Multi-Turn Attacks
+## Single vs Multi-Turn
 
 _To be documented..._
 
-## Single-Turn Attacks
+## Single-Turn Enhancements
 
-`deepteam`'s `AttackEnhancement`s are categorized into three types: **encoding-based, one-shot, and dialogue-based enhancements**.
+Single-turn are categorized into two main types:
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "start",
-  }}
->
-  <img
-    src="https://confident-bucket.s3.amazonaws.com/attack_enhancements_overview.svg"
-    alt="LangChain"
-    style={{
-      marginTop: "20px",
-      marginBottom: "20px",
-      height: "auto",
-      maxHeight: "800px",
-    }}
-  />
-</div>
+- **Encoding-based**, and
+- **One-shot**
 
-Encoding-based attack enhancements apply simple encoding techniques, such as character rotation, to obscure the baseline attack. One-shot attack enhancements use a single LLM pass to modify the attack, for instance, by embedding it within a math problem. Lastly, dialogue-based attack enhancements also rely on a single LLM pass but leverage feedback from the target LLM application to further refine and strengthen the attack.
+Encoding-based attack enhancements apply simple encoding techniques, such as character rotation, to obscure the baseline attack. One-shot attack enhancements use a single LLM pass to modify the attack, for instance, by embedding it within a math problem.
 
 ### Encoding-based
 
@@ -112,7 +106,7 @@ Encoding-based attack enhancements apply simple encoding techniques, such as cha
   />
 </div>
 
-### One-shot enhancement
+### One-shot
 
 One-shot attack enhancements utilize an LLM to creatively **modify the baseline attack in a single pass**. These enhancements disguise or restructure the attack in ways that evade detection, making them more creative and adaptable to different contexts. The LLM applies the enhancement, which adds an element of unpredictability, making these attacks harder to detect with traditional methods.
 
@@ -141,7 +135,7 @@ Unlike encoding-based enhancements, which are deterministic, one-shot enhancemen
 Using a **powerful but older model** like GPT3.5 can increase your enhancement success rates.
 :::
 
-## Multi-Turn Attacks
+## Multi-Turn Progressions
 
 Dialogue-based enhancements involve interactive methods where the attack is **refined through dialogue with the target LLM** (your LLM application you wish to test). These enhancements are particularly effective because they utilize feedback from the target LLM, allowing the attacker to adjust the approach until the desired result is achieved. Dialogue-based methods focus on gradual exploitation, making them harder to detect in a single interaction.
 
@@ -193,20 +187,3 @@ Linear Jailbreaking uses a step-by-step progression, building on each LLM respon
 ## Selecting Your Attack Strategy
 
 _To be documented..._
-
-## The Menu
-
-| Attack Methods          | Description                                                                                                                                                        |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ROT13`                 | This attack enhancement encodes the original request using the ROT13 cipher, scrambling the text to bypass simple content filters.                                 |
-| `Base64`                | The request is encoded in Base64 format, obfuscating the attack to bypass detection mechanisms.                                                                    |
-| `Leetspeak`             | Replaces characters in the request with their leetspeak equivalents (e.g., "E" becomes "3"), making the message harder to detect.                                  |
-| `PromptInjection`       | Injects a secondary command within the original attack to manipulate the system into performing unintended actions or disclosing sensitive data.                   |
-| `Roleplay`        | Embeds attacks within elaborate persona-based scenarios where the LLM adopts specific character roles, leveraging collaborative training to bypass safety mechanisms through authentic character portrayal. |
-| `GrayBox`               | Simulates a gray-box attack where some system information is known, crafting an enhancement to exploit this partial knowledge to obtain restricted outputs.        |
-| `MathProblem`           | Masks the harmful request by embedding it within a seemingly benign math problem, disguising the true intent.                                                      |
-| `Multilingual`          | Translates the attack into another language to bypass filters that are primarily focused on one language, usually English.                                         |
-| `LinearJailbreaking`    | Utilizes a linear progression of increasingly persuasive attack enhancements to gradually convince the model to bypass its restrictions.                           |
-| `TreeJailbreaking`      | Creates a tree-like structure of attack enhancements with multiple branches, exploring different pathways to bypass the system's ethical constraints.              |
-| `SequentialJailbreaking`| Employs multi-turn conversational strategies to embed harmful prompts within seemingly innocent dialogue scenarios, question bank formats, and game environments using character role-playing and contextual framing. |
-| `CrescendoJailbreaking` | Builds up to a more forceful request, escalating the intensity of the attack enhancement with each interaction to coerce the model into generating harmful output. |
