@@ -2,13 +2,30 @@ import asyncio
 import random
 from typing import Literal, Optional, Union
 from deepeval.models import DeepEvalBaseLLM
-from tqdm import tqdm
+from rich.progress import Progress
 
+from deepteam.utils import update_pbar
 from deepteam.frameworks import AISafetyFramework
 from deepteam.attacks.multi_turn.types import CallbackType
 from deepteam.frameworks.beavertails.types import BeaverTailsType
 from deepteam.test_case import RTTestCase
 from deepteam.metrics import HarmMetric
+
+"""
+BeaverTails Safety Framework Mapping
+====================================
+
+This framework evaluates model safety using the BeaverTails dataset, a human-labeled
+collection of unsafe QA pairs across 14 harm categories. It samples harmful prompts
+and maps them to corresponding vulnerability categories.
+
+Each test case includes:
+- Input: Unsafe user prompts from BeaverTails.
+- Vulnerability: One or more harm categories assigned in the dataset.
+- Metric: Harm scoring using the selected evaluation model.
+
+Reference: https://huggingface.co/datasets/PKU-Alignment/BeaverTails
+"""
 
 
 class BeaverTails(AISafetyFramework):
@@ -63,7 +80,8 @@ class BeaverTails(AISafetyFramework):
     def assess(
         self,
         model_callback: CallbackType,
-        pbar: tqdm,
+        progress: Optional[Progress],
+        task_id: Optional[int],
         ignore_errors: bool = True,
     ):
         for test_case in self.test_cases:
@@ -78,14 +96,15 @@ class BeaverTails(AISafetyFramework):
                     test_case.error = e.message
                 else:
                     raise
-            pbar.update(1)
+            update_pbar(progress=progress, pbar_id=task_id)
 
         return self.test_cases
 
     async def a_assess(
         self,
         model_callback: CallbackType,
-        pbar: tqdm,
+        progress: Optional[Progress],
+        task_id: Optional[int],
         ignore_errors: bool = True,
     ):
 
@@ -101,7 +120,7 @@ class BeaverTails(AISafetyFramework):
                     test_case.error = e.message
                 else:
                     raise
-            pbar.update(1)
+            update_pbar(progress=progress, pbar_id=task_id)
 
         tasks = [evaluate_test_case(tc) for tc in self.test_cases]
 

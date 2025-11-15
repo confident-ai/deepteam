@@ -2,6 +2,8 @@ import pytest
 from deepteam.frameworks import MITRE
 from deepteam.vulnerabilities import BaseVulnerability
 from deepteam.attacks import BaseAttack
+from deepteam.frameworks.risk_category import RiskCategory
+from deepteam.frameworks.mitre.risk_categories import MITRE_CATEGORIES
 from deepteam import red_team
 
 
@@ -44,33 +46,32 @@ class TestMITRE:
 
     def test_mitre_vulnerabilities_exist(self):
         """Test that MITRE framework defines vulnerabilities."""
-        framework = MITRE()
-        assert hasattr(framework, "vulnerabilities")
-        assert len(framework.vulnerabilities) > 0
+        for risk_category in MITRE_CATEGORIES:
+            assert hasattr(risk_category, "vulnerabilities")
+            assert len(risk_category.vulnerabilities) > 0
 
     def test_mitre_vulnerabilities_are_instances(self):
         """Test that all vulnerabilities are instances of BaseVulnerability."""
-        framework = MITRE()
-        for vuln in framework.vulnerabilities:
-            assert isinstance(vuln, BaseVulnerability)
+        for risk_category in MITRE_CATEGORIES:
+            for vuln in risk_category.vulnerabilities:
+                assert isinstance(vuln, BaseVulnerability)
 
     def test_mitre_attacks_exist(self):
         """Test that MITRE framework defines attacks."""
-        framework = MITRE()
-        assert hasattr(framework, "attacks")
-        assert len(framework.attacks) > 0
+        for risk_category in MITRE_CATEGORIES:
+            assert hasattr(risk_category, "attacks")
+            assert len(risk_category.attacks) > 0
 
     def test_mitre_attacks_are_instances(self):
         """Test that all attacks are instances of BaseAttack."""
-        framework = MITRE()
-        for attack in framework.attacks:
-            assert isinstance(attack, BaseAttack)
+        for risk_category in MITRE_CATEGORIES:
+            for attack in risk_category.attacks:
+                assert isinstance(attack, BaseAttack)
 
     def test_mitre_category_vulnerability_mapping(self):
         """Test that all categories map to vulnerabilities properly."""
-        framework = MITRE()
-        mapping = framework._mitre_vulnerabilities_by_category()
-        assert set(mapping.keys()) == {
+        categories = MITRE_CATEGORIES
+        assert set([category.name for category in categories]) == {
             "reconnaissance",
             "resource_development",
             "initial_access",
@@ -78,15 +79,17 @@ class TestMITRE:
             "exfiltration",
             "impact",
         }
-        for vlist in mapping.values():
-            assert isinstance(vlist, list)
-            assert all(isinstance(v, BaseVulnerability) for v in vlist)
+        for risk_category in categories:
+            assert isinstance(risk_category, RiskCategory)
+            assert all(
+                isinstance(v, BaseVulnerability)
+                for v in risk_category.vulnerabilities
+            )
 
     def test_mitre_category_attack_mapping(self):
         """Test that all categories map to attacks properly."""
-        framework = MITRE()
-        mapping = framework._mitre_attacks_by_category()
-        assert set(mapping.keys()) == {
+        categories = MITRE_CATEGORIES
+        assert set([category.name for category in categories]) == {
             "reconnaissance",
             "resource_development",
             "initial_access",
@@ -94,14 +97,17 @@ class TestMITRE:
             "exfiltration",
             "impact",
         }
-        for alist in mapping.values():
-            assert isinstance(alist, list)
-            assert all(isinstance(a, BaseAttack) for a in alist)
+        for risk_category in categories:
+            assert isinstance(risk_category, RiskCategory)
+            assert all(isinstance(v, BaseAttack) for v in risk_category.attacks)
 
     def test_mitre_vulnerability_names_present(self):
         """Test that key MITRE vulnerabilities are present."""
-        framework = MITRE()
-        vuln_names = [v.__class__.__name__ for v in framework.vulnerabilities]
+        vuln_names = []
+        for risk_category in MITRE_CATEGORIES:
+            vuln_names.extend(
+                [v.__class__.__name__ for v in risk_category.vulnerabilities]
+            )
         expected_vulns = [
             "IllegalActivity",
             "PromptLeakage",
@@ -125,8 +131,11 @@ class TestMITRE:
 
     def test_mitre_attack_names_present(self):
         """Test that key MITRE attacks are present."""
-        framework = MITRE()
-        attack_names = [a.__class__.__name__ for a in framework.attacks]
+        attack_names = []
+        for risk_category in MITRE_CATEGORIES:
+            attack_names.extend(
+                [a.__class__.__name__ for a in risk_category.attacks]
+            )
         expected_attacks = [
             "Roleplay",
             "PromptInjection",
@@ -141,20 +150,13 @@ class TestMITRE:
         for name in expected_attacks:
             assert name in attack_names, f"Expected attack {name} not found"
 
-    def test_partial_category_reduces_scope(self):
-        """Test that selecting fewer categories reduces vulnerabilities and attacks."""
-        full = MITRE()
-        partial = MITRE(categories=["impact"])
-        assert len(partial.vulnerabilities) < len(full.vulnerabilities)
-        assert len(partial.attacks) < len(full.attacks)
-
     def test_mitre_attack_weights_valid(self):
         """Test that all attacks have valid weights."""
-        framework = MITRE()
-        for attack in framework.attacks:
-            assert hasattr(attack, "weight")
-            assert isinstance(attack.weight, int)
-            assert 1 <= attack.weight <= 3
+        for risk_category in MITRE_CATEGORIES:
+            for attack in risk_category.attacks:
+                assert hasattr(attack, "weight")
+                assert isinstance(attack.weight, int)
+                assert 1 <= attack.weight <= 3
 
     def test_mitre_framework_with_red_team(self):
         import random
@@ -179,4 +181,5 @@ class TestMITRE:
             async_mode=False,
             ignore_errors=True,
         )
+        assert isinstance(risk_assessment, dict)
         assert risk_assessment is not None

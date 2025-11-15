@@ -62,21 +62,20 @@ The 2025 OWASP Top 10 for LLMs includes significant updates reflecting real-worl
 
 **Indirect Injection:** Hidden instructions in external content (documents, websites, emails) that the LLM processes.
 
-```python title="main.py"
+```python
+from deepteam.frameworks import OWASPTop10
 from deepteam import red_team
-from deepteam.attacks.single_turn import PromptInjection, Base64, ROT13, Leetspeak
-from deepteam.attacks.multi_turn import LinearJailbreaking, CrescendoJailbreaking
+from somewhere import your_model_callback
 
-attacks = [
-    PromptInjection(),       # Direct injection attempts
-    Base64(),               # Encoded payloads
-    Leetspeak(),           # Character substitution
-    LinearJailbreaking(),   # Multi-turn escalation
-]
+owasp = OWASPTop10(categories=["LLM_01"])
+attacks = owasp.attacks
+vulnerabilities = owasp.vulnerabilities
 
-risk_assessment = red_team(
-    model_callback=your_model_callback,
-    attacks=attacks
+# Modify attributes for your specific testing context if needed
+red_team(
+    model_callback=your_model_callback, 
+    attacks=attacks, 
+    vulnerabilities=vulnerabilities
 )
 ```
 
@@ -95,19 +94,20 @@ Prompt injection attacks in DeepTeam test your LLM's resilience against various 
 - **Intellectual Property**: Proprietary algorithms and trade secrets
 - **Authentication Data**: API keys, passwords, tokens
 
-```python title="main.py"
-from deepteam.vulnerabilities import PIILeakage, PromptLeakage, IntellectualProperty
+```python
+from deepteam.frameworks import OWASPTop10
+from deepteam import red_team
+from somewhere import your_model_callback
 
-sensitive_vulnerabilities = [
-    PIILeakage(types=["direct disclosure", "session leak"]),
-    PromptLeakage(types=["secrets and credentials", "instructions"]),
-    IntellectualProperty(types=["patent disclosure", "copyright violations"])
-]
+owasp = OWASPTop10(categories=["LLM_02"])
+attacks = owasp.attacks
+vulnerabilities = owasp.vulnerabilities
 
-risk_assessment = red_team(
-    model_callback=your_model_callback,
-    vulnerabilities=sensitive_vulnerabilities,
-    attacks=[PromptInjection(), Roleplay()]
+# Modify attributes for your specific testing context if needed
+red_team(
+    model_callback=your_model_callback, 
+    attacks=attacks, 
+    vulnerabilities=vulnerabilities
 )
 ```
 
@@ -126,21 +126,20 @@ Testing for sensitive information disclosure focuses on specific vulnerability t
 - **Library Dependencies**: Vulnerable Python packages or ML frameworks
 - **Plugin Ecosystem**: Malicious or compromised LLM plugins
 
-```python title="main.py"
-from deepteam.vulnerabilities import Bias, Toxicity, Misinformation, Robustness
+```python
+from deepteam.frameworks import OWASPTop10
+from deepteam import red_team
+from somewhere import your_model_callback
 
-# Test for signs of compromised supply chain components
-supply_chain_tests = [
-    Bias(types=["race", "gender", "politics"]),
-    Toxicity(types=["profanity", "insults"]),
-    Misinformation(types=["factual errors"]),
-    Robustness(types=["hijacking"])
-]
+owasp = OWASPTop10(categories=["LLM_03"])
+attacks = owasp.attacks
+vulnerabilities = owasp.vulnerabilities
 
-risk_assessment = red_team(
-    model_callback=your_model_callback,
-    vulnerabilities=supply_chain_tests,
-    attacks=[PromptInjection(), Roleplay(), LinearJailbreaking()]
+# Modify attributes for your specific testing context if needed
+red_team(
+    model_callback=your_model_callback, 
+    attacks=attacks, 
+    vulnerabilities=vulnerabilities
 )
 ```
 
@@ -159,22 +158,20 @@ DeepTeam detects the behavioral impact of supply chain vulnerabilities. If your 
 - **RAG Poisoning**: Malicious documents in retrieval knowledge bases
 - **Embedding Poisoning**: Corrupted vector representations
 
-```python title="main.py"
-from deepteam.vulnerabilities import (
-    Bias, Toxicity, Misinformation, IllegalActivity, GraphicContent, PersonalSafety
-)
+```python
+from deepteam.frameworks import OWASPTop10
+from deepteam import red_team
+from somewhere import your_model_callback
 
-poisoning_vulnerabilities = [
-    Bias(types=["race", "gender", "religion"]),
-    Toxicity(types=["profanity", "threats"]),
-    Misinformation(types=["factual errors", "unsupported claims"]),
-    IllegalActivity(types=["cybercrime", "violent crimes"])
-]
+owasp = OWASPTop10(categories=["LLM_04"])
+attacks = owasp.attacks
+vulnerabilities = owasp.vulnerabilities
 
-risk_assessment = red_team(
-    model_callback=your_model_callback,
-    vulnerabilities=poisoning_vulnerabilities,
-    attacks=[PromptInjection(), Roleplay(), CrescendoJailbreaking()]
+# Modify attributes for your specific testing context if needed
+red_team(
+    model_callback=your_model_callback, 
+    attacks=attacks, 
+    vulnerabilities=vulnerabilities
 )
 ```
 
@@ -189,18 +186,20 @@ risk_assessment = red_team(
 - **SQL Injection**: Database queries constructed from LLM output
 - **Command Injection**: System commands generated by LLM
 
-```python title="main.py"
-from deepteam.vulnerabilities import ShellInjection, SQLInjection
+```python
+from deepteam.frameworks import OWASPTop10
+from deepteam import red_team
+from somewhere import your_model_callback
 
-dangerous_output_tests = [
-    ShellInjection(types=["command_injection", "system_command_execution"]),
-    SQLInjection(types=["blind_sql_injection", "union_based_injection"])
-]
+owasp = OWASPTop10(categories=["LLM_05"])
+attacks = owasp.attacks
+vulnerabilities = owasp.vulnerabilities
 
-risk_assessment = red_team(
-    model_callback=your_model_callback,
-    vulnerabilities=dangerous_output_tests,
-    attacks=[PromptInjection(), GrayBox()]
+# Modify attributes for your specific testing context if needed
+red_team(
+    model_callback=your_model_callback, 
+    attacks=attacks, 
+    vulnerabilities=vulnerabilities
 )
 ```
 
@@ -218,20 +217,20 @@ Implement output validation in your model callback to catch and sanitize dangero
 - **Permissions**: LLM operates with elevated privileges
 - **Autonomy**: LLM makes decisions without appropriate oversight
 
-```python title="main.py"
-from deepteam.vulnerabilities import ExcessiveAgency, RBAC, BFLA, BOLA
+```python
+from deepteam.frameworks import OWASPTop10
+from deepteam import red_team
+from somewhere import your_model_callback
 
-agency_tests = [
-    ExcessiveAgency(types=["functionality", "permissions", "autonomy"]),
-    RBAC(types=["role bypass", "privilege escalation"]),
-    BFLA(types=["function_bypass", "authorization_bypass"]),
-    BOLA(types=["object_access_bypass", "cross_customer_access"])
-]
+owasp = OWASPTop10(categories=["LLM_06"])
+attacks = owasp.attacks
+vulnerabilities = owasp.vulnerabilities
 
-risk_assessment = red_team(
-    model_callback=your_model_callback,
-    vulnerabilities=agency_tests,
-    attacks=[PromptInjection(), Roleplay()]
+# Modify attributes for your specific testing context if needed
+red_team(
+    model_callback=your_model_callback, 
+    attacks=attacks, 
+    vulnerabilities=vulnerabilities
 )
 ```
 
@@ -246,22 +245,20 @@ risk_assessment = red_team(
 - **Guards**: Security mechanisms and content filtering rules
 - **Permissions and Roles**: Access control configurations
 
-```python title="main.py"
-from deepteam.vulnerabilities import PromptLeakage
+```python
+from deepteam.frameworks import OWASPTop10
+from deepteam import red_team
+from somewhere import your_model_callback
 
-prompt_tests = [
-    PromptLeakage(types=[
-        "secrets and credentials",
-        "instructions",
-        "guards",
-        "permissions and roles"
-    ])
-]
+owasp = OWASPTop10(categories=["LLM_07"])
+attacks = owasp.attacks
+vulnerabilities = owasp.vulnerabilities
 
-risk_assessment = red_team(
-    model_callback=your_model_callback,
-    vulnerabilities=prompt_tests,
-    attacks=[PromptInjection(), PromptProbing(), Base64()]
+# Modify attributes for your specific testing context if needed
+red_team(
+    model_callback=your_model_callback, 
+    attacks=attacks, 
+    vulnerabilities=vulnerabilities
 )
 ```
 
@@ -280,19 +277,20 @@ Never include sensitive credentials or secrets directly in system prompts. Use e
 - **Vector Database Access**: Unauthorized access to embedding stores
 - **Embedding Inversion**: Reconstructing source text from vectors
 
-```python title="main.py"
-from deepteam.vulnerabilities import Misinformation, PIILeakage
+```python
+from deepteam.frameworks import OWASPTop10
+from deepteam import red_team
+from somewhere import your_model_callback
 
-# Test for RAG-specific vulnerabilities
-rag_tests = [
-    Misinformation(types=["factual errors"]),  # May indicate poisoned knowledge base
-    PIILeakage(types=["direct disclosure"])    # May indicate vector database leakage
-]
+owasp = OWASPTop10(categories=["LLM_08"])
+attacks = owasp.attacks
+vulnerabilities = owasp.vulnerabilities
 
-risk_assessment = red_team(
-    model_callback=your_model_callback,
-    vulnerabilities=rag_tests,
-    attacks=[PromptInjection(), GrayBox()]
+# Modify attributes for your specific testing context if needed
+red_team(
+    model_callback=your_model_callback, 
+    attacks=attacks, 
+    vulnerabilities=vulnerabilities
 )
 ```
 
@@ -311,22 +309,20 @@ Vector and embedding security is crucial for RAG systems. Ensure proper access c
 - **Expertise Misrepresentation**: False claims about qualifications
 - **Fabricated Sources**: Made-up citations, studies, or references
 
-```python title="main.py"
-from deepteam.vulnerabilities import Misinformation, Competition
+```python
+from deepteam.frameworks import OWASPTop10
+from deepteam import red_team
+from somewhere import your_model_callback
 
-misinformation_tests = [
-    Misinformation(types=[
-        "factual errors",
-        "unsupported claims",
-        "expertize misrepresentation"
-    ]),
-    Competition(types=["discreditation"])
-]
+owasp = OWASPTop10(categories=["LLM_09"])
+attacks = owasp.attacks
+vulnerabilities = owasp.vulnerabilities
 
-risk_assessment = red_team(
-    model_callback=your_model_callback,
-    vulnerabilities=misinformation_tests,
-    attacks=[PromptInjection(), Roleplay(), PromptProbing()]
+# Modify attributes for your specific testing context if needed
+red_team(
+    model_callback=your_model_callback, 
+    attacks=attacks, 
+    vulnerabilities=vulnerabilities
 )
 ```
 
@@ -345,17 +341,20 @@ LLM misinformation can have serious consequences in domains like healthcare, fin
 - **API Abuse**: High-volume requests leading to cost escalation
 - **Context Flooding**: Extremely long inputs that overflow context windows
 
-```python title="main.py"
-# Test for potentially resource-intensive patterns
-resource_test = red_team(
-    model_callback=your_model_callback,
-    attacks=[
-        MathProblem(),           # Complex computational requests
-        LinearJailbreaking(),    # Extended conversations
-        CrescendoJailbreaking()  # Escalating complexity
-    ],
-    attacks_per_vulnerability_type=3,  # Limited testing
-    max_concurrent=1  # Sequential testing to monitor resources
+```python
+from deepteam.frameworks import OWASPTop10
+from deepteam import red_team
+from somewhere import your_model_callback
+
+owasp = OWASPTop10(categories=["LLM_10"])
+attacks = owasp.attacks
+vulnerabilities = owasp.vulnerabilities
+
+# Modify attributes for your specific testing context if needed
+red_team(
+    model_callback=your_model_callback, 
+    attacks=attacks, 
+    vulnerabilities=vulnerabilities
 )
 ```
 

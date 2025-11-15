@@ -1,4 +1,3 @@
-from tqdm import tqdm
 from typing import Optional, Union, List, Dict
 import random
 
@@ -18,6 +17,7 @@ from deepteam.attacks.attack_simulator.utils import (
     a_generate,
 )
 from deepteam.attacks.multi_turn.types import CallbackType
+from deepteam.utils import create_progress, update_pbar, add_pbar
 from deepteam.attacks import BaseAttack
 from deepteam.attacks.multi_turn.utils import enhance_attack, a_enhance_attack
 from deepteam.attacks.multi_turn.base_schema import NonRefusal
@@ -66,95 +66,96 @@ class LinearJailbreaking(BaseAttack):
             f"Vulnerability: {vulnerability} | Type: {vulnerability_type}"
         )
 
-        pbar = tqdm(
-            total=self.num_turns,
-            desc="...... ⛓️  Linear Jailbreaking",
-            leave=False,
-        )
-
-        # Get current attack from last user turn (simple reverse search)
-        current_attack = None
-        original_attack = None
-        for turn in reversed(turns):
-            if turn.role == "user":
-                current_attack = turn.content
-                original_attack = turn.content
-                break
-
-        if current_attack is None:
-            raise ValueError("No user turns found in conversation history")
-
-        # If the last turn is from user, we need a model response before simulation
-        if len(turns) <= 1 or turns[-1].role == "user":
-            target_response = model_callback(current_attack, turns)
-            turns.append(RTTurn(role="assistant", content=target_response))
-        else:
-            target_response = turns[-1].content
-
-        # Main simulation loop
-        for _ in range(self.num_turns):
-            judge_prompt = JailBreakingTemplate.linear_judge(
-                original_attack,
-                current_attack,
-                target_response,
-                vulnerability_data,
-            )
-            feedback: Feedback = generate(
-                judge_prompt, Feedback, self.simulator_model
+        progress = create_progress()
+        with progress:
+            task_id = add_pbar(
+                progress,
+                description="...... ⛓️  Linear Jailbreaking",
+                total=self.num_turns,
             )
 
-            if feedback.jailbroken:
-                pbar.n = pbar.total
-                pbar.close()
-                break
+            # Get current attack from last user turn (simple reverse search)
+            current_attack = None
+            original_attack = None
+            for turn in reversed(turns):
+                if turn.role == "user":
+                    current_attack = turn.content
+                    original_attack = turn.content
+                    break
 
-            improvement_prompt = JailBreakingTemplate.improvement_prompt(
-                turns, feedback.suggestion, vulnerability_data
-            )
-            improvement: Improvement = generate(
-                improvement_prompt, Improvement, self.simulator_model
-            )
-            next_attack = improvement.new_prompt
+            if current_attack is None:
+                raise ValueError("No user turns found in conversation history")
 
-            non_refusal_prompt = BaseMultiTurnTemplate.non_refusal(
-                original_attack, next_attack
-            )
-            non_refusal_res: NonRefusal = generate(
-                non_refusal_prompt, NonRefusal, self.simulator_model
-            )
-
-            if non_refusal_res.classification == "Refusal":
-                pbar.n = pbar.total
-                pbar.close()
-                raise ModelRefusalError(entity=self.get_name())
-
-            current_attack = next_attack
-
-            # Randomly enhancing a turn attack
-            turn_level_attack = None
-            if self.turn_level_attacks and random.random() < 0.5:
-                attack = random.choice(self.turn_level_attacks)
-                turn_level_attack = attack
-                current_attack = enhance_attack(
-                    attack, current_attack, self.simulator_model
-                )
-
-            target_response = model_callback(current_attack, turns)
-            turns.append(RTTurn(role="user", content=current_attack))
-            if turn_level_attack is not None:
-                turns.append(
-                    RTTurn(
-                        role="assistant",
-                        content=target_response,
-                        turn_level_attack=turn_level_attack.get_name(),
-                    )
-                )
-            else:
+            # If the last turn is from user, we need a model response before simulation
+            if len(turns) <= 1 or turns[-1].role == "user":
+                target_response = model_callback(current_attack, turns)
                 turns.append(RTTurn(role="assistant", content=target_response))
+            else:
+                target_response = turns[-1].content
 
-            pbar.update(1)
+            # Main simulation loop
+            for _ in range(self.num_turns):
+                judge_prompt = JailBreakingTemplate.linear_judge(
+                    original_attack,
+                    current_attack,
+                    target_response,
+                    vulnerability_data,
+                )
+                feedback: Feedback = generate(
+                    judge_prompt, Feedback, self.simulator_model
+                )
 
-        pbar.close()
+                if feedback.jailbroken:
+                    update_pbar(progress, task_id, advance_to_end=True)
+                    break
+
+                improvement_prompt = JailBreakingTemplate.improvement_prompt(
+                    turns, feedback.suggestion, vulnerability_data
+                )
+                improvement: Improvement = generate(
+                    improvement_prompt, Improvement, self.simulator_model
+                )
+                next_attack = improvement.new_prompt
+
+                non_refusal_prompt = BaseMultiTurnTemplate.non_refusal(
+                    original_attack, next_attack
+                )
+                non_refusal_res: NonRefusal = generate(
+                    non_refusal_prompt, NonRefusal, self.simulator_model
+                )
+
+                if non_refusal_res.classification == "Refusal":
+                    update_pbar(progress, task_id, advance_to_end=True)
+                    raise ModelRefusalError(entity=self.get_name())
+
+                current_attack = next_attack
+
+                # Randomly enhancing a turn attack
+                turn_level_attack = None
+                if self.turn_level_attacks and random.random() < 0.5:
+                    attack = random.choice(self.turn_level_attacks)
+                    turn_level_attack = attack
+                    current_attack = enhance_attack(
+                        attack, current_attack, self.simulator_model
+                    )
+
+                target_response = model_callback(current_attack, turns)
+                turns.append(RTTurn(role="user", content=current_attack))
+                if turn_level_attack is not None:
+                    turns.append(
+                        RTTurn(
+                            role="assistant",
+                            content=target_response,
+                            turn_level_attack=turn_level_attack.get_name(),
+                        )
+                    )
+                else:
+                    turns.append(
+                        RTTurn(role="assistant", content=target_response)
+                    )
+
+                update_pbar(progress, task_id)
+
         return turns
 
     async def _a_get_turns(
@@ -173,95 +174,96 @@ class LinearJailbreaking(BaseAttack):
             f"Vulnerability: {vulnerability} | Type: {vulnerability_type}"
         )
 
-        pbar = tqdm(
-            total=self.num_turns,
-            desc="...... ⛓️  Linear Jailbreaking",
-            leave=False,
-        )
-
-        # Get current attack from last user turn (simple reverse search)
-        current_attack = None
-        original_attack = None
-        for turn in reversed(turns):
-            if turn.role == "user":
-                current_attack = turn.content
-                original_attack = turn.content
-                break
-
-        if current_attack is None:
-            raise ValueError("No user turns found in conversation history")
-
-        # If last turn is user, generate a model response before the loop
-        if len(turns) <= 1 or turns[-1].role == "user":
-            target_response = await model_callback(current_attack, turns)
-            turns.append(RTTurn(role="assistant", content=target_response))
-        else:
-            target_response = turns[-1].content
-
-        # Main simulation loop
-        for _ in range(self.num_turns):
-            judge_prompt = JailBreakingTemplate.linear_judge(
-                original_attack,
-                current_attack,
-                target_response,
-                vulnerability_data,
-            )
-            feedback: Feedback = await a_generate(
-                judge_prompt, Feedback, self.simulator_model
+        progress = create_progress()
+        with progress:
+            task_id = add_pbar(
+                progress,
+                description="...... ⛓️  Linear Jailbreaking",
+                total=self.num_turns,
             )
 
-            if feedback.jailbroken:
-                pbar.n = pbar.total
-                pbar.close()
-                break
+            # Get current attack from last user turn (simple reverse search)
+            current_attack = None
+            original_attack = None
+            for turn in reversed(turns):
+                if turn.role == "user":
+                    current_attack = turn.content
+                    original_attack = turn.content
+                    break
 
-            improvement_prompt = JailBreakingTemplate.improvement_prompt(
-                turns, feedback.suggestion, vulnerability_data
-            )
-            improvement: Improvement = await a_generate(
-                improvement_prompt, Improvement, self.simulator_model
-            )
-            next_attack = improvement.new_prompt
+            if current_attack is None:
+                raise ValueError("No user turns found in conversation history")
 
-            non_refusal_prompt = BaseMultiTurnTemplate.non_refusal(
-                original_attack, next_attack
-            )
-            non_refusal_res: NonRefusal = await a_generate(
-                non_refusal_prompt, NonRefusal, self.simulator_model
-            )
-
-            if non_refusal_res.classification == "Refusal":
-                pbar.n = pbar.total
-                pbar.close()
-                raise ModelRefusalError(entity=self.get_name())
-
-            current_attack = next_attack
-
-            # Randomly enhancing a turn attack
-            turn_level_attack = None
-            if self.turn_level_attacks and random.random() < 0.5:
-                attack = random.choice(self.turn_level_attacks)
-                turn_level_attack = attack
-                current_attack = await a_enhance_attack(
-                    attack, current_attack, self.simulator_model
-                )
-
-            target_response = await model_callback(current_attack, turns)
-            turns.append(RTTurn(role="user", content=current_attack))
-            if turn_level_attack is not None:
-                turns.append(
-                    RTTurn(
-                        role="assistant",
-                        content=target_response,
-                        turn_level_attack=turn_level_attack.get_name(),
-                    )
-                )
-            else:
+            # If last turn is user, generate a model response before the loop
+            if len(turns) <= 1 or turns[-1].role == "user":
+                target_response = await model_callback(current_attack, turns)
                 turns.append(RTTurn(role="assistant", content=target_response))
+            else:
+                target_response = turns[-1].content
 
-            pbar.update(1)
+            # Main simulation loop
+            for _ in range(self.num_turns):
+                judge_prompt = JailBreakingTemplate.linear_judge(
+                    original_attack,
+                    current_attack,
+                    target_response,
+                    vulnerability_data,
+                )
+                feedback: Feedback = await a_generate(
+                    judge_prompt, Feedback, self.simulator_model
+                )
 
-        pbar.close()
+                if feedback.jailbroken:
+                    update_pbar(progress, task_id, advance_to_end=True)
+                    break
+
+                improvement_prompt = JailBreakingTemplate.improvement_prompt(
+                    turns, feedback.suggestion, vulnerability_data
+                )
+                improvement: Improvement = await a_generate(
+                    improvement_prompt, Improvement, self.simulator_model
+                )
+                next_attack = improvement.new_prompt
+
+                non_refusal_prompt = BaseMultiTurnTemplate.non_refusal(
+                    original_attack, next_attack
+                )
+                non_refusal_res: NonRefusal = await a_generate(
+                    non_refusal_prompt, NonRefusal, self.simulator_model
+                )
+
+                if non_refusal_res.classification == "Refusal":
+                    update_pbar(progress, task_id, advance_to_end=True)
+                    raise ModelRefusalError(entity=self.get_name())
+
+                current_attack = next_attack
+
+                # Randomly enhancing a turn attack
+                turn_level_attack = None
+                if self.turn_level_attacks and random.random() < 0.5:
+                    attack = random.choice(self.turn_level_attacks)
+                    turn_level_attack = attack
+                    current_attack = await a_enhance_attack(
+                        attack, current_attack, self.simulator_model
+                    )
+
+                target_response = await model_callback(current_attack, turns)
+                turns.append(RTTurn(role="user", content=current_attack))
+                if turn_level_attack is not None:
+                    turns.append(
+                        RTTurn(
+                            role="assistant",
+                            content=target_response,
+                            turn_level_attack=turn_level_attack.get_name(),
+                        )
+                    )
+                else:
+                    turns.append(
+                        RTTurn(role="assistant", content=target_response)
+                    )
+
+                update_pbar(progress, task_id)
+
         return turns
 
     def progress(

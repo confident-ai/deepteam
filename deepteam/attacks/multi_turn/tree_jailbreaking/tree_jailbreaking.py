@@ -1,5 +1,4 @@
-from tqdm.asyncio import tqdm as async_tqdm_bar
-from tqdm import tqdm
+from rich.progress import Progress
 import asyncio
 import time
 import json
@@ -9,6 +8,7 @@ import random
 from deepeval.models import DeepEvalBaseLLM
 from deepeval.metrics.utils import initialize_model
 
+from deepteam.utils import create_progress, update_pbar, add_pbar
 from deepteam.attacks import BaseAttack
 from deepteam.attacks.multi_turn.tree_jailbreaking.schema import (
     ImprovementPrompt,
@@ -110,52 +110,62 @@ class TreeJailbreaking(BaseAttack):
         )
 
         # Progress bar
-        pbar = tqdm(
-            total=MAX_RUNTIME,
-            desc="...... ⛓️  Tree Jailbreaking",
-            unit="s",
-            leave=False,
-        )
-
-        try:
-            best_node = self.tree_search(
-                root, attack, start_time, MAX_RUNTIME, pbar, vulnerability_data
+        progress = create_progress()
+        with progress:
+            task_id = add_pbar(
+                progress,
+                description="...... ⛓️  Tree Jailbreaking",
+                total=MAX_RUNTIME,
             )
-        finally:
-            pbar.close()
 
-        # Reconstruct path from best_node to root
-        path_nodes = []
-        current = best_node
-        while current is not None:
-            path_nodes.append(current)
-            current = current.parent
-        path_nodes.reverse()
-
-        if path_nodes:
-            first_prompt = path_nodes[0].prompt
-            if any(
-                t.content == first_prompt and t.role == "user" for t in turns
-            ):
-                path_nodes = path_nodes[1:]
-
-        # Append turns along the best path
-        for node in path_nodes:
-            turns.append(RTTurn(role="user", content=node.prompt))
-            assistant_response = model_callback(node.prompt, turns)
-            turns.append(RTTurn(role="assistant", content=assistant_response))
-            if node.turn_level_attack is not None:
-                turns.append(
-                    RTTurn(
-                        role="assistant",
-                        content=assistant_response,
-                        turn_level_attack=node.turn_level_attack.get_name(),
-                    )
+            try:
+                best_node = self.tree_search(
+                    root,
+                    attack,
+                    start_time,
+                    MAX_RUNTIME,
+                    progress,
+                    task_id,
+                    vulnerability_data,
                 )
-            else:
+            finally:
+                update_pbar(progress, task_id, advance_to_end=True)
+
+            # Reconstruct path from best_node to root
+            path_nodes = []
+            current = best_node
+            while current is not None:
+                path_nodes.append(current)
+                current = current.parent
+            path_nodes.reverse()
+
+            if path_nodes:
+                first_prompt = path_nodes[0].prompt
+                if any(
+                    t.content == first_prompt and t.role == "user"
+                    for t in turns
+                ):
+                    path_nodes = path_nodes[1:]
+
+            # Append turns along the best path
+            for node in path_nodes:
+                turns.append(RTTurn(role="user", content=node.prompt))
+                assistant_response = model_callback(node.prompt, turns)
                 turns.append(
                     RTTurn(role="assistant", content=assistant_response)
                 )
+                if node.turn_level_attack is not None:
+                    turns.append(
+                        RTTurn(
+                            role="assistant",
+                            content=assistant_response,
+                            turn_level_attack=node.turn_level_attack.get_name(),
+                        )
+                    )
+                else:
+                    turns.append(
+                        RTTurn(role="assistant", content=assistant_response)
+                    )
 
         return turns
 
@@ -198,43 +208,50 @@ class TreeJailbreaking(BaseAttack):
         )
 
         # Async progress bar
-        pbar = async_tqdm_bar(
-            total=MAX_RUNTIME,
-            desc="...... ⛓️  Tree Jailbreaking",
-            unit="s",
-            leave=False,
-        )
-        tick_task = asyncio.create_task(
-            self.update_pbar(pbar, start_time, MAX_RUNTIME)
-        )
-
-        try:
-            best_node = await self.a_tree_search(
-                root, attack, start_time, MAX_RUNTIME, vulnerability_data
+        progress = create_progress()
+        with progress:
+            task_id = add_pbar(
+                progress,
+                description="...... ⛓️  Tree Jailbreaking",
+                total=MAX_RUNTIME,
             )
-        finally:
-            await tick_task
 
-        # Reconstruct best path
-        path_nodes = []
-        current = best_node
-        while current is not None:
-            path_nodes.append(current)
-            current = current.parent
-        path_nodes.reverse()
+            try:
+                best_node = await self.a_tree_search(
+                    root,
+                    attack,
+                    start_time,
+                    MAX_RUNTIME,
+                    vulnerability_data,
+                    progress,
+                    task_id,
+                )
+            finally:
+                update_pbar(progress, task_id, advance_to_end=True)
 
-        if path_nodes:
-            first_prompt = path_nodes[0].prompt
-            if any(
-                t.content == first_prompt and t.role == "user" for t in turns
-            ):
-                path_nodes = path_nodes[1:]
+            # Reconstruct best path
+            path_nodes = []
+            current = best_node
+            while current is not None:
+                path_nodes.append(current)
+                current = current.parent
+            path_nodes.reverse()
 
-        # Append turns from best path
-        for node in path_nodes:
-            turns.append(RTTurn(role="user", content=node.prompt))
-            assistant_response = await model_callback(node.prompt, turns)
-            turns.append(RTTurn(role="assistant", content=assistant_response))
+            if path_nodes:
+                first_prompt = path_nodes[0].prompt
+                if any(
+                    t.content == first_prompt and t.role == "user"
+                    for t in turns
+                ):
+                    path_nodes = path_nodes[1:]
+
+            # Append turns from best path
+            for node in path_nodes:
+                turns.append(RTTurn(role="user", content=node.prompt))
+                assistant_response = await model_callback(node.prompt, turns)
+                turns.append(
+                    RTTurn(role="assistant", content=assistant_response)
+                )
 
         return turns
 
@@ -325,7 +342,8 @@ class TreeJailbreaking(BaseAttack):
         goal: str,
         start_time: float,
         MAX_RUNTIME: float,
-        pbar,
+        progress: Progress,
+        task_id: int,
         vulnerability_data: str = "",
     ) -> TreeNode:
         """Synchronous tree search implementation with runtime limit."""
@@ -343,8 +361,11 @@ class TreeJailbreaking(BaseAttack):
 
             # Update progress bar
             elapsed_time = time.time() - start_time
-            pbar.n = elapsed_time
-            pbar.refresh()
+            update_pbar(
+                progress,
+                task_id,
+                elapsed_time - progress.tasks[task_id].completed,
+            )
 
         return best_node
 
@@ -527,6 +548,8 @@ class TreeJailbreaking(BaseAttack):
         start_time: float,
         MAX_RUNTIME: float,
         vulnerability_data: str,
+        progress: Progress,
+        task_id: int,
     ) -> TreeNode:
         """Asynchronous tree search implementation with runtime limit."""
         queue = [root]
@@ -543,6 +566,10 @@ class TreeJailbreaking(BaseAttack):
             if node.score > best_node.score:
                 best_node = node
 
+            elapsed_time = time.time() - start_time
+            update_pbar(progress, task_id, elapsed_time)
+
+        update_pbar(progress, task_id, advance_to_end=True)
         return best_node
 
     async def a_expand_node(
@@ -657,24 +684,6 @@ class TreeJailbreaking(BaseAttack):
     ##################################################
     ### General Jailbreaking #########################
     ##################################################
-
-    async def update_pbar(
-        self, pbar: async_tqdm_bar, start_time: float, MAX_RUNTIME: float
-    ):
-        """Update the async progress bar every second and ensure it completes."""
-        while True:
-            elapsed_time = time.time() - start_time
-
-            # Stop updating if the maximum runtime is exceeded
-            if elapsed_time >= MAX_RUNTIME:
-                pbar.n = MAX_RUNTIME
-                pbar.refresh()
-                pbar.close()
-                break
-
-            pbar.n = elapsed_time
-            pbar.refresh()
-            await asyncio.sleep(1)
 
     def calculate_branches(self, score: int, depth: int) -> int:
         """Calculate the number of branches (children) based on the score."""

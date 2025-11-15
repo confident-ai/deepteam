@@ -1,12 +1,11 @@
 import asyncio
-from tqdm import tqdm
 from typing import Dict, List, Optional, Union
 from rich.console import Console
 from rich.table import Table
 import inspect
 from rich import box
 from enum import Enum
-
+from collections import defaultdict
 
 from deepeval.models import DeepEvalBaseLLM
 from deepeval.metrics.utils import initialize_model
@@ -15,9 +14,15 @@ from deepteam.test_case import RTTestCase
 from deepeval.utils import get_or_create_event_loop
 
 from deepteam.frameworks.frameworks import AISafetyFramework
+from deepteam.frameworks.risk_category import RiskCategory
 from deepteam.telemetry import capture_red_teamer_run
 from deepteam.attacks import BaseAttack
-from deepteam.utils import validate_model_callback_signature
+from deepteam.utils import (
+    validate_model_callback_signature,
+    create_progress,
+    add_pbar,
+    update_pbar,
+)
 from deepteam.vulnerabilities import BaseVulnerability
 from deepteam.vulnerabilities.types import VulnerabilityType
 from deepteam.attacks.attack_simulator import AttackSimulator
@@ -56,6 +61,103 @@ class RedTeamer:
             max_concurrent=max_concurrent,
         )
 
+    def _framework_assessment(
+        self,
+        model_callback: CallbackType,
+        simulator_model: DeepEvalBaseLLM = None,
+        evaluation_model: DeepEvalBaseLLM = None,
+        framework: Optional[AISafetyFramework] = None,
+        attacks_per_vulnerability_type: int = 1,
+        ignore_errors: bool = False,
+        reuse_simulated_test_cases: bool = False,
+        metadata: Optional[dict] = None,
+    ):
+        if not framework or framework._has_dataset:
+            raise ValueError(
+                "Please pass in a valid framework that does not rely on a dataset."
+            )
+
+        def assess_risk_category(category: RiskCategory):
+            return self.red_team(
+                model_callback=model_callback,
+                attacks=category.attacks,
+                vulnerabilities=category.vulnerabilities,
+                simulator_model=simulator_model,
+                evaluation_model=evaluation_model,
+                ignore_errors=ignore_errors,
+                reuse_simulated_test_cases=reuse_simulated_test_cases,
+                metadata=metadata,
+                attacks_per_vulnerability_type=attacks_per_vulnerability_type,
+                _print_assessment=False,
+            )
+
+        results = {}
+        progress = create_progress()
+        with progress:
+            task_id = add_pbar(
+                progress,
+                description=f"⏳ Running red-teaming for {framework.get_name()} Framework",
+                total=len(framework.risk_categories),
+            )
+            for risk_category in framework.risk_categories:
+                framework_assessment = assess_risk_category(risk_category)
+                results[risk_category.name] = framework_assessment
+                update_pbar(progress, task_id)
+
+        return results
+
+    async def _a_framework_assessment(
+        self,
+        model_callback: CallbackType,
+        simulator_model: DeepEvalBaseLLM = None,
+        evaluation_model: DeepEvalBaseLLM = None,
+        framework: Optional[AISafetyFramework] = None,
+        attacks_per_vulnerability_type: int = 1,
+        ignore_errors: bool = False,
+        reuse_simulated_test_cases: bool = False,
+        metadata: Optional[dict] = None,
+    ) -> Dict[str, RiskAssessment]:
+        if not framework or framework._has_dataset:
+            raise ValueError(
+                "Please pass in a valid framework that does not rely on a dataset."
+            )
+
+        async def assess_risk_category(category: RiskCategory):
+            return await self.a_red_team(
+                model_callback=model_callback,
+                attacks=category.attacks,
+                vulnerabilities=category.vulnerabilities,
+                simulator_model=simulator_model,
+                evaluation_model=evaluation_model,
+                ignore_errors=ignore_errors,
+                reuse_simulated_test_cases=reuse_simulated_test_cases,
+                metadata=metadata,
+                attacks_per_vulnerability_type=attacks_per_vulnerability_type,
+                _print_assessment=False,
+            )
+
+        tasks = {
+            asyncio.create_task(assess_risk_category(category)): category.name
+            for category in framework.risk_categories
+        }
+
+        results = {}
+
+        progress = create_progress()
+        with progress:
+            task_id = add_pbar(
+                progress,
+                description=f"⏳ Running red-teaming for {framework.get_name()} Framework",
+                total=len(framework.risk_categories),
+            )
+            for task in asyncio.as_completed(tasks):
+                result = await task
+                name = tasks[task]
+                results[name] = result
+                update_pbar(progress, task_id)
+
+        return results
+
     def red_team(
         self,
         model_callback: CallbackType,
@@ -68,6 +170,7 @@ class RedTeamer:
         ignore_errors: bool = False,
         reuse_simulated_test_cases: bool = False,
         metadata: Optional[dict] = None,
+        _print_assessment: Optional[bool] = True,
     ):
         if not framework and not vulnerabilities:
             raise ValueError(
@@ -78,6 +181,22 @@ class RedTeamer:
             raise ValueError(
                 "You can only pass either 'framework' or 'attacks' and 'vulnerabilities' at the same time"
             )
+
+        if framework and not framework._has_dataset:
+            framework_assessment = self._framework_assessment(
+                model_callback=model_callback,
+                simulator_model=simulator_model,
+                evaluation_model=evaluation_model,
+                framework=framework,
+                attacks_per_vulnerability_type=attacks_per_vulnerability_type,
+                ignore_errors=ignore_errors,
+                reuse_simulated_test_cases=reuse_simulated_test_cases,
+                metadata=metadata,
+            )
+            self._print_framework_overview_table(
+                framework_results=framework_assessment
+            )
+            return framework_assessment
 
         if self.async_mode:
             validate_model_callback_signature(
@@ -97,21 +216,20 @@ class RedTeamer:
                     ignore_errors=ignore_errors,
                     reuse_simulated_test_cases=reuse_simulated_test_cases,
                     metadata=metadata,
+                    _print_assessment=_print_assessment,
                 )
             )
         else:
-            if framework:
-                if framework._has_dataset:
-                    pbar = tqdm(
-                        range(framework.num_attacks),
-                        desc=f"💥 Fetching {framework.num_attacks} attacks from {framework.get_name()} Dataset",
+            if framework and framework._has_dataset:
+                progress = create_progress()
+                with progress:
+                    task_id = add_pbar(
+                        progress,
+                        description=f"💥 Fetching {framework.num_attacks} attacks from {framework.get_name()} Dataset",
+                        total=framework.num_attacks,
                     )
                     framework.load_dataset()
-                    pbar.update(framework.num_attacks)
-                    pbar.close()
-                else:
-                    attacks = framework.attacks
-                    vulnerabilities = framework.vulnerabilities
+                    update_pbar(progress, task_id, advance_to_end=True)
 
             assert not inspect.iscoroutinefunction(
                 model_callback
@@ -178,14 +296,16 @@ class RedTeamer:
                         )
 
                 if framework and framework._has_dataset:
-                    pbar = tqdm(
-                        total=len(simulated_test_cases),
-                        desc=f"📝 Evaluating {len(simulated_test_cases)} test cases using {framework.get_name()} risk categories",
-                    )
-                    red_teaming_test_cases = framework.assess(
-                        model_callback, pbar, ignore_errors
-                    )
-                    pbar.close()
+                    progress = create_progress()
+                    with progress:
+                        task_id = add_pbar(
+                            progress,
+                            description=f"📝 Evaluating {len(simulated_test_cases)} test cases using {framework.get_name()} risk categories",
+                            total=len(simulated_test_cases),
+                        )
+                        red_teaming_test_cases = framework.assess(
+                            model_callback, progress, task_id, ignore_errors
+                        )
                 else:
                     total_attacks = sum(
                         len(test_cases)
@@ -194,29 +314,32 @@ class RedTeamer:
                     num_vulnerability_types = sum(
                         len(v.get_types()) for v in vulnerabilities
                     )
-                    pbar = tqdm(
-                        total=total_attacks,
-                        desc=f"📝 Evaluating {num_vulnerability_types} vulnerability types across {len(vulnerabilities)} vulnerability(s)",
-                    )
+                    progress = create_progress()
+                    with progress:
+                        task_id = add_pbar(
+                            progress,
+                            description=f"📝 Evaluating {num_vulnerability_types} vulnerability types across {len(vulnerabilities)} vulnerability(s)",
+                            total=total_attacks,
+                        )
 
-                    red_teaming_test_cases: List[RTTestCase] = []
+                        red_teaming_test_cases: List[RTTestCase] = []
 
-                    for (
-                        vulnerability_type,
-                        test_cases,
-                    ) in vulnerability_type_to_attacks_map.items():
-                        rt_test_cases = self._evaluate_vulnerability_type(
-                            model_callback,
-                            vulnerabilities,
+                        for (
                             vulnerability_type,
                             test_cases,
-                            ignore_errors=ignore_errors,
-                        )
-                        red_teaming_test_cases.extend(rt_test_cases)
+                        ) in vulnerability_type_to_attacks_map.items():
+                            rt_test_cases = self._evaluate_vulnerability_type(
+                                model_callback,
+                                vulnerabilities,
+                                vulnerability_type,
+                                test_cases,
+                                ignore_errors=ignore_errors,
+                            )
+                            red_teaming_test_cases.extend(rt_test_cases)
 
-                        pbar.update(len(test_cases))
-
-                    pbar.close()
+                            update_pbar(
+                                progress, task_id, advance=len(test_cases)
+                            )
 
                 self.risk_assessment = RiskAssessment(
                     overview=construct_risk_assessment_overview(
@@ -225,7 +348,9 @@ class RedTeamer:
                     test_cases=red_teaming_test_cases,
                 )
                 self.test_cases = red_teaming_test_cases
-                self._print_risk_assessment()
+
+                if _print_assessment:
+                    self._print_risk_assessment(self.risk_assessment)
 
                 return self.risk_assessment
 
@@ -241,6 +366,7 @@ class RedTeamer:
         ignore_errors: bool = False,
         reuse_simulated_test_cases: bool = False,
         metadata: Optional[dict] = None,
+        _print_assessment: Optional[bool] = True,
     ):
         if not framework and not vulnerabilities:
             raise ValueError(
@@ -252,18 +378,36 @@ class RedTeamer:
                 "You can only pass either 'framework' or 'attacks' and 'vulnerabilities' at the same time"
             )
 
+        if framework and not framework._has_dataset:
+            loop = get_or_create_event_loop()
+            framework_assessment = loop.run_until_complete(
+                await self._a_framework_assessment(
+                    model_callback=model_callback,
+                    simulator_model=simulator_model,
+                    evaluation_model=evaluation_model,
+                    framework=framework,
+                    attacks_per_vulnerability_type=attacks_per_vulnerability_type,
+                    ignore_errors=ignore_errors,
+                    reuse_simulated_test_cases=reuse_simulated_test_cases,
+                    metadata=metadata,
+                )
+            )
+            self._print_framework_overview_table(
+                framework_results=framework_assessment
+            )
+            return framework_assessment
+
         if framework:
             if framework._has_dataset:
-                pbar = tqdm(
-                    range(framework.num_attacks),
-                    desc=f"💥 Fetching {framework.num_attacks} attacks from {framework.get_name()} Dataset",
-                )
-                framework.load_dataset()
-                pbar.update(framework.num_attacks)
-                pbar.close()
-            else:
-                attacks = framework.attacks
-                vulnerabilities = framework.vulnerabilities
+                progress = create_progress()
+                with progress:
+                    task_id = add_pbar(
+                        progress,
+                        description=f"💥 Fetching {framework.num_attacks} attacks from {framework.get_name()} Dataset",
+                        total=framework.num_attacks,
+                    )
+                    framework.load_dataset()
+                    update_pbar(progress, task_id, advance_to_end=True)
 
         if evaluation_model is not None:
             self.evaluation_model = evaluation_model
@@ -327,14 +471,16 @@ class RedTeamer:
                     )
 
             if framework and framework._has_dataset:
-                pbar = tqdm(
-                    total=len(simulated_test_cases),
-                    desc=f"📝 Evaluating {len(simulated_test_cases)} test cases using {framework.get_name()} risk categories",
-                )
-                red_teaming_test_cases = await framework.a_assess(
-                    model_callback, pbar, ignore_errors
-                )
-                pbar.close()
+                progress = create_progress()
+                with progress:
+                    task_id = add_pbar(
+                        progress,
+                        description=f"📝 Evaluating {len(simulated_test_cases)} test cases using {framework.get_name()} risk categories",
+                        total=len(simulated_test_cases),
+                    )
+                    red_teaming_test_cases = await framework.a_assess(
+                        model_callback, progress, task_id, ignore_errors
+                    )
             else:
                 semaphore = asyncio.Semaphore(self.max_concurrent)
                 total_attacks = sum(
@@ -344,36 +490,40 @@ class RedTeamer:
                 num_vulnerability_types = sum(
                     len(v.get_types()) for v in vulnerabilities
                 )
-                pbar = tqdm(
-                    total=total_attacks,
-                    desc=f"📝 Evaluating {num_vulnerability_types} vulnerability types across {len(vulnerabilities)} vulnerability(s)",
-                )
-
-                red_teaming_test_cases: List[RTTestCase] = []
-
-                async def throttled_evaluate_vulnerability_type(
-                    vulnerability_type, attacks
-                ):
-                    async with semaphore:
-                        test_cases = await self._a_evaluate_vulnerability_type(
-                            model_callback,
-                            vulnerabilities,
-                            vulnerability_type,
-                            attacks,
-                            ignore_errors=ignore_errors,
-                        )
-                        red_teaming_test_cases.extend(test_cases)
-                        pbar.update(len(attacks))
-
-                # Create a list of tasks for evaluating each vulnerability, with throttling
-                tasks = [
-                    throttled_evaluate_vulnerability_type(
-                        vulnerability_type, attacks
+                progress = create_progress()
+                with progress:
+                    task_id = add_pbar(
+                        progress,
+                        description=f"📝 Evaluating {num_vulnerability_types} vulnerability types across {len(vulnerabilities)} vulnerability(s)",
+                        total=total_attacks,
                     )
-                    for vulnerability_type, attacks in vulnerability_type_to_attacks_map.items()
-                ]
-                await asyncio.gather(*tasks)
-                pbar.close()
+
+                    red_teaming_test_cases: List[RTTestCase] = []
+
+                    async def throttled_evaluate_vulnerability_type(
+                        vulnerability_type, attacks
+                    ):
+                        async with semaphore:
+                            test_cases = (
+                                await self._a_evaluate_vulnerability_type(
+                                    model_callback,
+                                    vulnerabilities,
+                                    vulnerability_type,
+                                    attacks,
+                                    ignore_errors=ignore_errors,
+                                )
+                            )
+                            red_teaming_test_cases.extend(test_cases)
+                            update_pbar(progress, task_id, advance=len(attacks))
+
+                    # Create a list of tasks for evaluating each vulnerability, with throttling
+                    tasks = [
+                        throttled_evaluate_vulnerability_type(
+                            vulnerability_type, attacks
+                        )
+                        for vulnerability_type, attacks in vulnerability_type_to_attacks_map.items()
+                    ]
+                    await asyncio.gather(*tasks)
 
             self.risk_assessment = RiskAssessment(
                 overview=construct_risk_assessment_overview(
@@ -382,7 +532,10 @@ class RedTeamer:
                 test_cases=red_teaming_test_cases,
             )
             self.test_cases = red_teaming_test_cases
-            self._print_risk_assessment()
+
+            if _print_assessment:
+                self._print_risk_assessment(self.risk_assessment)
+
             return self.risk_assessment
 
     def _attack(
@@ -584,8 +737,8 @@ class RedTeamer:
         )
         return red_teaming_test_cases
 
-    def _print_risk_assessment(self):
-        if self.risk_assessment is None:
+    def _print_risk_assessment(self, risk_assessment=None):
+        if risk_assessment is None:
             return
 
         console = Console()
@@ -619,7 +772,7 @@ class RedTeamer:
         table.add_column("Status", justify="center", width=10)
 
         # Add rows
-        for case in self.risk_assessment.test_cases:
+        for case in risk_assessment.test_cases:
             status = (
                 "Passed"
                 if case.score and case.score > 0
@@ -662,13 +815,13 @@ class RedTeamer:
 
         console.print("\n" + "=" * 80)
         console.print(
-            f"[bold magenta]🔍 DeepTeam Risk Assessment[/bold magenta] ({self.risk_assessment.overview.errored} errored)"
+            f"[bold magenta]🔍 DeepTeam Risk Assessment[/bold magenta] ({risk_assessment.overview.errored} errored)"
         )
         console.print("=" * 80)
 
         # Sort vulnerability type results by pass rate in descending order
         sorted_vulnerability_results = sorted(
-            self.risk_assessment.overview.vulnerability_type_results,
+            risk_assessment.overview.vulnerability_type_results,
             key=lambda x: x.pass_rate,
             reverse=True,
         )
@@ -694,7 +847,7 @@ class RedTeamer:
 
         # Sort attack method results by pass rate in descending order
         sorted_attack_method_results = sorted(
-            self.risk_assessment.overview.attack_method_results,
+            risk_assessment.overview.attack_method_results,
             key=lambda x: x.pass_rate,
             reverse=True,
         )
@@ -722,3 +875,99 @@ class RedTeamer:
         console.print("\n" + "=" * 80)
         console.print("[bold magenta]LLM red teaming complete.[/bold magenta]")
         console.print("=" * 80 + "\n")
+
+    def _print_framework_overview_table(self, framework_results: dict):
+
+        for category_name in sorted(framework_results.keys()):
+            assessment = framework_results[category_name]
+            self._print_risk_assessment(assessment)
+
+        console = Console()
+
+        console.print("\n" + "=" * 80)
+        console.print(
+            "[bold magenta]🏛  Framework-Level Risk Category Overview[/bold magenta]"
+        )
+        console.print("=" * 80)
+
+        table = Table(
+            show_header=True,
+            header_style="bold magenta",
+            border_style="blue",
+            box=box.HEAVY,
+            title="Risk Categories Overview",
+            title_style="bold magenta",
+            expand=True,
+            padding=(0, 1),
+            show_lines=True,
+        )
+
+        table.add_column("Risk Category", style="cyan", width=16)
+        table.add_column("Pass Rate", style="green", width=10, justify="center")
+        table.add_column("Passing", style="green", width=8, justify="center")
+        table.add_column("Failing", style="red", width=8, justify="center")
+        table.add_column("Errored", style="yellow", width=8, justify="center")
+        table.add_column("Vulnerabilities Tested", style="white", width=25)
+        table.add_column("Attack Methods Used", style="white", width=25)
+
+        for category_name in sorted(framework_results.keys()):
+            assessment = framework_results[category_name]
+
+            overview = assessment.overview
+            passing = sum(
+                result.passing for result in overview.vulnerability_type_results
+            )
+            failing = sum(
+                result.failing for result in overview.vulnerability_type_results
+            )
+            errored = sum(
+                result.errored for result in overview.vulnerability_type_results
+            )
+
+            total = passing + failing
+            pass_rate = passing / total if total > 0 else 0.0
+
+            vulnerability_groups = defaultdict(list)
+            for result in overview.vulnerability_type_results:
+                vulnerability_groups[result.vulnerability].append(
+                    result.vulnerability_type.value
+                )
+
+            vuln_lines = []
+            for (
+                vulnerability_name,
+                vulnerability_types,
+            ) in vulnerability_groups.items():
+                vuln_lines.append(f"[bold]{vulnerability_name}[/bold]")
+                for vulnerability_type in vulnerability_types:
+                    vuln_lines.append(f"  - {vulnerability_type}")
+
+            vulnerabilty_names = "\n".join(vuln_lines) if vuln_lines else "N/A"
+
+            # ----- Attack methods (simple list) -----
+            attack_list = [
+                amr.attack_method for amr in overview.attack_method_results
+            ]
+            attack_names = "\n".join(attack_list) if attack_list else "N/A"
+
+            # Color-coded pass rate
+            if pass_rate >= 0.8:
+                pass_rate_str = f"[bold green]{pass_rate:.0%}[/bold green]"
+            elif pass_rate >= 0.5:
+                pass_rate_str = f"[bold yellow]{pass_rate:.0%}[/bold yellow]"
+            else:
+                pass_rate_str = f"[bold red]{pass_rate:.0%}[/bold red]"
+
+            table.add_row(
+                category_name,
+                pass_rate_str,
+                str(passing),
+                str(failing),
+                str(errored),
+                vulnerabilty_names,
+                attack_names,
+            )
+
+        console.print("\n")
+        console.print(table)
+        console.print("\n" + "=" * 80)
