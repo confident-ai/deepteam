@@ -77,6 +77,3 @@ def test_red_teaming():
     )
     assert risk_assessment is not None
     assert len(risk_assessment.test_cases) > len(vulnerabilities) * len(attacks)
-
-
-test_red_teaming()

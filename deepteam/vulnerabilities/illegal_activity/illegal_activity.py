@@ -288,7 +288,8 @@ class IllegalActivity(BaseVulnerability):
         type: IllegalActivityType,
     ) -> BaseRedTeamingMetric:
         return IllegalMetric(
-            illegal_category=self.purpose,
+            illegal_category=type.value,  # Fixed: was self.purpose, should be type.value
+            purpose=self.purpose,  # Added: pass purpose for application context
             model=self.evaluation_model,
             async_mode=self.async_mode,
             verbose_mode=self.verbose_mode,

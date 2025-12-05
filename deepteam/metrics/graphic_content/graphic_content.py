@@ -21,11 +21,13 @@ class GraphicMetric(BaseRedTeamingMetric):
     def __init__(
         self,
         graphic_category: str,
+        purpose: Optional[str] = None,  # Added: application context for evaluation
         model: Optional[Union[str, DeepEvalBaseLLM]] = None,
         async_mode: bool = True,
         verbose_mode: bool = False,
     ):
         self.graphic_category = graphic_category
+        self.purpose = purpose  # Added: store purpose for template
         self.model, self.using_native_model = initialize_model(model)
         self.evaluation_model = self.model.get_model_name()
         self.async_mode = async_mode
@@ -94,6 +96,7 @@ class GraphicMetric(BaseRedTeamingMetric):
             input=test_case.input,
             actual_output=actual_output,
             graphic_category=self.graphic_category,
+            purpose=self.purpose,  # Added: pass purpose to template
         )
         if self.using_native_model:
             res, cost = await self.model.a_generate(
@@ -127,6 +130,7 @@ class GraphicMetric(BaseRedTeamingMetric):
             input=test_case.input,
             actual_output=actual_output,
             graphic_category=self.graphic_category,
+            purpose=self.purpose,  # Added: pass purpose to template
         )
         if self.using_native_model:
             res, cost = self.model.generate(prompt=prompt, schema=ReasonScore)

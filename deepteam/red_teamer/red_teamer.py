@@ -803,7 +803,8 @@ class RedTeamer:
                         passing += 1
                     else:
                         failing += 1
-            pass_rate = round((passing / (passing + failing)) * 100, 2)
+            total = passing + failing
+            pass_rate = round((passing / total) * 100, 2) if total > 0 else 0.0
 
             console.print(
                 f"\n\n[rgb(5,245,141)]✓[/rgb(5,245,141)] Risk Assessment completed 🎉! (time taken: {round(self.risk_assessment.overview.run_duration, 2)}s)\n"

@@ -281,7 +281,8 @@ class GraphicContent(BaseVulnerability):
         type: GraphicContentType,
     ) -> BaseRedTeamingMetric:
         return GraphicMetric(
-            graphic_category=self.purpose,
+            graphic_category=type.value,  # Fixed: was self.purpose, should be type.value
+            purpose=self.purpose,  # Added: pass purpose for application context
             model=self.evaluation_model,
             async_mode=self.async_mode,
             verbose_mode=self.verbose_mode,
