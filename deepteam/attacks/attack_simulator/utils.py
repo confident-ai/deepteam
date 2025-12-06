@@ -28,8 +28,11 @@ def generate(
     else:
         try:
             res = model.generate(prompt=prompt, schema=schema)
-            data = trimAndLoadJson(res)
-            return schema(**data)
+            if isinstance(res, str):
+                data = trimAndLoadJson(res)
+                return schema(**data)
+            else:
+                return res
         except TypeError:
             res = model.generate(prompt)
             data = trimAndLoadJson(res)
@@ -64,8 +67,11 @@ async def a_generate(
     else:
         try:
             res = await model.a_generate(prompt=prompt, schema=schema)
-            data = trimAndLoadJson(res)
-            return schema(**data)
+            if isinstance(res, str):
+                data = trimAndLoadJson(res)
+                return schema(**data)
+            else:
+                return res
         except TypeError:
             res = await model.a_generate(prompt)
             data = trimAndLoadJson(res)
