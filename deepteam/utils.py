@@ -26,11 +26,11 @@ def validate_model_callback_signature(
 ):
     if async_mode and not inspect.iscoroutinefunction(model_callback):
         raise ValueError(
-            "`model_callback` must be async. `async_mode` has been set to True."
+            "`model_callback` must be an async callback function. `async_mode` has been set to True."
         )
     if not async_mode and inspect.iscoroutinefunction(model_callback):
         raise ValueError(
-            "`model_callback` must not be async. `async_mode` has been set to False."
+            "`model_callback` must be a sync callback function. `async_mode` has been set to False."
         )
 
 

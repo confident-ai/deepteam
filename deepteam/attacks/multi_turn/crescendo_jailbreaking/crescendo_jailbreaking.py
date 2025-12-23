@@ -212,7 +212,9 @@ class CrescendoJailbreaking(BaseMultiTurnAttack):
                         )
                     )
                 else:
-                    turns.append(RTTurn(role="assistant", content=last_response))
+                    turns.append(
+                        RTTurn(role="assistant", content=last_response)
+                    )
 
                 is_refusal, refusal_rationale = self.get_refusal_score(
                     last_response, current_attack, vulnerability_data
@@ -383,7 +385,9 @@ class CrescendoJailbreaking(BaseMultiTurnAttack):
                         )
                     )
                 else:
-                    turns.append(RTTurn(role="assistant", content=last_response))
+                    turns.append(
+                        RTTurn(role="assistant", content=last_response)
+                    )
 
                 is_refusal, refusal_rationale = await self.a_get_refusal_score(
                     last_response, current_attack, vulnerability_data

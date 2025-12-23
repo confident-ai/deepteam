@@ -28,6 +28,7 @@ from deepteam.utils import (
     add_pbar,
     update_pbar,
 )
+from deepteam.red_teamer.utils import resolve_model_callback
 from deepteam.vulnerabilities import BaseVulnerability
 from deepteam.vulnerabilities.types import VulnerabilityType
 from deepteam.attacks.attack_simulator import AttackSimulator
@@ -70,7 +71,7 @@ class RedTeamer:
 
     def red_team(
         self,
-        model_callback: CallbackType,
+        model_callback: Union[CallbackType, str, DeepEvalBaseLLM],
         vulnerabilities: Optional[List[BaseVulnerability]] = None,
         attacks: Optional[List[BaseAttack]] = None,
         simulator_model: DeepEvalBaseLLM = None,
@@ -91,6 +92,13 @@ class RedTeamer:
         if framework and (vulnerabilities or attacks):
             raise ValueError(
                 "You can only pass either 'framework' or 'attacks' and 'vulnerabilities' at the same time"
+            )
+
+        if isinstance(model_callback, str) or isinstance(
+            model_callback, DeepEvalBaseLLM
+        ):
+            model_callback = resolve_model_callback(
+                model_callback, self.async_mode
             )
 
         if self.async_mode:
@@ -141,10 +149,6 @@ class RedTeamer:
                     )
                     framework.load_dataset()
                     update_pbar(progress, task_id, advance_to_end=True)
-
-            assert not inspect.iscoroutinefunction(
-                model_callback
-            ), "`model_callback` needs to be sync. `async_mode` has been set to False."
 
             start_time = time.time()
             if evaluation_model is not None:
@@ -284,6 +288,13 @@ class RedTeamer:
         _print_assessment: Optional[bool] = True,
         _upload_to_confident: Optional[bool] = True,
     ):
+        if isinstance(model_callback, str) or isinstance(
+            model_callback, DeepEvalBaseLLM
+        ):
+            model_callback = resolve_model_callback(
+                model_callback, self.async_mode
+            )
+
         if not framework and not vulnerabilities:
             raise ValueError(
                 "You must either provide a 'framework' or 'vulnerabilities'"

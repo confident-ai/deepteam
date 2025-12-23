@@ -14,6 +14,7 @@ from deepeval.models import (
     AnthropicModel,
     AmazonBedrockModel,
     DeepEvalBaseLLM,
+    # PortkeyModel,
 )
 from deepeval.metrics.utils import initialize_model
 
@@ -102,6 +103,14 @@ def load_model(spec: Union[str, Dict[str, Any], None]) -> DeepEvalBaseLLM:
 
     if provider == "anthropic":
         return AnthropicModel(model=model_name, temperature=temperature)
+
+    # if provider == "portkey":
+    #     return PortkeyModel(
+    #         model=model_name,
+    #         api_key=spec.get("api_key"),
+    #         base_url=spec.get("base_url"),
+    #         provider=spec.get("provider_name"),
+    #     )
 
     if provider == "bedrock":
         return AmazonBedrockModel(

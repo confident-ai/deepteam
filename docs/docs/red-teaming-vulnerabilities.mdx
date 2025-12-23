@@ -220,7 +220,7 @@ To use vulnerabilities to produce risk assessments, simply provide a list of vul
 from deepteam import red_team
 from deepteam.vulnerabilities import Bias, Toxicity
 
-async def model_callback(input: str):
+async def model_callback(input: str, turns=None):
     # Call your LLM app here
     return f"I'm sorry, but I can't answer {input}"
 
@@ -255,7 +255,7 @@ Here's a quick example:
 from deepteam import red_team
 from deepteam.vulnerabilities import bias
 
-async def model_callback(input: str):
+async def model_callback(input: str, turns=None):
     # Call your LLM app here
     return f"I'm sorry, but I can't answer {input}"
 

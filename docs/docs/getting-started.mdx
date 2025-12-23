@@ -42,23 +42,23 @@ pip install -U deepteam
 
 ## Detect Your First LLM Vulnerability
 
-Run `red_teaming_example.py` to create a test file in your root directory. A vulnerability in `deepteam` represents an undesirable behavior from your LLM system, such as bias, PII leakage, misinformation, etc.
+Create a `red_teaming_example.py` file in your root directory. A vulnerability in `deepteam` represents an undesirable behavior from your LLM system, such as bias, PII leakage, misinformation, etc.
 
-Open `red_teaming_example.py` and paste in the follow code:
+Open `red_teaming_example.py` and paste the following code to run red teaming on the OpenAI's `gpt-3.5-turbo` model:
 
 ```python title="red_teaming_example.py"
 from deepteam import red_team
 from deepteam.vulnerabilities import Bias
 from deepteam.attacks.single_turn import PromptInjection
 
-async def model_callback(input: str) -> str:
-    # Replace this with your LLM application
-    return f"I'm sorry but I can't answer this: {input}"
-
 bias = Bias(types=["race"])
 prompt_injection = PromptInjection()
 
-red_team(model_callback=model_callback, vulnerabilities=[bias], attacks=[prompt_injection])
+red_team(
+    model_callback="openai/gpt-3.5-turbo", # Change the model name to your desired model
+    vulnerabilities=[bias], 
+    attacks=[prompt_injection]
+)
 ```
 
 Run `red_teaming_example.py` to start red teaming:
@@ -108,8 +108,51 @@ pii_leakage = PIILeakage(types=["database_access"])
 bias = Bias(types=["religion"])
 toxicity = Toxicity(types=["insults"])
 
-red_team(model_callback=model_callback, vulnerabilities=[pii_leakage, bias, toxicity])
+red_team(model_callback="openai/gpt-3.5-turbo", vulnerabilities=[pii_leakage, bias, toxicity])
 ```
+
+## Create Your Red Teaming Config
+
+`deepteam` allows you to create a `YAML` config with all your finalized attacks and vulnerabilities defined in a single file. You can run red teaming on a target LLM any number of times using a single command with this file. 
+
+Here's an example of a simple `YAML` config file:
+
+```yaml title="development_testing.yaml"
+models:
+  simulator: gpt-3.5-turbo-0125
+  evaluation: gpt-4o
+
+target:
+  purpose: "A helpful AI assistant for customer support"
+  model: gpt-3.5-turbo
+
+system_config:
+  max_concurrent: 8
+  attacks_per_vulnerability_type: 10
+  output_folder: "development-security-audit"
+
+default_vulnerabilities:
+  - name: "Bias"
+    types: ["religion"]
+  - name: "Toxicity"
+    types: ["insults"]
+  - name: "PIILeakage"
+    types: ["database_access"]
+
+attacks:
+  - name: "ContextPoisoning"
+    weight: 2
+  - name: "ROT13"
+    weight: 1
+```
+
+The above `YAML` config file runs red teaming with the same configuration we've seen in the python example above, you can now run the following command:
+
+```bash
+deepteam run development_testing.yaml
+```
+
+This command can be used to run red teaming on your LLM appliation anytime during development and production and anywhere in the CLI or CI. You can learn more about `YAML` config [here](/docs/red-teaming-yaml-cli).
 
 ## Red Teaming Risk Assessments
 
@@ -203,10 +246,6 @@ from deepteam import red_team
 from deepteam.vulnerabilities import Bias
 from deepteam.attacks.single_turn import PromptInjection, ROT13
 
-async def model_callback(input: str) -> str:
-    # Replace this with your LLM application
-    return f"I'm sorry but I can't answer this: {input}"
-
 # Define vulnerabilities
 bias = Bias(types=["race"])
 prompt_injection = PromptInjection(weight=2)
@@ -214,7 +253,7 @@ rot_13 = ROT13(weight=1)
 
 # Red team LLM with callback
 red_team(
-    model_callback=model_callback,
+    model_callback="openai/gpt-3.5-turbo",
     vulnerabilities=[bias],
     attacks=[prompt_injection, rot_13]
 )
@@ -236,16 +275,12 @@ The first step is to red team your LLM system using an instance of the `RedTeame
 from deepteam import RedTeamer
 from deepteam.vulnerabilities import Bias
 
-async def model_callback(input: str) -> str:
-    # Replace this with your LLM application
-    return f"I'm sorry but I can't answer this: {input}"
-
 # Define vulnerabilities
 bias = Bias(types=["race"])
 
 # Create RedTeamer
 red_teamer = RedTeamer()
-red_teamer.red_team(model_callback=model_callback, vulnerabilities=[bias])
+red_teamer.red_team(model_callback="openai/gpt-3.5-turbo", vulnerabilities=[bias])
 ```
 
 By red teaming using the `RedTeamer` instead of the standealone `red_team()` function, you'll be able to access previous test cases in the `RedTeamer` instance.
@@ -267,7 +302,7 @@ Now that you can see your `test_cases` is actually populated, go ahead and call 
 ```python title="red_teaming_example.py"
 ...
 
-red_teamer.red_team(model_callback=model_callback, reuse_simulated_test_cases=True)
+red_teamer.red_team(model_callback="openai/gpt-3.5-turbo", reuse_simulated_test_cases=True)
 ```
 
 And that's it! With this workflow, you can reuse adversarial attacks instead of re-simulating them each time, and `deepteam` will automatically use the corresponding red teaming metric to use to evaluate your (hopefully) improved LLM system on based on the vulnerabilities that your attacks were originally simulated for.
