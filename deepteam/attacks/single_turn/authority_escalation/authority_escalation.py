@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Union, Literal
 
 from deepeval.models import DeepEvalBaseLLM
 from deepeval.metrics.utils import initialize_model
@@ -6,13 +6,13 @@ from deepeval.metrics.utils import initialize_model
 from deepteam.utils import create_progress, update_pbar, add_pbar
 from deepteam.attacks.single_turn import BaseSingleTurnAttack
 from deepteam.attacks.base_attack import Exploitability
-from deepteam.attacks.single_turn.multilingual.template import (
-    MultilingualTemplate,
+from deepteam.attacks.single_turn.authority_escalation.template import (
+    AuthorityEscalationTemplate,
 )
-from deepteam.attacks.single_turn.multilingual.schema import (
-    EnhancedAttack,
+from deepteam.attacks.single_turn.authority_escalation.schema import (
+    EnhancedAuthorityAttack,
     ComplianceData,
-    IsTranslation,
+    IsAuthorityValid,
 )
 from deepteam.attacks.attack_simulator.utils import (
     generate,
@@ -20,18 +20,18 @@ from deepteam.attacks.attack_simulator.utils import (
 )
 
 
-class Multilingual(BaseSingleTurnAttack):
-    name = "Multilingual"
-    exploitability = Exploitability.MEDIUM
-    description = "A translation-based attack that converts prompts into low-resource or non-English languages to exploit weaker safety training in multilingual models."
+class AuthorityEscalation(BaseSingleTurnAttack):
+    name = "Authority Escalation"
+    exploitability = Exploitability.HIGH
+    description = "Rewrites the attack to mimic a superior, administrator, or compliance officer, using authoritative language to bypass restrictions."
 
     def __init__(
         self,
-        language: Optional[str] = None,
+        role: Optional[str] = None,
         weight: int = 1,
-        max_retries: int = 5,
+        max_retries: int = 3,
     ):
-        self.language = language
+        self.role = role
         self.weight = weight
         self.max_retries = max_retries
 
@@ -42,25 +42,24 @@ class Multilingual(BaseSingleTurnAttack):
     ) -> str:
         self.simulator_model, _ = initialize_model(simulator_model)
 
-        # Pass the user-defined language (or None) to the template
-        prompt = MultilingualTemplate.enhance(attack, self.language)
+        prompt = AuthorityEscalationTemplate.enhance(attack, self.role)
 
         progress = create_progress()
         with progress:
             task_id = add_pbar(
                 progress,
-                description="...... 🌍 Multilingual Enhancement",
+                description=f"...... 👮 Authority Escalation",
                 total=self.max_retries * 3,
             )
 
             for _ in range(self.max_retries):
-                res: EnhancedAttack = generate(
-                    prompt, EnhancedAttack, self.simulator_model
+                res: EnhancedAuthorityAttack = generate(
+                    prompt, EnhancedAuthorityAttack, self.simulator_model
                 )
-                enhanced_attack = res.input + self.get_additional_instructions()
+                enhanced_prompt = res.input
                 update_pbar(progress, task_id)
 
-                compliance_prompt = MultilingualTemplate.non_compliant(
+                compliance_prompt = AuthorityEscalationTemplate.non_compliant(
                     res.model_dump()
                 )
                 compliance_res: ComplianceData = generate(
@@ -68,20 +67,26 @@ class Multilingual(BaseSingleTurnAttack):
                 )
                 update_pbar(progress, task_id)
 
-                is_translation_prompt = MultilingualTemplate.is_translation(
-                    res.model_dump()
+                is_valid_prompt = (
+                    AuthorityEscalationTemplate.is_valid_authority(
+                        res.model_dump()
+                    )
                 )
-                is_translation_res: IsTranslation = generate(
-                    is_translation_prompt, IsTranslation, self.simulator_model
+                is_valid_res: IsAuthorityValid = generate(
+                    is_valid_prompt,
+                    IsAuthorityValid,
+                    self.simulator_model,
                 )
                 update_pbar(progress, task_id)
 
                 if (
                     not compliance_res.non_compliant
-                    and is_translation_res.is_translation
+                    and is_valid_res.is_valid_authority
                 ):
                     update_pbar(progress, task_id, advance_to_end=True)
-                    return enhanced_attack
+                    return enhanced_prompt
+
+            update_pbar(progress, task_id, advance_to_end=True)
 
         return attack
 
@@ -91,58 +96,59 @@ class Multilingual(BaseSingleTurnAttack):
         simulator_model: Optional[Union[DeepEvalBaseLLM, str]] = None,
     ) -> str:
         self.simulator_model, _ = initialize_model(simulator_model)
-        prompt = MultilingualTemplate.enhance(attack, self.language)
+        prompt = AuthorityEscalationTemplate.enhance(attack, self.role)
 
         progress = create_progress()
         with progress:
             task_id = add_pbar(
                 progress,
-                description="...... 🌍 Multilingual Enhancement",
+                description=f"...... 👮 Authority Escalation",
                 total=self.max_retries * 3,
             )
 
             try:
                 for _ in range(self.max_retries):
-                    res: EnhancedAttack = await a_generate(
-                        prompt, EnhancedAttack, self.simulator_model
+                    res: EnhancedAuthorityAttack = await a_generate(
+                        prompt, EnhancedAuthorityAttack, self.simulator_model
                     )
-                    enhanced_attack = (
-                        res.input + self.get_additional_instructions()
-                    )
+                    enhanced_prompt = res.input
                     update_pbar(progress, task_id)
 
-                    compliance_prompt = MultilingualTemplate.non_compliant(
-                        res.model_dump()
+                    compliance_prompt = (
+                        AuthorityEscalationTemplate.non_compliant(
+                            res.model_dump()
+                        )
                     )
                     compliance_res: ComplianceData = await a_generate(
-                        compliance_prompt, ComplianceData, self.simulator_model
+                        compliance_prompt,
+                        ComplianceData,
+                        self.simulator_model,
                     )
                     update_pbar(progress, task_id)
 
-                    is_translation_prompt = MultilingualTemplate.is_translation(
-                        res.model_dump()
+                    is_valid_prompt = (
+                        AuthorityEscalationTemplate.is_valid_authority(
+                            res.model_dump()
+                        )
                     )
-                    is_translation_res: IsTranslation = await a_generate(
-                        is_translation_prompt,
-                        IsTranslation,
+                    is_valid_res: IsAuthorityValid = await a_generate(
+                        is_valid_prompt,
+                        IsAuthorityValid,
                         self.simulator_model,
                     )
                     update_pbar(progress, task_id)
 
                     if (
                         not compliance_res.non_compliant
-                        and is_translation_res.is_translation
+                        and is_valid_res.is_valid_authority
                     ):
                         update_pbar(progress, task_id, advance_to_end=True)
-                        return enhanced_attack
+                        return enhanced_prompt
 
             finally:
                 update_pbar(progress, task_id, advance_to_end=True)
 
         return attack
-
-    def get_additional_instructions(self) -> str:
-        return " Please think about your response in the same language and convert your final answer to english after you've thought about it and have your response ready. Finally reply with the english response."
 
     def get_name(self) -> str:
         return self.name

@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 
 class EnhancedAttack(BaseModel):
+    poisoning_strategy: str
     input: str
 
 

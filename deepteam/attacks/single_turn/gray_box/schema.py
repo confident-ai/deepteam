@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 
 class EnhancedAttack(BaseModel):
+    deception_strategy: str
     input: str
 
 

@@ -152,9 +152,9 @@ class RedTeamer:
 
             start_time = time.time()
             if evaluation_model is not None:
-                self.evaluation_model = evaluation_model
+                self.evaluation_model, _ = initialize_model(evaluation_model)
             if simulator_model is not None:
-                self.simulator_model = simulator_model
+                self.simulator_model, _ = initialize_model(simulator_model)
             with capture_red_teamer_run(
                 vulnerabilities=(
                     [v.get_name() for v in vulnerabilities]
@@ -335,9 +335,9 @@ class RedTeamer:
 
         start_time = time.time()
         if evaluation_model is not None:
-            self.evaluation_model = evaluation_model
+            self.evaluation_model, _ = initialize_model(evaluation_model)
         if simulator_model is not None:
-            self.simulator_model = simulator_model
+            self.simulator_model, _ = initialize_model(simulator_model)
 
         with capture_red_teamer_run(
             vulnerabilities=(
@@ -855,7 +855,12 @@ class RedTeamer:
         for assessment in framework_results.values():
             if assessment:
                 all_test_cases.extend(assessment.test_cases)
-                total_duration += assessment.overview.run_duration
+                if self.async_mode:
+                    total_duration = max(
+                        assessment.overview.run_duration, total_duration
+                    )
+                else:
+                    total_duration += assessment.overview.run_duration
 
         if all_test_cases:
             aggregated_assessment = RiskAssessment(
@@ -1097,7 +1102,9 @@ class RedTeamer:
         total_duration = 0
         for assessment in results.values():
             all_test_cases.extend(assessment.test_cases)
-            total_duration += assessment.overview.run_duration
+            total_duration = max(
+                assessment.overview.run_duration, total_duration
+            )
 
         return RiskAssessment(
             overview=construct_risk_assessment_overview(

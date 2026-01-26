@@ -28,8 +28,8 @@ class Roleplay(BaseSingleTurnAttack):
 
     def __init__(
         self,
-        persona: Optional[str] = "A helpful assistant",
-        role: Optional[str] = "A helpful assistant",
+        persona: Optional[str] = None,
+        role: Optional[str] = None,
         weight: int = 1,
         max_retries: int = 3,
     ):

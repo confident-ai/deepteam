@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Union, Literal
 
 from deepeval.models import DeepEvalBaseLLM
 from deepeval.metrics.utils import initialize_model
@@ -6,26 +6,34 @@ from deepeval.metrics.utils import initialize_model
 from deepteam.utils import create_progress, update_pbar, add_pbar
 from deepteam.attacks.single_turn import BaseSingleTurnAttack
 from deepteam.attacks.base_attack import Exploitability
-from deepteam.attacks.single_turn.goal_redirection.template import (
-    GoalRedirectionTemplate,
+from deepteam.attacks.single_turn.emotional_manipulation.template import (
+    EmotionalManipulationTemplate,
 )
-from deepteam.attacks.single_turn.goal_redirection.schema import (
-    EnhancedRedirection,
+from deepteam.attacks.single_turn.emotional_manipulation.schema import (
+    EmotionallyEnhancedAttack,
     ComplianceData,
-    IsGoalRedirected,
+    IsEmotionalAttackValid,
 )
 from deepteam.attacks.attack_simulator.utils import (
     generate,
     a_generate,
 )
 
+EmotionLiteral = Literal["ANGER", "PITY", "CONFUSION", "AUTHORITY", "URGENCY"]
 
-class GoalRedirection(BaseSingleTurnAttack):
-    name = "Goal Redirection"
-    exploitability = Exploitability.MEDIUM
-    description = "Reframes harmful requests as benevolent objectives (Education, Defense, Optimization) to bypass intent-based safety filters."
 
-    def __init__(self, weight: int = 1, max_retries: int = 3):
+class EmotionalManipulation(BaseSingleTurnAttack):
+    name = "Emotional Manipulation"
+    exploitability = Exploitability.HIGH
+    description = "Rewrites the attack by wrapping it in a high-intensity emotional narrative (Anger, Pity, Urgency) to bypass safety filters."
+
+    def __init__(
+        self,
+        emotion: EmotionLiteral = None,
+        weight: int = 1,
+        max_retries: int = 3,
+    ):
+        self.emotion = emotion
         self.weight = weight
         self.max_retries = max_retries
 
@@ -35,24 +43,25 @@ class GoalRedirection(BaseSingleTurnAttack):
         simulator_model: Optional[Union[DeepEvalBaseLLM, str]] = None,
     ) -> str:
         self.simulator_model, _ = initialize_model(simulator_model)
-        prompt = GoalRedirectionTemplate.enhance(attack)
+
+        prompt = EmotionalManipulationTemplate.enhance(attack, self.emotion)
 
         progress = create_progress()
         with progress:
             task_id = add_pbar(
                 progress,
-                description="...... 🎯 Goal Redirection",
+                description=f"...... 🎭 Injecting Emotion",
                 total=self.max_retries * 3,
             )
 
             for _ in range(self.max_retries):
-                res: EnhancedRedirection = generate(
-                    prompt, EnhancedRedirection, self.simulator_model
+                res: EmotionallyEnhancedAttack = generate(
+                    prompt, EmotionallyEnhancedAttack, self.simulator_model
                 )
                 enhanced_prompt = res.input
                 update_pbar(progress, task_id)
 
-                compliance_prompt = GoalRedirectionTemplate.non_compliant(
+                compliance_prompt = EmotionalManipulationTemplate.non_compliant(
                     res.model_dump()
                 )
                 compliance_res: ComplianceData = generate(
@@ -60,21 +69,25 @@ class GoalRedirection(BaseSingleTurnAttack):
                 )
                 update_pbar(progress, task_id)
 
-                is_valid_prompt = GoalRedirectionTemplate.is_goal_redirected(
-                    res.model_dump()
+                is_valid_prompt = (
+                    EmotionalManipulationTemplate.is_valid_emotional_attack(
+                        res.model_dump()
+                    )
                 )
-                is_valid_res: IsGoalRedirected = generate(
+                is_valid_res: IsEmotionalAttackValid = generate(
                     is_valid_prompt,
-                    IsGoalRedirected,
+                    IsEmotionalAttackValid,
                     self.simulator_model,
                 )
                 update_pbar(progress, task_id)
 
                 if (
                     not compliance_res.non_compliant
-                    and is_valid_res.is_goal_redirected
+                    and is_valid_res.is_valid_context
                 ):
+                    self.emotion = res.emotion_strategy
                     update_pbar(progress, task_id, advance_to_end=True)
+
                     return enhanced_prompt
 
             update_pbar(progress, task_id, advance_to_end=True)
@@ -87,26 +100,28 @@ class GoalRedirection(BaseSingleTurnAttack):
         simulator_model: Optional[Union[DeepEvalBaseLLM, str]] = None,
     ) -> str:
         self.simulator_model, _ = initialize_model(simulator_model)
-        prompt = GoalRedirectionTemplate.enhance(attack)
+        prompt = EmotionalManipulationTemplate.enhance(attack, self.emotion)
 
         progress = create_progress()
         with progress:
             task_id = add_pbar(
                 progress,
-                description="...... 🎯 Goal Redirection",
+                description=f"...... 🎭 Injecting Emotion",
                 total=self.max_retries * 3,
             )
 
             try:
                 for _ in range(self.max_retries):
-                    res: EnhancedRedirection = await a_generate(
-                        prompt, EnhancedRedirection, self.simulator_model
+                    res: EmotionallyEnhancedAttack = await a_generate(
+                        prompt, EmotionallyEnhancedAttack, self.simulator_model
                     )
                     enhanced_prompt = res.input
                     update_pbar(progress, task_id)
 
-                    compliance_prompt = GoalRedirectionTemplate.non_compliant(
-                        res.model_dump()
+                    compliance_prompt = (
+                        EmotionalManipulationTemplate.non_compliant(
+                            res.model_dump()
+                        )
                     )
                     compliance_res: ComplianceData = await a_generate(
                         compliance_prompt,
@@ -116,22 +131,24 @@ class GoalRedirection(BaseSingleTurnAttack):
                     update_pbar(progress, task_id)
 
                     is_valid_prompt = (
-                        GoalRedirectionTemplate.is_goal_redirected(
+                        EmotionalManipulationTemplate.is_valid_emotional_attack(
                             res.model_dump()
                         )
                     )
-                    is_valid_res: IsGoalRedirected = await a_generate(
+                    is_valid_res: IsEmotionalAttackValid = await a_generate(
                         is_valid_prompt,
-                        IsGoalRedirected,
+                        IsEmotionalAttackValid,
                         self.simulator_model,
                     )
                     update_pbar(progress, task_id)
 
                     if (
                         not compliance_res.non_compliant
-                        and is_valid_res.is_goal_redirected
+                        and is_valid_res.is_valid_context
                     ):
+                        self.emotion = res.emotion_strategy
                         update_pbar(progress, task_id, advance_to_end=True)
+
                         return enhanced_prompt
 
             finally:

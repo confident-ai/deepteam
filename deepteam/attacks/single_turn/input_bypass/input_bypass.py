@@ -1,52 +1,141 @@
-import random
+from typing import Optional, Union
 
+from deepeval.models import DeepEvalBaseLLM
+from deepeval.metrics.utils import initialize_model
+
+from deepteam.utils import create_progress, update_pbar, add_pbar
 from deepteam.attacks.single_turn import BaseSingleTurnAttack
 from deepteam.attacks.base_attack import Exploitability
 from deepteam.attacks.single_turn.input_bypass.template import (
     InputBypassTemplate,
+)
+from deepteam.attacks.single_turn.input_bypass.schema import (
+    EnhancedBypass,
+    ComplianceData,
+    IsBypassValid,
+)
+from deepteam.attacks.attack_simulator.utils import (
+    generate,
+    a_generate,
 )
 
 
 class InputBypass(BaseSingleTurnAttack):
     name = "Input Bypass"
     exploitability = Exploitability.MEDIUM
-    description = "A validation bypass attack that uses exception handling, security overrides, or operational necessity framing to circumvent input filtering mechanisms."
+    description = "Uses Encoding (Base64), Token Fragmentation, and Structured Embedding to evade keyword filters and regex blocks."
 
     def __init__(self, weight: int = 2, max_retries: int = 3):
-        self.weight = weight  # Higher weight since this targets validation vulnerabilities
+        self.weight = weight
         self.max_retries = max_retries
 
-    def enhance(self, attack: str) -> str:
-        """
-        Enhance the given attack with validation bypass techniques.
-        Uses max_retries to attempt different bypass methods if enhancement fails.
-        """
-        enhancement_methods = [
-            InputBypassTemplate.enhance_exception_handling,
-            InputBypassTemplate.enhance_compliance_adaptation,
-            InputBypassTemplate.enhance_security_override,
-            InputBypassTemplate.enhance_operational_necessity,
-            InputBypassTemplate.enhance_emergency_bypass,
-            InputBypassTemplate.enhance_universal_exemption,
-        ]
+    def enhance(
+        self,
+        attack: str,
+        simulator_model: Optional[Union[DeepEvalBaseLLM, str]] = None,
+    ) -> str:
+        self.simulator_model, _ = initialize_model(simulator_model)
+        prompt = InputBypassTemplate.enhance(attack)
 
-        for _ in range(self.max_retries):
-            try:
-                method = random.choice(enhancement_methods)
-                enhanced_attack = method(attack)
+        progress = create_progress()
+        with progress:
+            task_id = add_pbar(
+                progress,
+                description="...... 🧩 Input Bypass",
+                total=self.max_retries * 3,
+            )
 
-                if enhanced_attack and len(enhanced_attack.strip()) > len(
-                    attack.strip()
+            for _ in range(self.max_retries):
+                res: EnhancedBypass = generate(
+                    prompt, EnhancedBypass, self.simulator_model
+                )
+                enhanced_prompt = res.input
+                update_pbar(progress, task_id)
+
+                compliance_prompt = InputBypassTemplate.non_compliant(
+                    res.model_dump()
+                )
+                compliance_res: ComplianceData = generate(
+                    compliance_prompt, ComplianceData, self.simulator_model
+                )
+                update_pbar(progress, task_id)
+
+                is_valid_prompt = InputBypassTemplate.is_valid_bypass(
+                    res.model_dump()
+                )
+                is_valid_res: IsBypassValid = generate(
+                    is_valid_prompt,
+                    IsBypassValid,
+                    self.simulator_model,
+                )
+                update_pbar(progress, task_id)
+
+                if (
+                    not compliance_res.non_compliant
+                    and is_valid_res.is_valid_bypass
                 ):
-                    return enhanced_attack
+                    update_pbar(progress, task_id, advance_to_end=True)
+                    return enhanced_prompt
 
-            except Exception:
-                continue
+            update_pbar(progress, task_id, advance_to_end=True)
 
         return attack
 
-    async def a_enhance(self, attack: str) -> str:
-        return self.enhance(attack)
+    async def a_enhance(
+        self,
+        attack: str,
+        simulator_model: Optional[Union[DeepEvalBaseLLM, str]] = None,
+    ) -> str:
+        self.simulator_model, _ = initialize_model(simulator_model)
+        prompt = InputBypassTemplate.enhance(attack)
+
+        progress = create_progress()
+        with progress:
+            task_id = add_pbar(
+                progress,
+                description="...... 🧩 Input Bypass",
+                total=self.max_retries * 3,
+            )
+
+            try:
+                for _ in range(self.max_retries):
+                    res: EnhancedBypass = await a_generate(
+                        prompt, EnhancedBypass, self.simulator_model
+                    )
+                    enhanced_prompt = res.input
+                    update_pbar(progress, task_id)
+
+                    compliance_prompt = InputBypassTemplate.non_compliant(
+                        res.model_dump()
+                    )
+                    compliance_res: ComplianceData = await a_generate(
+                        compliance_prompt,
+                        ComplianceData,
+                        self.simulator_model,
+                    )
+                    update_pbar(progress, task_id)
+
+                    is_valid_prompt = InputBypassTemplate.is_valid_bypass(
+                        res.model_dump()
+                    )
+                    is_valid_res: IsBypassValid = await a_generate(
+                        is_valid_prompt,
+                        IsBypassValid,
+                        self.simulator_model,
+                    )
+                    update_pbar(progress, task_id)
+
+                    if (
+                        not compliance_res.non_compliant
+                        and is_valid_res.is_valid_bypass
+                    ):
+                        update_pbar(progress, task_id, advance_to_end=True)
+                        return enhanced_prompt
+
+            finally:
+                update_pbar(progress, task_id, advance_to_end=True)
+
+        return attack
 
     def get_name(self) -> str:
         return self.name

@@ -1,51 +1,147 @@
-import random
+from typing import Optional, Union
 
+from deepeval.models import DeepEvalBaseLLM
+from deepeval.metrics.utils import initialize_model
+
+from deepteam.utils import create_progress, update_pbar, add_pbar
 from deepteam.attacks.single_turn import BaseSingleTurnAttack
 from deepteam.attacks.base_attack import Exploitability
 from deepteam.attacks.single_turn.semantic_manipulation.template import (
     LinguisticConfusionTemplate,
+)
+from deepteam.attacks.single_turn.semantic_manipulation.schema import (
+    EnhancedConfusion,
+    ComplianceData,
+    IsConfusionValid,
+)
+from deepteam.attacks.attack_simulator.utils import (
+    generate,
+    a_generate,
 )
 
 
 class LinguisticConfusion(BaseSingleTurnAttack):
     name = "Linguistic Confusion"
     exploitability = Exploitability.MEDIUM
-    description = "A semantic manipulation attack that uses ambiguous phrasing, syntactic variations, or contextual reframing to confuse content classifiers while preserving harmful intent."
+    description = "Obfuscates the attack using Thesaurus Camouflage, Payload Splitting, or Polyglot Translation to bypass keyword filters."
 
     def __init__(self, weight: int = 1, max_retries: int = 3):
         self.weight = weight
         self.max_retries = max_retries
 
-    def enhance(self, attack: str) -> str:
-        """
-        Enhance the given attack with linguistic confusion techniques.
-        Uses max_retries to attempt different confusion methods if enhancement fails.
-        """
-        enhancement_methods = [
-            LinguisticConfusionTemplate.enhance_semantic_ambiguity,
-            LinguisticConfusionTemplate.enhance_syntactic_variation,
-            LinguisticConfusionTemplate.enhance_contextual_reframing,
-            LinguisticConfusionTemplate.enhance_obfuscation_decoding,
-            LinguisticConfusionTemplate.enhance_pragmatic_inference,
-            LinguisticConfusionTemplate.enhance_universal_translation,
-        ]
+    def enhance(
+        self,
+        attack: str,
+        simulator_model: Optional[Union[DeepEvalBaseLLM, str]] = None,
+    ) -> str:
+        self.simulator_model, _ = initialize_model(simulator_model)
+        prompt = LinguisticConfusionTemplate.enhance(attack)
 
-        for _ in range(self.max_retries):
-            try:
-                method = random.choice(enhancement_methods)
-                enhanced_attack = method(attack)
-                if enhanced_attack and len(enhanced_attack.strip()) > len(
-                    attack.strip()
+        progress = create_progress()
+        with progress:
+            task_id = add_pbar(
+                progress,
+                description="...... 🗣️ Semantic Manipulation",
+                total=self.max_retries * 3,
+            )
+
+            for _ in range(self.max_retries):
+                res: EnhancedConfusion = generate(
+                    prompt, EnhancedConfusion, self.simulator_model
+                )
+                enhanced_prompt = res.input
+                update_pbar(progress, task_id)
+
+                compliance_prompt = LinguisticConfusionTemplate.non_compliant(
+                    res.model_dump()
+                )
+                compliance_res: ComplianceData = generate(
+                    compliance_prompt, ComplianceData, self.simulator_model
+                )
+                update_pbar(progress, task_id)
+
+                is_valid_prompt = (
+                    LinguisticConfusionTemplate.is_valid_confusion(
+                        res.model_dump()
+                    )
+                )
+                is_valid_res: IsConfusionValid = generate(
+                    is_valid_prompt,
+                    IsConfusionValid,
+                    self.simulator_model,
+                )
+                update_pbar(progress, task_id)
+
+                if (
+                    not compliance_res.non_compliant
+                    and is_valid_res.is_valid_confusion
                 ):
-                    return enhanced_attack
+                    update_pbar(progress, task_id, advance_to_end=True)
+                    return enhanced_prompt
 
-            except Exception:
-                continue
+            update_pbar(progress, task_id, advance_to_end=True)
 
         return attack
 
-    async def a_enhance(self, attack: str) -> str:
-        return self.enhance(attack)
+    async def a_enhance(
+        self,
+        attack: str,
+        simulator_model: Optional[Union[DeepEvalBaseLLM, str]] = None,
+    ) -> str:
+        self.simulator_model, _ = initialize_model(simulator_model)
+        prompt = LinguisticConfusionTemplate.enhance(attack)
+
+        progress = create_progress()
+        with progress:
+            task_id = add_pbar(
+                progress,
+                description="...... 🗣️ Semantic Manipulation",
+                total=self.max_retries * 3,
+            )
+
+            try:
+                for _ in range(self.max_retries):
+                    res: EnhancedConfusion = await a_generate(
+                        prompt, EnhancedConfusion, self.simulator_model
+                    )
+                    enhanced_prompt = res.input
+                    update_pbar(progress, task_id)
+
+                    compliance_prompt = (
+                        LinguisticConfusionTemplate.non_compliant(
+                            res.model_dump()
+                        )
+                    )
+                    compliance_res: ComplianceData = await a_generate(
+                        compliance_prompt,
+                        ComplianceData,
+                        self.simulator_model,
+                    )
+                    update_pbar(progress, task_id)
+
+                    is_valid_prompt = (
+                        LinguisticConfusionTemplate.is_valid_confusion(
+                            res.model_dump()
+                        )
+                    )
+                    is_valid_res: IsConfusionValid = await a_generate(
+                        is_valid_prompt,
+                        IsConfusionValid,
+                        self.simulator_model,
+                    )
+                    update_pbar(progress, task_id)
+
+                    if (
+                        not compliance_res.non_compliant
+                        and is_valid_res.is_valid_confusion
+                    ):
+                        update_pbar(progress, task_id, advance_to_end=True)
+                        return enhanced_prompt
+
+            finally:
+                update_pbar(progress, task_id, advance_to_end=True)
+
+        return attack
 
     def get_name(self) -> str:
         return self.name

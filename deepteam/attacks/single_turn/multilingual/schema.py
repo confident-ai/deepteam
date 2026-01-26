@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 
 class EnhancedAttack(BaseModel):
+    translation_logic: str
     input: str
 
 
