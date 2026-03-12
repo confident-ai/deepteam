@@ -1,6 +1,7 @@
 import yaml
 import typer
 import importlib.util
+import inspect
 import sys
 import os
 from typing import Callable, Awaitable, Optional
@@ -10,101 +11,28 @@ from . import config
 from .model_callback import load_model
 
 from deepteam.red_teamer import RedTeamer
-from deepteam.vulnerabilities import (
-    # Data Privacy
-    PIILeakage,
-    PromptLeakage,
-    # Responsible AI
-    Bias,
-    Toxicity,
-    # Security
-    BFLA,
-    BOLA,
-    RBAC,
-    DebugAccess,
-    ShellInjection,
-    SQLInjection,
-    SSRF,
-    # Safety
-    IllegalActivity,
-    GraphicContent,
-    PersonalSafety,
-    # Business
-    Misinformation,
-    IntellectualProperty,
-    Competition,
-    # Agentic
-    GoalTheft,
-    RecursiveHijacking,
-    ExcessiveAgency,
-    Robustness,
-    # Custom
-    CustomVulnerability,
-)
-from deepteam.attacks.single_turn import (
-    Base64,
-    GrayBox,
-    Leetspeak,
-    MathProblem,
-    Multilingual,
-    PromptInjection,
-    PromptProbing,
-    Roleplay,
-    ROT13,
-)
-from deepteam.attacks.multi_turn import (
-    CrescendoJailbreaking,
-    LinearJailbreaking,
-    TreeJailbreaking,
-    SequentialJailbreak,
-    BadLikertJudge,
-)
+import deepteam.vulnerabilities as vulnerabilities
+from deepteam.vulnerabilities import CustomVulnerability
+import deepteam.attacks.single_turn as single_turn_attacks
+import deepteam.attacks.multi_turn as multi_turn_attacks
 from deepteam.red_teamer.risk_assessment import RiskAssessment
 
 app = typer.Typer(name="deepteam")
 
-VULN_CLASSES = [
-    Bias,
-    Toxicity,
-    Misinformation,
-    IllegalActivity,
-    PromptLeakage,
-    PIILeakage,
-    ExcessiveAgency,
-    Robustness,
-    IntellectualProperty,
-    Competition,
-    GraphicContent,
-    PersonalSafety,
-    BFLA,
-    BOLA,
-    RBAC,
-    DebugAccess,
-    ShellInjection,
-    SQLInjection,
-    SSRF,
-    GoalTheft,
-    RecursiveHijacking,
-]
+def _load_concrete_classes(*modules):
+    """Load all concrete (non-abstract) classes from the given modules."""
+    classes = []
+    for module in modules:
+        for name in module.__all__:
+            cls = getattr(module, name)
+            if not inspect.isabstract(cls):
+                classes.append(cls)
+    return classes
+
+VULN_CLASSES = _load_concrete_classes(vulnerabilities)
 VULN_MAP = {cls.__name__: cls for cls in VULN_CLASSES}
 
-ATTACK_CLASSES = [
-    Base64,
-    GrayBox,
-    Leetspeak,
-    MathProblem,
-    Multilingual,
-    PromptInjection,
-    PromptProbing,
-    Roleplay,
-    ROT13,
-    CrescendoJailbreaking,
-    LinearJailbreaking,
-    TreeJailbreaking,
-    SequentialJailbreak,
-    BadLikertJudge,
-]
-
+ATTACK_CLASSES = _load_concrete_classes(single_turn_attacks, multi_turn_attacks)
 ATTACK_MAP = {cls.__name__: cls for cls in ATTACK_CLASSES}
 
 
@@ -166,6 +94,21 @@ def _build_attack(cfg: dict):
                 raise ValueError(f"Unknown attack: {attack_name}")
             attacks_objects.append(attack_cls())
         kwargs["turn_level_attacks"] = attacks_objects
+
+    # Attack-specific parameters
+    if "target_information" in cfg:
+        kwargs["target_information"] = cfg["target_information"]
+    if "target_chars" in cfg:
+        kwargs["target_chars"] = cfg["target_chars"]
+    if "context_style" in cfg:
+        kwargs["context_style"] = cfg["context_style"]
+    if "prefix" in cfg:
+        kwargs["prefix"] = cfg["prefix"]
+    if "prefix_type" in cfg:
+        kwargs["prefix_type"] = cfg["prefix_type"]
+    if "max_retries" in cfg:
+        kwargs["max_retries"] = cfg["max_retries"]
+    
     obj = cls(**kwargs)
     return obj
 
