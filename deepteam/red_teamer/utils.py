@@ -1,7 +1,8 @@
-from typing import List, Dict, Union, Optional
+from typing import List, Dict, Union, Optional, Any
 import inspect
+import json
 from functools import wraps
-from deepteam.test_case import RTTestCase, RTTurn
+from deepteam.test_case import RTTestCase, RTTurn, ToolCall
 from deepteam.vulnerabilities.types import VulnerabilityType
 from deepeval.models import (
     DeepEvalBaseLLM,
@@ -78,20 +79,24 @@ def wrap_model_callback(model_callback, async_mode):
             )
 
     @wraps(model_callback)
-    def get_sync_model_callback(input: str, turns: List[RTTurn] = None):
+    def get_sync_model_callback(
+        input: str, turns: Optional[List[RTTurn]] = None, **kwargs
+    ):
         if accepts_turns:
-            response = model_callback(input, turns)
+            response = model_callback(input, turns, **kwargs)
         else:
-            response = model_callback(input)
+            response = model_callback(input, **kwargs)
 
         return _validate_response(response)
 
     @wraps(model_callback)
-    async def get_async_model_callback(input: str, turns: List[RTTurn] = None):
+    async def get_async_model_callback(
+        input: str, turns: Optional[List[RTTurn]] = None, **kwargs
+    ):
         if accepts_turns:
-            response = await model_callback(input, turns)
+            response = await model_callback(input, turns, **kwargs)
         else:
-            response = await model_callback(input)
+            response = await model_callback(input, **kwargs)
 
         return _validate_response(response)
 
@@ -118,11 +123,59 @@ def resolve_model_callback(
 
     model_callback, _ = initialize_model(model_callback)
 
+    def _parse_tool_calls(message: Any):
+        parsed_tool_calls = []
+        for tool_call in getattr(message, "tool_calls", []) or []:
+            function = getattr(tool_call, "function", None)
+            name = getattr(function, "name", None)
+            arguments = getattr(function, "arguments", None)
+
+            input_parameters = {}
+            if isinstance(arguments, str) and arguments.strip():
+                try:
+                    loaded = json.loads(arguments)
+                    if isinstance(loaded, dict):
+                        input_parameters = loaded
+                except json.JSONDecodeError:
+                    input_parameters = {"raw": arguments}
+
+            if name:
+                parsed_tool_calls.append(
+                    ToolCall(name=name, input_parameters=input_parameters)
+                )
+
+        return parsed_tool_calls
+
     if not async_mode:
 
         def new_model_callback(
-            input: str, turns: Optional[List[RTTurn]] = None
+            input: str,
+            turns: Optional[List[RTTurn]] = None,
+            **kwargs: Any,
         ):
+            if "tools" in kwargs and hasattr(model_callback, "generate_raw_response"):
+                original_generation_kwargs = dict(
+                    getattr(model_callback, "generation_kwargs", {}) or {}
+                )
+                try:
+                    model_callback.generation_kwargs = {
+                        **original_generation_kwargs,
+                        **kwargs,
+                    }
+                    completion, _ = model_callback.generate_raw_response(
+                        input
+                    )
+                    message = completion.choices[0].message
+                    return RTTurn(
+                        role="assistant",
+                        content=message.content or "",
+                        tools_called=_parse_tool_calls(message),
+                    )
+                finally:
+                    model_callback.generation_kwargs = (
+                        original_generation_kwargs
+                    )
+
             res = model_callback.generate(input)
             if isinstance(res, tuple):
                 res, _ = res
@@ -131,8 +184,33 @@ def resolve_model_callback(
     else:
 
         async def new_model_callback(
-            input: str, turns: Optional[List[RTTurn]] = None
+            input: str,
+            turns: Optional[List[RTTurn]] = None,
+            **kwargs: Any,
         ):
+            if "tools" in kwargs and hasattr(model_callback, "a_generate_raw_response"):
+                original_generation_kwargs = dict(
+                    getattr(model_callback, "generation_kwargs", {}) or {}
+                )
+                try:
+                    model_callback.generation_kwargs = {
+                        **original_generation_kwargs,
+                        **kwargs,
+                    }
+                    completion, _ = await model_callback.a_generate_raw_response(
+                        input
+                    )
+                    message = completion.choices[0].message
+                    return RTTurn(
+                        role="assistant",
+                        content=message.content or "",
+                        tools_called=_parse_tool_calls(message),
+                    )
+                finally:
+                    model_callback.generation_kwargs = (
+                        original_generation_kwargs
+                    )
+
             res = await model_callback.a_generate(input)
             if isinstance(res, tuple):
                 res, _ = res

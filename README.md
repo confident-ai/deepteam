@@ -99,6 +99,7 @@ DeepTeam runs **locally on your machine** and uses LLMs for both attack simulati
     - Graphic Content — violence, sexual content
     - Personal Safety — self-harm, dangerous advice
     - Unexpected Code Execution — arbitrary code generation
+    - HarmActionsBench — agentic evaluation of harmful actions
 
     </details>
 
