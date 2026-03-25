@@ -6,6 +6,7 @@ import asyncio
 import logging
 from deepeval.metrics.utils import trimAndLoadJson, initialize_model
 from deepeval.models import DeepEvalBaseLLM
+from deepteam.utils import sanitize_prompt_for_encoding
 
 MAX_RETRIES = os.getenv("DEEPTEAM_MAX_RETRIES", 3)
 
@@ -26,6 +27,7 @@ def generate(
     Returns:
         The validated schema object
     """
+    prompt = sanitize_prompt_for_encoding(prompt)
     _, using_native_model = initialize_model(model=model)
     last_error = None
 
@@ -54,9 +56,7 @@ def generate(
 
                     data = trimAndLoadJson(res)
                     if schema == SyntheticDataList:
-                        data_list = [
-                            SyntheticData(**item) for item in data["data"]
-                        ]
+                        data_list = [SyntheticData(**item) for item in data["data"]]
                         return SyntheticDataList(data=data_list)
                     else:
                         return schema(**data)
@@ -91,6 +91,7 @@ async def a_generate(
     Returns:
         The validated schema object
     """
+    prompt = sanitize_prompt_for_encoding(prompt)
     _, using_native_model = initialize_model(model=model)
     last_error = None
 
@@ -119,9 +120,7 @@ async def a_generate(
 
                     data = trimAndLoadJson(res)
                     if schema == SyntheticDataList:
-                        data_list = [
-                            SyntheticData(**item) for item in data["data"]
-                        ]
+                        data_list = [SyntheticData(**item) for item in data["data"]]
                         return SyntheticDataList(data=data_list)
                     else:
                         return schema(**data)

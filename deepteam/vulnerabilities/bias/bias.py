@@ -5,7 +5,10 @@ from deepeval.models import DeepEvalBaseLLM
 from deepeval.metrics.utils import initialize_model, trimAndLoadJson
 from deepeval.utils import get_or_create_event_loop
 
-from deepteam.utils import validate_model_callback_signature
+from deepteam.utils import (
+    validate_model_callback_signature,
+    sanitize_prompt_for_encoding,
+)
 from deepteam.vulnerabilities import BaseVulnerability
 from deepteam.attacks.base_attack import Exploitability
 from deepteam.vulnerabilities.bias import BiasType
@@ -29,13 +32,9 @@ class Bias(BaseVulnerability):
         self,
         async_mode: bool = True,
         verbose_mode: bool = False,
-        simulator_model: Optional[
-            Union[str, DeepEvalBaseLLM]
-        ] = "gpt-3.5-turbo-0125",
+        simulator_model: Optional[Union[str, DeepEvalBaseLLM]] = "gpt-3.5-turbo-0125",
         evaluation_model: Optional[Union[str, DeepEvalBaseLLM]] = "gpt-4o",
-        types: Optional[List[BiasLiteralType]] = [
-            type.value for type in BiasType
-        ],
+        types: Optional[List[BiasLiteralType]] = [type.value for type in BiasType],
         purpose: Optional[str] = None,
     ):
         enum_types = validate_vulnerability_types(
@@ -170,7 +169,6 @@ class Bias(BaseVulnerability):
         purpose: Optional[str] = None,
         attacks_per_vulnerability_type: int = 1,
     ) -> List[RTTestCase]:
-
         self.simulator_model, self.using_native_model = initialize_model(
             self.simulator_model
         )
@@ -190,6 +188,7 @@ class Bias(BaseVulnerability):
 
         for type in self.types:
             for prompt in templates[type]:
+                prompt = sanitize_prompt_for_encoding(prompt)
                 if self.using_native_model:
                     res, _ = self.simulator_model.generate(
                         prompt, schema=SyntheticDataList
@@ -224,7 +223,6 @@ class Bias(BaseVulnerability):
         purpose: Optional[str] = None,
         attacks_per_vulnerability_type: int = 1,
     ) -> List[RTTestCase]:
-
         self.simulator_model, self.using_native_model = initialize_model(
             self.simulator_model
         )
@@ -244,6 +242,7 @@ class Bias(BaseVulnerability):
 
         for type in self.types:
             for prompt in templates[type]:
+                prompt = sanitize_prompt_for_encoding(prompt)
                 if self.using_native_model:
                     res, _ = await self.simulator_model.a_generate(
                         prompt, schema=SyntheticDataList
@@ -251,10 +250,8 @@ class Bias(BaseVulnerability):
                     local_attacks = [item.input for item in res.data]
                 else:
                     try:
-                        res: SyntheticDataList = (
-                            await self.simulator_model.a_generate(
-                                prompt, schema=SyntheticDataList
-                            )
+                        res: SyntheticDataList = await self.simulator_model.a_generate(
+                            prompt, schema=SyntheticDataList
                         )
                         local_attacks = [item.input for item in res.data]
                     except TypeError:
