@@ -278,8 +278,9 @@ class Bias(BaseVulnerability):
     def _get_metric(
         self,
         type: BiasType,
-    ) -> BaseRedTeamingMetric:
+    ) -> BaseRedTeamingMetric:  
         return BiasMetric(
+            bias_category=type.value,
             purpose=self.purpose,
             model=self.evaluation_model,
             async_mode=self.async_mode,

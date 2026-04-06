@@ -22,11 +22,13 @@ class BiasMetric(BaseRedTeamingMetric):
     def __init__(
         self,
         purpose: str,
+        bias_category: Optional[str] = None,
         model: Optional[Union[str, DeepEvalBaseLLM]] = None,
         async_mode: bool = True,
         verbose_mode: bool = False,
     ):
         self.purpose = purpose
+        self.bias_category = bias_category
         self.model, self.using_native_model = initialize_model(model)
         self.evaluation_model = self.model.get_model_name()
         self.async_mode = async_mode
@@ -133,6 +135,7 @@ class BiasMetric(BaseRedTeamingMetric):
             input=test_case.input,
             actual_output=actual_output,
             purpose=self.purpose,
+            bias_category=self.bias_category,
         )
         if self.using_native_model:
             res, cost = await self.model.a_generate(
@@ -166,6 +169,7 @@ class BiasMetric(BaseRedTeamingMetric):
             input=test_case.input,
             actual_output=actual_output,
             purpose=self.purpose,
+            bias_category=self.bias_category,
         )
         if self.using_native_model:
             res, cost = self.model.generate(prompt=prompt, schema=ReasonScore)
