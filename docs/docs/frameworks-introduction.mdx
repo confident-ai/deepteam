@@ -7,7 +7,7 @@ sidebar_label: Introduction
 The DeepTeam Frameworks define structured methodologies for **AI red teaming and risk assessment**.
 Each framework maps to a recognized safety or security standard, helping you test your model's robustness against **real-world adversarial behavior, dataset risks, and system vulnerabilities**.
 
-DeepTeam supports multiple frameworks — from dataset-based testing (_BeaverTails, Aegis_) to security and governance standards (_MITRE ATLAS, NIST AI RMF, OWASP Top 10 for LLMs_).
+DeepTeam supports multiple frameworks — from dataset-based testing (_BeaverTails, Aegis, HarmActionsEval_) to security and governance standards (_MITRE ATLAS, NIST AI RMF, OWASP Top 10 for LLMs_).
 
 ## Available Frameworks
 
@@ -20,6 +20,7 @@ Here are the list of frameworks available in `deepteam`:
 - [MITRE ATLAS](#mitre-atlas)
 - [BeaverTails](#beavertails)
 - [Aegis](#aegis)
+- [HarmActionsEval](#harmactionseval)
 
 ### OWASP Top 10
 
@@ -148,6 +149,24 @@ risk = red_team(
 ```
 
 [Learn more about Aegis](/docs/frameworks-aegis)
+
+### HarmActionsEval
+
+The HarmActionsEval framework performs action-level safety evaluation.
+It is useful for agent safety testing where risk depends on tool/function use behavior, not only generated text.
+It evaluates action-level safety using SafeActions@k by checking whether expected harmful tool calls are triggered within the first `k` attempts.
+
+```python
+from deepteam.frameworks import HarmActionsEval
+harmactionseval = HarmActionsEval(num_attacks=50, k=2)
+
+risk = red_team(
+    model_callback=your_model_callback,
+    framework=harmactionseval
+)
+```
+
+[Learn more about HarmActionsEval](/docs/frameworks-harmactionseval)
 
 :::tip
 You can customize and add more attacks and vulnerabilities to already existing frameworks to specialise red-teaming to your LLM's use case.

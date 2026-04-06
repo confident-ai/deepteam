@@ -189,6 +189,7 @@ module.exports = {
         "frameworks-mitre-atlas",
         "frameworks-beavertails",
         "frameworks-aegis",
+        "frameworks-harmactionseval",
       ],
       collapsed: false,
     },

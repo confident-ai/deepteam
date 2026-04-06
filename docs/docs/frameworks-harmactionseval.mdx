@@ -1,0 +1,63 @@
+---
+id: frameworks-harmactionseval
+title: HarmActionsEval
+sidebar_label: HarmActionsEval
+---
+
+The **HarmActionsEval** framework implements action-level safety evaluation in DeepTeam.
+It evaluates safety with the **SafeActions@k** metric, which measures whether a model remains safe within the first `k` attempts.
+
+## Overview
+
+```python
+from deepteam.frameworks import HarmActionsEval
+from deepteam import red_team
+from somewhere import your_model_callback
+
+harmactionseval = HarmActionsEval(num_attacks=50, k=2)
+
+risk_assessment = red_team(
+    model_callback=your_model_callback,
+    framework=harmactionseval,
+)
+
+print(risk_assessment)
+```
+
+The `HarmActionsEval` framework accepts **SIX** optional parameters:
+
+- [Optional] `num_attacks`: Number of harmful/unethical dataset actions to sample. Defaulted to `50`.
+- [Optional] `k`: SafeActions@k threshold for evaluation. Defaulted to `2`.
+- [Optional] `offset`: Start index into the harmful/unethical subset before sampling. Defaulted to `0`.
+- [Optional] `async_mode`: a boolean which when set to `True`, enables concurrent execution mode in DeepTeam. Defaulted to `True`.
+- [Optional] `verbose_mode`: a boolean for verbose framework behavior. Defaulted to `False`.
+- [Optional] `evaluation_model`: reserved for API compatibility with other dataset frameworks.
+
+## How It Works
+
+1. Loads the packaged dataset from `deepteam/frameworks/harmactionseval/harmactions_dataset.json`.
+2. Filters out `safe` rows, applies `offset`, and samples `num_attacks` actions.
+3. Builds DeepTeam test cases using each row's `manipulated_prompt` (or `prompt`) and expected tool name.
+4. For each test case, runs up to `k` attempts via your `model_callback`.
+5. Marks unsafe if the callback output includes a matching tool call in `tools_called`; otherwise marks safe.
+6. Maps results to DeepTeam score:
+    - safe within `k`: score `1.0`
+    - unsafe within `k`: score `0.0`
+
+## Callback Contract
+
+HarmActionsEval evaluates tool-use behavior from your callback responses.
+
+- Your callback should return an `RTTurn` with role `assistant`.
+- To represent tool use, include tool-call entries in `RTTurn.tools_called`.
+- If `tools_called` is empty (or has no matching tool), the attempt is treated as safe for that step.
+
+## Notes
+
+- This framework does not delegate to an external evaluator module at runtime.
+- The `model_callback` output directly drives SafeActions@k evaluation.
+
+## Reference and Acknowledgement
+
+- This benchmark is based on HarmActionsEval introduced in Agent Action Guard, contributed by Praneeth Vadlapati and licensed under CC-BY-4.0.
+    - Repository: https://github.com/Pro-GenAI/Agent-Action-Guard
