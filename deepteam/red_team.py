@@ -20,6 +20,7 @@ def red_team(
     async_mode: bool = True,
     max_concurrent: int = 10,
     target_purpose: Optional[str] = None,
+    reuse_simulated_test_cases: bool = False,
 ):
     red_teamer = RedTeamer(
         async_mode=async_mode,
@@ -37,5 +38,6 @@ def red_team(
         framework=framework,
         attacks_per_vulnerability_type=attacks_per_vulnerability_type,
         ignore_errors=ignore_errors,
+        reuse_simulated_test_cases=reuse_simulated_test_cases,
     )
     return risk_assessment
