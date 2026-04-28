@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/confident-ai-deepteam-badge.png)](https://mseep.ai/app/confident-ai-deepteam)
+
 <p align="center">
     <img src="https://github.com/confident-ai/deepteam/blob/main/assets/deepteam-logo2.png" alt="DeepTeam Logo" width="55%">
 </p>
