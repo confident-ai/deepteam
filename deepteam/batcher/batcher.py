@@ -184,6 +184,7 @@ class TraceBatchEvaluator:
         
         extracted = ExtractedSpan(
             spanUuid=span.uuid,
+            parentUuid=span.parent_uuid,
             type=span.__class__.__name__,
             name=span.name,
             status=span.status.value if span.status else None,
@@ -221,6 +222,7 @@ class TraceBatchEvaluator:
         
         return ExtractedSpan(
             spanUuid=trace.uuid,
+            parentUuid=None,
             type="TraceRoot",
             name=getattr(trace, "name", None),
             status=trace.status.value if trace.status else None,

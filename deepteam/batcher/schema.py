@@ -29,6 +29,7 @@ class BatchFindingsList(BaseModel):
 class ExtractedSpan(BaseModel):
     """Strictly types the extracted span data before it goes into the LLM batch."""
     spanUuid: str
+    parentUuid: Optional[str] = None
     type: str
     name: Optional[str] = None
     status: Optional[str] = None
