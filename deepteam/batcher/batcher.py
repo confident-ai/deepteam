@@ -3,10 +3,10 @@ from typing import Dict, List, Any
 
 from deepeval.tracing.types import AgentSpan, LlmSpan, RetrieverSpan, ToolSpan, Trace, BaseSpan
 from deepeval.models import DeepEvalBaseLLM
-from deepeval.metrics.utils import trimAndLoadJson
 
 from .schema import BatchFinding, BatchFindingsList, ExtractedSpan
 from deepteam.utils import SPANS_CONTEXT_LIMIT
+from deepteam.attacks.attack_simulator.utils import generate, a_generate
 
 class TraceBatchEvaluator:
     def __init__(
@@ -95,19 +95,8 @@ class TraceBatchEvaluator:
         batch_string = json.dumps(batch_list, indent=2)
         prompt = self.template.generate_trace_batch_evaluation(batch_data=batch_string)
 
-        if self.using_native_model:
-            res, _ = self.model.generate(prompt, schema=BatchFindingsList)
-            findings = res.findings
-        else:
-            try:
-                res: BatchFindingsList = self.model.generate(prompt, schema=BatchFindingsList)
-                findings = res.findings
-            except TypeError:
-                res = self.model.generate(prompt)
-                data = trimAndLoadJson(res)
-                findings = [BatchFinding(**item) for item in data.get("findings", [])]
-
-        self._store_findings(findings)
+        res: BatchFindingsList = generate(prompt, BatchFindingsList, self.model)
+        self._store_findings(res.findings)
         self.current_batch = []
         self.current_batch_size = 0
 
@@ -146,19 +135,8 @@ class TraceBatchEvaluator:
         batch_string = json.dumps(batch_list, indent=2)
         prompt = self.template.generate_trace_batch_evaluation(batch_data=batch_string)
 
-        if self.using_native_model:
-            res, _ = await self.model.a_generate(prompt, schema=BatchFindingsList)
-            findings = res.findings
-        else:
-            try:
-                res: BatchFindingsList = await self.model.a_generate(prompt, schema=BatchFindingsList)
-                findings = res.findings
-            except TypeError:
-                res = await self.model.a_generate(prompt)
-                data = trimAndLoadJson(res)
-                findings = [BatchFinding(**item) for item in data.get("findings", [])]
-
-        self._store_findings(findings)
+        res: BatchFindingsList = await a_generate(prompt, BatchFindingsList, self.model)
+        self._store_findings(res.findings)
         self.current_batch = []
         self.current_batch_size = 0
 
