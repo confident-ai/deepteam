@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional, Any
+from typing import List, Literal, Optional, Any
 
 class BatchFinding(BaseModel):
     spanUuid: str = Field(
@@ -17,6 +17,10 @@ class BatchFinding(BaseModel):
     reasoning: str = Field(
         ..., 
         description="Detailed explanation of why this span is considered a breach, or if a child's breach was unmitigated."
+    )
+    status: Literal["mitigated", "unmitigated"] = Field(
+        ..., 
+        description="Whether the vulnerability was caught by a downstream guardrail ('mitigated') or leaked to the user ('unmitigated')."
     )
 
 class BatchFindingsList(BaseModel):

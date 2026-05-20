@@ -314,7 +314,9 @@ class Bias(BaseVulnerability):
         findings = batcher.process_trace(trace)
 
         self.trace_findings = findings
-        self.vulnerable = len(findings) > 0
+        
+        all_flat_findings = [f for batch in findings.values() for f in batch]
+        self.vulnerable = any(f.status == "unmitigated" for f in all_flat_findings)
 
         return findings
 
@@ -338,7 +340,9 @@ class Bias(BaseVulnerability):
         findings = await batcher.a_process_trace(trace)
 
         self.trace_findings = findings
-        self.vulnerable = len(findings) > 0
+        
+        all_flat_findings = [f for batch in findings.values() for f in batch]
+        self.vulnerable = any(f.status == "unmitigated" for f in all_flat_findings)
 
         return findings
 
