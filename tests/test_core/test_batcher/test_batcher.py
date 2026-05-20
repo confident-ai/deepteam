@@ -122,5 +122,5 @@ class TestTraceBatchEvaluator:
         extracted_parent = evaluator._extract_span_with_findings(agent_span, child_findings=[])
 
         assert extracted_parent.spanUuid == agent_uuid
-        assert extracted_parent.input is None, "Parent input was not collapsed!"
-        assert extracted_parent.output is None, "Parent output was not collapsed!"
+        assert extracted_parent.input is None
+        assert extracted_parent.output is None
