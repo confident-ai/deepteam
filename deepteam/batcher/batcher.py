@@ -157,16 +157,38 @@ class TraceBatchEvaluator:
                 findings.extend(self.all_findings[child.uuid])
         return findings
 
+    def _collapse_io(self, parent_input: Any, parent_output: Any, children: List[BaseSpan]) -> tuple[Any, Any]:
+        """
+        Compares parent I/O with children I/O. If an exact match is found, 
+        returns None for that field to avoid redundant LLM evaluation / attribution.
+        """
+        collapsed_input = parent_input
+        collapsed_output = parent_output
+        
+        for child in children:
+            if collapsed_input is not None and collapsed_input == child.input:
+                collapsed_input = None
+            if collapsed_output is not None and collapsed_output == child.output:
+                collapsed_output = None
+            
+            # Early exit if both are already collapsed
+            if collapsed_input is None and collapsed_output is None:
+                break
+                
+        return collapsed_input, collapsed_output
+
     def _extract_span_with_findings(self, span: BaseSpan, child_findings: List[BatchFinding]) -> ExtractedSpan:
         """Strips useless metadata, keeps I/O, tools, and attaches child findings."""
+
+        c_input, c_output = self._collapse_io(span.input, span.output, span.children)
         
         extracted = ExtractedSpan(
             spanUuid=span.uuid,
             type=span.__class__.__name__,
             name=span.name,
             status=span.status.value if span.status else None,
-            input=span.input,
-            output=span.output,
+            input=c_input,
+            output=c_output,
             error=span.error,
             context=span.context,
             retrieval_context=span.retrieval_context,
@@ -194,14 +216,16 @@ class TraceBatchEvaluator:
     def _extract_trace_root(self, trace: Trace) -> ExtractedSpan:
         """Extracts the top-level trace I/O and any root-level findings."""
         root_findings = self._get_child_findings(trace.root_spans)
+
+        c_input, c_output = self._collapse_io(trace.input, trace.output, trace.root_spans)
         
         return ExtractedSpan(
             spanUuid=trace.uuid,
             type="TraceRoot",
             name=getattr(trace, "name", None),
             status=trace.status.value if trace.status else None,
-            input=trace.input,
-            output=trace.output,
+            input=c_input,
+            output=c_output,
             context=getattr(trace, "context", None),
             retrieval_context=getattr(trace, "retrieval_context", None),
             expected_output=getattr(trace, "expected_output", None),
