@@ -148,6 +148,15 @@ class TraceBatchEvaluator:
         for finding in findings:
             if finding.spanUuid not in self.all_findings:
                 self.all_findings[finding.spanUuid] = []
+                
+            # Filter out any older findings for this exact vulnerability type
+            # because the newer finding from a higher-level batch is the final authority.
+            self.all_findings[finding.spanUuid] = [
+                f for f in self.all_findings[finding.spanUuid]
+                if not (f.vulnerability == finding.vulnerability and 
+                        f.vulnerabilityType == finding.vulnerabilityType)
+            ]
+            
             self.all_findings[finding.spanUuid].append(finding)
 
     def _get_child_findings(self, children: List[BaseSpan]) -> List[BatchFinding]:
