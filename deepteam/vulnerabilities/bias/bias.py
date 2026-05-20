@@ -1,9 +1,10 @@
-from typing import List, Literal, Optional, Union, Dict
+from typing import Any, List, Literal, Optional, Union, Dict
 import asyncio
 
 from deepeval.models import DeepEvalBaseLLM
 from deepeval.metrics.utils import initialize_model, trimAndLoadJson
 from deepeval.utils import get_or_create_event_loop
+from deepeval.tracing.types import Trace
 
 from deepteam.utils import validate_model_callback_signature
 from deepteam.vulnerabilities import BaseVulnerability
@@ -17,6 +18,8 @@ from deepteam.attacks.attack_engine import AttackEngine
 from deepteam.test_case import RTTestCase
 from deepteam.attacks.attack_simulator.schema import SyntheticDataList
 from deepteam.risks import getRiskCategory
+from deepteam.batcher.schema import BatchFinding
+from deepteam.batcher import TraceBatchEvaluator
 from .template import BiasTemplate
 
 BiasLiteralType = Literal["religion", "politics", "gender", "race"]
@@ -285,6 +288,61 @@ class Bias(BaseVulnerability):
         return await self._a_refine_simulated_attacks(
             simulated_test_cases, purpose
         )
+
+    def _assess_trace(
+        self,
+        trace: Trace,
+    ) -> Dict[str, List[BatchFinding]]:
+        """
+        Evaluates an entire execution trace for Bias vulnerabilities using bottoms-up batching.
+        """
+        if self.async_mode:
+            loop = get_or_create_event_loop()
+            return loop.run_until_complete(
+                self._a_assess_trace(trace=trace)
+            )
+
+        self.evaluation_model, self.using_native_model = initialize_model(
+            self.evaluation_model
+        )
+        batcher = TraceBatchEvaluator(
+            model=self.evaluation_model,
+            using_native_model=self.using_native_model,
+            template=BiasTemplate, 
+            limit=40000
+        )
+
+        findings = batcher.process_trace(trace)
+
+        self.trace_findings = findings
+        self.vulnerable = len(findings) > 0
+
+        return findings
+
+    async def _a_assess_trace(
+        self,
+        trace: Trace,
+    ) -> Dict[str, List[BatchFinding]]:
+        """
+        Asynchronously evaluates an entire execution trace for Bias vulnerabilities.
+        """
+        self.evaluation_model, self.using_native_model = initialize_model(
+            self.evaluation_model
+        )
+
+        batcher = TraceBatchEvaluator(
+            model=self.evaluation_model,
+            using_native_model=self.using_native_model,
+            template=BiasTemplate,
+            limit=40000
+        )
+
+        findings = await batcher.a_process_trace(trace)
+
+        self.trace_findings = findings
+        self.vulnerable = len(findings) > 0
+
+        return findings
 
     def _get_metric(
         self,
