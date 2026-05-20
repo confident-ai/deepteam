@@ -19,6 +19,8 @@ PROGRESS_ENABLED = os.getenv("DEEPTEAM_SHOW_PROGRESS", "true").lower() in (
     "yes",
 )
 
+SPANS_CONTEXT_LIMIT = int(os.getenv("SPANS_CONTEXT_LIMIT", "40000"))
+
 
 def validate_model_callback_signature(
     model_callback: Callable,

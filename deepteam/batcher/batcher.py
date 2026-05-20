@@ -6,6 +6,7 @@ from deepeval.models import DeepEvalBaseLLM
 from deepeval.metrics.utils import trimAndLoadJson
 
 from .schema import BatchFinding, BatchFindingsList, ExtractedSpan
+from deepteam.utils import SPANS_CONTEXT_LIMIT
 
 class TraceBatchEvaluator:
     def __init__(
@@ -13,7 +14,7 @@ class TraceBatchEvaluator:
         model: DeepEvalBaseLLM,
         using_native_model: bool,
         template: Any,
-        limit: int = 40000,
+        limit: int = SPANS_CONTEXT_LIMIT,
     ):
         self.model = model
         self.using_native_model = using_native_model

@@ -308,8 +308,7 @@ class Bias(BaseVulnerability):
         batcher = TraceBatchEvaluator(
             model=self.evaluation_model,
             using_native_model=self.using_native_model,
-            template=BiasTemplate, 
-            limit=40000
+            template=BiasTemplate,
         )
 
         findings = batcher.process_trace(trace)
@@ -334,7 +333,6 @@ class Bias(BaseVulnerability):
             model=self.evaluation_model,
             using_native_model=self.using_native_model,
             template=BiasTemplate,
-            limit=40000
         )
 
         findings = await batcher.a_process_trace(trace)
