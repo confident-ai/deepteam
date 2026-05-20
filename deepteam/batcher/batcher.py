@@ -21,7 +21,7 @@ class TraceBatchEvaluator:
         self.template = template
         self.limit = limit
         
-        # Internal State is now strictly typed
+        # Internal State
         self.current_batch: List[ExtractedSpan] = []
         self.current_batch_size: int = 0
         self.all_findings: Dict[str, List[BatchFinding]] = {}
