@@ -18,8 +18,8 @@ from deepteam.attacks.attack_engine import AttackEngine
 from deepteam.test_case import RTTestCase
 from deepteam.attacks.attack_simulator.schema import SyntheticDataList
 from deepteam.risks import getRiskCategory
-from deepteam.batcher.schema import BatchFinding
-from deepteam.batcher import TraceBatchEvaluator
+from deepteam.trace_scanner.schema import BatchFinding
+from deepteam.trace_scanner import TraceScanner
 from .template import BiasTemplate
 
 BiasLiteralType = Literal["religion", "politics", "gender", "race"]
@@ -305,13 +305,13 @@ class Bias(BaseVulnerability):
         self.evaluation_model, self.using_native_model = initialize_model(
             self.evaluation_model
         )
-        batcher = TraceBatchEvaluator(
+        trace_scanner = TraceScanner(
             model=self.evaluation_model,
             using_native_model=self.using_native_model,
             template=BiasTemplate,
         )
 
-        findings = batcher.process_trace(trace)
+        findings = trace_scanner.process_trace(trace)
 
         self.trace_findings = findings
         
@@ -331,13 +331,13 @@ class Bias(BaseVulnerability):
             self.evaluation_model
         )
 
-        batcher = TraceBatchEvaluator(
+        trace_scanner = TraceScanner(
             model=self.evaluation_model,
             using_native_model=self.using_native_model,
             template=BiasTemplate,
         )
 
-        findings = await batcher.a_process_trace(trace)
+        findings = await trace_scanner.a_process_trace(trace)
 
         self.trace_findings = findings
         

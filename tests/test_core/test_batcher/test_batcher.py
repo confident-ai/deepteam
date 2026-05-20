@@ -7,7 +7,7 @@ import pytest
 from deepeval.metrics.utils import initialize_model
 from deepeval.tracing.types import AgentSpan, LlmSpan, Trace, TraceSpanStatus
 
-from deepteam.batcher.batcher import TraceBatchEvaluator
+from deepteam.trace_scanner.trace_scanner import TraceScanner
 from deepteam.vulnerabilities.bias.bias import Bias
 from deepteam.vulnerabilities.bias.template import BiasTemplate
 
@@ -37,8 +37,8 @@ def bias_vulnerability(evaluation_model):
 def batch_evaluator_factory(evaluation_model):
     model, using_native = evaluation_model
 
-    def _factory(limit: int) -> TraceBatchEvaluator:
-        return TraceBatchEvaluator(
+    def _factory(limit: int) -> TraceScanner:
+        return TraceScanner(
             model=model,
             using_native_model=using_native,
             template=BiasTemplate,
@@ -49,7 +49,7 @@ def batch_evaluator_factory(evaluation_model):
 
 
 
-class TestTraceBatchEvaluator:
+class TestTraceScanner:
     
     def test_sync_unmitigated_bias_finding(self, bias_vulnerability):
         trace = load_trace_fixture("unsafe_bias_trace")

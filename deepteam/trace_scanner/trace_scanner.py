@@ -4,11 +4,11 @@ from typing import Dict, List, Any
 from deepeval.tracing.types import AgentSpan, LlmSpan, RetrieverSpan, ToolSpan, Trace, BaseSpan
 from deepeval.models import DeepEvalBaseLLM
 
-from .schema import BatchFinding, BatchFindingsList, ExtractedSpan
+from .schema import BatchFinding, BatchFindingsList, SpanNode
 from deepteam.utils import SPANS_CONTEXT_LIMIT
 from deepteam.attacks.attack_simulator.utils import generate, a_generate
 
-class TraceBatchEvaluator:
+class TraceScanner:
     def __init__(
         self,
         model: DeepEvalBaseLLM,
@@ -22,9 +22,9 @@ class TraceBatchEvaluator:
         self.limit = limit
         
         # Internal State
-        self.current_batch: List[ExtractedSpan] = []
-        self.current_batch_size: int = 0
-        self.all_findings: Dict[str, List[BatchFinding]] = {}
+        self._current_batch: List[SpanNode] = []
+        self._current_batch_size: int = 0
+        self._all_findings: Dict[str, List[BatchFinding]] = {}
 
     def process_trace(self, trace: Trace) -> Dict[str, List[BatchFinding]]:
         self._reset_state()
@@ -35,10 +35,10 @@ class TraceBatchEvaluator:
         trace_node = self._extract_trace_root(trace)
         self._add_to_batch_and_check(trace_node)
         
-        if self.current_batch:
+        if self._current_batch:
             self._flush_batch()
             
-        return self.all_findings
+        return self._all_findings
 
     async def a_process_trace(self, trace: Trace) -> Dict[str, List[BatchFinding]]:
         self._reset_state()
@@ -49,15 +49,15 @@ class TraceBatchEvaluator:
         trace_node = self._extract_trace_root(trace)
         await self._a_add_to_batch_and_check(trace_node)
         
-        if self.current_batch:
+        if self._current_batch:
             await self._a_flush_batch()
             
-        return self.all_findings
+        return self._all_findings
 
     def _reset_state(self):
-        self.current_batch = []
-        self.current_batch_size = 0
-        self.all_findings = {}
+        self._current_batch = []
+        self._current_batch_size = 0
+        self._all_findings = {}
 
     # ---------------------------------------------------------
     # SYNCHRONOUS TRAVERSAL
@@ -72,33 +72,33 @@ class TraceBatchEvaluator:
         
         self._add_to_batch_and_check(span_node)
 
-    def _add_to_batch_and_check(self, node: ExtractedSpan):
+    def _add_to_batch_and_check(self, node: SpanNode):
         # Dump to dict strictly excluding None to save tokens
         node_dict = node.model_dump(exclude_none=True)
         node_str = json.dumps(node_dict)
         node_size = len(node_str)
         
-        if self.current_batch_size + node_size > self.limit and self.current_batch:
+        if self._current_batch_size + node_size > self.limit and self._current_batch:
             self._flush_batch()
 
-        self.current_batch.append(node)
-        self.current_batch_size += node_size
+        self._current_batch.append(node)
+        self._current_batch_size += node_size
 
-        if self.current_batch_size >= self.limit:
+        if self._current_batch_size >= self.limit:
             self._flush_batch()
 
     def _flush_batch(self):
-        if not self.current_batch:
+        if not self._current_batch:
             return
             
-        batch_list = [node.model_dump(exclude_none=True) for node in self.current_batch]
+        batch_list = [node.model_dump(exclude_none=True) for node in self._current_batch]
         batch_string = json.dumps(batch_list, indent=2)
         prompt = self.template.generate_trace_batch_evaluation(batch_data=batch_string)
 
         res: BatchFindingsList = generate(prompt, BatchFindingsList, self.model)
         self._store_findings(res.findings)
-        self.current_batch = []
-        self.current_batch_size = 0
+        self._current_batch = []
+        self._current_batch_size = 0
 
     # ---------------------------------------------------------
     # ASYNCHRONOUS TRAVERSAL
@@ -113,32 +113,32 @@ class TraceBatchEvaluator:
         
         await self._a_add_to_batch_and_check(span_node)
 
-    async def _a_add_to_batch_and_check(self, node: ExtractedSpan):
+    async def _a_add_to_batch_and_check(self, node: SpanNode):
         node_dict = node.model_dump(exclude_none=True)
         node_str = json.dumps(node_dict)
         node_size = len(node_str)
         
-        if self.current_batch_size + node_size > self.limit and self.current_batch:
+        if self._current_batch_size + node_size > self.limit and self._current_batch:
             await self._a_flush_batch()
             
-        self.current_batch.append(node)
-        self.current_batch_size += node_size
+        self._current_batch.append(node)
+        self._current_batch_size += node_size
 
-        if self.current_batch_size >= self.limit:
+        if self._current_batch_size >= self.limit:
             await self._a_flush_batch()
 
     async def _a_flush_batch(self):
-        if not self.current_batch:
+        if not self._current_batch:
             return
             
-        batch_list = [node.model_dump(exclude_none=True) for node in self.current_batch]
+        batch_list = [node.model_dump(exclude_none=True) for node in self._current_batch]
         batch_string = json.dumps(batch_list, indent=2)
         prompt = self.template.generate_trace_batch_evaluation(batch_data=batch_string)
 
         res: BatchFindingsList = await a_generate(prompt, BatchFindingsList, self.model)
         self._store_findings(res.findings)
-        self.current_batch = []
-        self.current_batch_size = 0
+        self._current_batch = []
+        self._current_batch_size = 0
 
     # ---------------------------------------------------------
     # UTILITIES & EXTRACTION
@@ -146,24 +146,24 @@ class TraceBatchEvaluator:
 
     def _store_findings(self, findings: List[BatchFinding]):
         for finding in findings:
-            if finding.spanUuid not in self.all_findings:
-                self.all_findings[finding.spanUuid] = []
+            if finding.spanUuid not in self._all_findings:
+                self._all_findings[finding.spanUuid] = []
                 
             # Filter out any older findings for this exact vulnerability type
             # because the newer finding from a higher-level batch is the final authority.
-            self.all_findings[finding.spanUuid] = [
-                f for f in self.all_findings[finding.spanUuid]
+            self._all_findings[finding.spanUuid] = [
+                f for f in self._all_findings[finding.spanUuid]
                 if not (f.vulnerability == finding.vulnerability and 
                         f.vulnerabilityType == finding.vulnerabilityType)
             ]
             
-            self.all_findings[finding.spanUuid].append(finding)
+            self._all_findings[finding.spanUuid].append(finding)
 
     def _get_child_findings(self, children: List[BaseSpan]) -> List[BatchFinding]:
         findings = []
         for child in children:
-            if child.uuid in self.all_findings:
-                findings.extend(self.all_findings[child.uuid])
+            if child.uuid in self._all_findings:
+                findings.extend(self._all_findings[child.uuid])
         return findings
 
     def _collapse_io(self, parent_input: Any, parent_output: Any, children: List[BaseSpan]) -> tuple[Any, Any]:
@@ -186,12 +186,12 @@ class TraceBatchEvaluator:
                 
         return collapsed_input, collapsed_output
 
-    def _extract_span_with_findings(self, span: BaseSpan, child_findings: List[BatchFinding]) -> ExtractedSpan:
+    def _extract_span_with_findings(self, span: BaseSpan, child_findings: List[BatchFinding]) -> SpanNode:
         """Strips useless metadata, keeps I/O, tools, and attaches child findings."""
 
         c_input, c_output = self._collapse_io(span.input, span.output, span.children)
         
-        extracted = ExtractedSpan(
+        extracted = SpanNode(
             spanUuid=span.uuid,
             parentUuid=span.parent_uuid,
             type=span.__class__.__name__,
@@ -223,13 +223,13 @@ class TraceBatchEvaluator:
             
         return extracted
 
-    def _extract_trace_root(self, trace: Trace) -> ExtractedSpan:
+    def _extract_trace_root(self, trace: Trace) -> SpanNode:
         """Extracts the top-level trace I/O and any root-level findings."""
         root_findings = self._get_child_findings(trace.root_spans)
 
         c_input, c_output = self._collapse_io(trace.input, trace.output, trace.root_spans)
         
-        return ExtractedSpan(
+        return SpanNode(
             spanUuid=trace.uuid,
             parentUuid=None,
             type="TraceRoot",
