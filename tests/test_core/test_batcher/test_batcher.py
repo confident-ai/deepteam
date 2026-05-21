@@ -40,7 +40,6 @@ def batch_evaluator_factory(evaluation_model):
     def _factory(limit: int) -> TraceScanner:
         return TraceScanner(
             model=model,
-            using_native_model=using_native,
             template=BiasTemplate,
             limit=limit,
         )
