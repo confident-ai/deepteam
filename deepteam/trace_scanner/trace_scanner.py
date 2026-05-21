@@ -24,9 +24,10 @@ class TraceScanner:
         # Internal State
         self._current_batch: List[SpanNode] = []
         self._current_batch_size: int = 0
-        self._all_findings: Dict[str, List[BatchFinding]] = {}
+        self._findings: List[BatchFinding] = []
+        self._findings_by_span: Dict[str, List[BatchFinding]] = {}
 
-    def process_trace(self, trace: Trace) -> Dict[str, List[BatchFinding]]:
+    def process_trace(self, trace: Trace) -> List[BatchFinding]:
         self._reset_state()
         
         for span in trace.root_spans:
@@ -38,9 +39,9 @@ class TraceScanner:
         if self._current_batch:
             self._flush_batch()
             
-        return self._all_findings
+        return self._findings
 
-    async def a_process_trace(self, trace: Trace) -> Dict[str, List[BatchFinding]]:
+    async def a_process_trace(self, trace: Trace) -> List[BatchFinding]:
         self._reset_state()
         
         for span in trace.root_spans:
@@ -52,12 +53,13 @@ class TraceScanner:
         if self._current_batch:
             await self._a_flush_batch()
             
-        return self._all_findings
+        return self._findings
 
     def _reset_state(self):
         self._current_batch = []
         self._current_batch_size = 0
-        self._all_findings = {}
+        self._findings = []
+        self._findings_by_span = {}
 
     # ---------------------------------------------------------
     # SYNCHRONOUS TRAVERSAL
@@ -146,24 +148,37 @@ class TraceScanner:
 
     def _store_findings(self, findings: List[BatchFinding]):
         for finding in findings:
-            if finding.spanUuid not in self._all_findings:
-                self._all_findings[finding.spanUuid] = []
-                
+            if finding.spanUuid not in self._findings_by_span:
+                self._findings_by_span[finding.spanUuid] = []
+
             # Filter out any older findings for this exact vulnerability type
             # because the newer finding from a higher-level batch is the final authority.
-            self._all_findings[finding.spanUuid] = [
-                f for f in self._all_findings[finding.spanUuid]
-                if not (f.vulnerability == finding.vulnerability and 
-                        f.vulnerabilityType == finding.vulnerabilityType)
+            self._findings_by_span[finding.spanUuid] = [
+                f
+                for f in self._findings_by_span[finding.spanUuid]
+                if not (
+                    f.vulnerability == finding.vulnerability
+                    and f.vulnerabilityType == finding.vulnerabilityType
+                )
             ]
-            
-            self._all_findings[finding.spanUuid].append(finding)
+            self._findings_by_span[finding.spanUuid].append(finding)
+
+            self._findings = [
+                f
+                for f in self._findings
+                if not (
+                    f.spanUuid == finding.spanUuid
+                    and f.vulnerability == finding.vulnerability
+                    and f.vulnerabilityType == finding.vulnerabilityType
+                )
+            ]
+            self._findings.append(finding)
 
     def _get_child_findings(self, children: List[BaseSpan]) -> List[BatchFinding]:
         findings = []
         for child in children:
-            if child.uuid in self._all_findings:
-                findings.extend(self._all_findings[child.uuid])
+            if child.uuid in self._findings_by_span:
+                findings.extend(self._findings_by_span[child.uuid])
         return findings
 
     def _collapse_io(self, parent_input: Any, parent_output: Any, children: List[BaseSpan]) -> tuple[Any, Any]:

@@ -58,19 +58,15 @@ class TestTraceScanner:
 
         assert bias_vulnerability.vulnerable is True
         assert len(findings) >= 1
-        
-        all_findings = [f for batch in findings.values() for f in batch]
-        assert any(f.vulnerabilityType == "gender" and f.status == "unmitigated" for f in all_findings)
+        assert any(f.vulnerabilityType == "gender" and f.status == "unmitigated" for f in findings)
 
     def test_guardrail_mitigation_no_root_breach(self, bias_vulnerability):
         trace = load_trace_fixture("guardrail_mitigated_trace")
         
         findings = bias_vulnerability._assess_trace(trace)
-        
-        all_findings = [f for batch in findings.values() for f in batch]
 
-        assert len(all_findings) > 0
-        assert all(f.status == "mitigated" for f in all_findings)
+        assert len(findings) > 0
+        assert all(f.status == "mitigated" for f in findings)
         
         assert bias_vulnerability.vulnerable is False
 
@@ -80,7 +76,7 @@ class TestTraceScanner:
         
         findings = await bias_vulnerability._a_assess_trace(trace)
 
-        assert findings == {}
+        assert findings == []
         assert bias_vulnerability.vulnerable is False
 
     def test_io_collapsing_wrapper_edge_case(self, batch_evaluator_factory):

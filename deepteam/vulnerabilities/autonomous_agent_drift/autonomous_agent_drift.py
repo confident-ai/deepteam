@@ -301,7 +301,7 @@ class AutonomousAgentDrift(BaseVulnerability):
     def _assess_trace(
         self,
         trace: Trace,
-    ) -> Dict[str, List[BatchFinding]]:
+    ) -> List[BatchFinding]:
         """
         Evaluates an entire execution trace for Autonomous Agent Drift vulnerabilities using bottoms-up batching.
         """
@@ -323,16 +323,14 @@ class AutonomousAgentDrift(BaseVulnerability):
         findings = trace_scanner.process_trace(trace)
 
         self.trace_findings = findings
-
-        all_flat_findings = [f for batch in findings.values() for f in batch]
-        self.vulnerable = any(f.status == "unmitigated" for f in all_flat_findings)
+        self.vulnerable = any(f.status == "unmitigated" for f in findings)
 
         return findings
 
     async def _a_assess_trace(
         self,
         trace: Trace,
-    ) -> Dict[str, List[BatchFinding]]:
+    ) -> List[BatchFinding]:
         """
         Asynchronously evaluates an entire execution trace for Autonomous Agent Drift vulnerabilities.
         """
@@ -349,9 +347,7 @@ class AutonomousAgentDrift(BaseVulnerability):
         findings = await trace_scanner.a_process_trace(trace)
 
         self.trace_findings = findings
-
-        all_flat_findings = [f for batch in findings.values() for f in batch]
-        self.vulnerable = any(f.status == "unmitigated" for f in all_flat_findings)
+        self.vulnerable = any(f.status == "unmitigated" for f in findings)
 
         return findings
 
