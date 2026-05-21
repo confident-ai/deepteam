@@ -308,7 +308,6 @@ class GoalTheft(BaseVulnerability):
         )
         trace_scanner = TraceScanner(
             model=self.evaluation_model,
-            using_native_model=self.using_native_model,
             template=GoalTheftTemplate,
         )
 
@@ -332,7 +331,6 @@ class GoalTheft(BaseVulnerability):
 
         trace_scanner = TraceScanner(
             model=self.evaluation_model,
-            using_native_model=self.using_native_model,
             template=GoalTheftTemplate,
         )
 

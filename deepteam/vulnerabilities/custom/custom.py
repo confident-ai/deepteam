@@ -334,7 +334,6 @@ class CustomVulnerability(BaseVulnerability):
         )
         trace_scanner = TraceScanner(
             model=self.evaluation_model,
-            using_native_model=self.using_native_model,
             template=self._get_trace_template(),
         )
 
@@ -358,7 +357,6 @@ class CustomVulnerability(BaseVulnerability):
 
         trace_scanner = TraceScanner(
             model=self.evaluation_model,
-            using_native_model=self.using_native_model,
             template=self._get_trace_template(),
         )
 

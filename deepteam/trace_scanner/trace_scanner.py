@@ -1,63 +1,83 @@
+import asyncio
 import json
-from typing import Dict, List, Any
+from dataclasses import dataclass, field
+from typing import Dict, List, Any, Optional
 
 from deepeval.tracing.types import AgentSpan, LlmSpan, RetrieverSpan, ToolSpan, Trace, BaseSpan
 from deepeval.models import DeepEvalBaseLLM
+from deepeval.metrics.utils import initialize_model
 
 from .schema import BatchFinding, BatchFindingsList, SpanNode
 from deepteam.utils import SPANS_CONTEXT_LIMIT
 from deepteam.attacks.attack_simulator.utils import generate, a_generate
 
+
+@dataclass
+class BatchContext:
+    """Subtree-local accumulator for spans pending LLM evaluation.
+
+    Each traversal subtree owns one; concurrent sibling traversals never
+    share one, which keeps batch composition and size accounting correct
+    across the `await` inside an async flush.
+    """
+    batch: List[SpanNode] = field(default_factory=list)
+    size: int = 0
+
+
 class TraceScanner:
     def __init__(
         self,
         model: DeepEvalBaseLLM,
-        using_native_model: bool,
         template: Any,
         limit: int = SPANS_CONTEXT_LIMIT,
+        max_concurrent: int = 10,
     ):
-        self.model = model
-        self.using_native_model = using_native_model
+        self.model, self.using_native_model = initialize_model(model)
         self.template = template
         self.limit = limit
-        
+        self.max_concurrent = max_concurrent
+
         # Internal State
-        self._current_batch: List[SpanNode] = []
-        self._current_batch_size: int = 0
         self._findings: List[BatchFinding] = []
         self._findings_by_span: Dict[str, List[BatchFinding]] = {}
+        self._semaphore: Optional[asyncio.Semaphore] = None
 
     def process_trace(self, trace: Trace) -> List[BatchFinding]:
         self._reset_state()
-        
+        ctx = BatchContext()
+
         for span in trace.root_spans:
-            self._traverse_post_order(span)
-            
+            self._merge_context(ctx, self._traverse_post_order(span))
+
         trace_node = self._extract_trace_root(trace)
-        self._add_to_batch_and_check(trace_node)
-        
-        if self._current_batch:
-            self._flush_batch()
-            
+        self._add_to_batch_and_check(ctx, trace_node)
+
+        if ctx.batch:
+            self._flush_batch(ctx)
+
         return self._findings
 
     async def a_process_trace(self, trace: Trace) -> List[BatchFinding]:
         self._reset_state()
-        
-        for span in trace.root_spans:
-            await self._a_traverse_post_order(span)
-            
+        self._semaphore = asyncio.Semaphore(self.max_concurrent)
+        ctx = BatchContext()
+
+        # Root spans are siblings -> independent -> scanned concurrently.
+        child_ctxs = await asyncio.gather(
+            *(self._a_traverse_post_order(span) for span in trace.root_spans)
+        )
+        for child_ctx in child_ctxs:
+            await self._a_merge_context(ctx, child_ctx)
+
         trace_node = self._extract_trace_root(trace)
-        await self._a_add_to_batch_and_check(trace_node)
-        
-        if self._current_batch:
-            await self._a_flush_batch()
-            
+        await self._a_add_to_batch_and_check(ctx, trace_node)
+
+        if ctx.batch:
+            await self._a_flush_batch(ctx)
+
         return self._findings
 
     def _reset_state(self):
-        self._current_batch = []
-        self._current_batch_size = 0
         self._findings = []
         self._findings_by_span = {}
 
@@ -65,82 +85,104 @@ class TraceScanner:
     # SYNCHRONOUS TRAVERSAL
     # ---------------------------------------------------------
 
-    def _traverse_post_order(self, span: BaseSpan):
+    def _traverse_post_order(self, span: BaseSpan) -> BatchContext:
+        ctx = BatchContext()
+
         for child in span.children:
-            self._traverse_post_order(child)
-            
+            self._merge_context(ctx, self._traverse_post_order(child))
+
         child_findings = self._get_child_findings(span.children)
         span_node = self._extract_span_with_findings(span, child_findings)
-        
-        self._add_to_batch_and_check(span_node)
 
-    def _add_to_batch_and_check(self, node: SpanNode):
+        self._add_to_batch_and_check(ctx, span_node)
+        return ctx
+
+    def _add_to_batch_and_check(self, ctx: BatchContext, node: SpanNode):
         # Dump to dict strictly excluding None to save tokens
         node_dict = node.model_dump(exclude_none=True)
         node_str = json.dumps(node_dict)
         node_size = len(node_str)
-        
-        if self._current_batch_size + node_size > self.limit and self._current_batch:
-            self._flush_batch()
 
-        self._current_batch.append(node)
-        self._current_batch_size += node_size
+        if ctx.size + node_size > self.limit and ctx.batch:
+            self._flush_batch(ctx)
 
-        if self._current_batch_size >= self.limit:
-            self._flush_batch()
+        ctx.batch.append(node)
+        ctx.size += node_size
 
-    def _flush_batch(self):
-        if not self._current_batch:
+        if ctx.size >= self.limit:
+            self._flush_batch(ctx)
+
+    def _merge_context(self, parent_ctx: BatchContext, child_ctx: BatchContext):
+        """Fold a completed subtree's leftover (unflushed) nodes into the parent."""
+        for node in child_ctx.batch:
+            self._add_to_batch_and_check(parent_ctx, node)
+
+    def _flush_batch(self, ctx: BatchContext):
+        if not ctx.batch:
             return
-            
-        batch_list = [node.model_dump(exclude_none=True) for node in self._current_batch]
+
+        batch_list = [node.model_dump(exclude_none=True) for node in ctx.batch]
         batch_string = json.dumps(batch_list, indent=2)
         prompt = self.template.generate_trace_batch_evaluation(batch_data=batch_string)
 
         res: BatchFindingsList = generate(prompt, BatchFindingsList, self.model)
         self._store_findings(res.findings)
-        self._current_batch = []
-        self._current_batch_size = 0
+        ctx.batch = []
+        ctx.size = 0
 
     # ---------------------------------------------------------
     # ASYNCHRONOUS TRAVERSAL
     # ---------------------------------------------------------
 
-    async def _a_traverse_post_order(self, span: BaseSpan):
-        for child in span.children:
-            await self._a_traverse_post_order(child)
-            
+    async def _a_traverse_post_order(self, span: BaseSpan) -> BatchContext:
+        ctx = BatchContext()
+
+        if span.children:
+            # Sibling subtrees are independent -> scan them concurrently.
+            child_ctxs = await asyncio.gather(
+                *(self._a_traverse_post_order(child) for child in span.children)
+            )
+            for child_ctx in child_ctxs:
+                await self._a_merge_context(ctx, child_ctx)
+
         child_findings = self._get_child_findings(span.children)
         span_node = self._extract_span_with_findings(span, child_findings)
-        
-        await self._a_add_to_batch_and_check(span_node)
 
-    async def _a_add_to_batch_and_check(self, node: SpanNode):
+        await self._a_add_to_batch_and_check(ctx, span_node)
+        return ctx
+
+    async def _a_add_to_batch_and_check(self, ctx: BatchContext, node: SpanNode):
         node_dict = node.model_dump(exclude_none=True)
         node_str = json.dumps(node_dict)
         node_size = len(node_str)
-        
-        if self._current_batch_size + node_size > self.limit and self._current_batch:
-            await self._a_flush_batch()
-            
-        self._current_batch.append(node)
-        self._current_batch_size += node_size
 
-        if self._current_batch_size >= self.limit:
-            await self._a_flush_batch()
+        if ctx.size + node_size > self.limit and ctx.batch:
+            await self._a_flush_batch(ctx)
 
-    async def _a_flush_batch(self):
-        if not self._current_batch:
+        ctx.batch.append(node)
+        ctx.size += node_size
+
+        if ctx.size >= self.limit:
+            await self._a_flush_batch(ctx)
+
+    async def _a_merge_context(self, parent_ctx: BatchContext, child_ctx: BatchContext):
+        for node in child_ctx.batch:
+            await self._a_add_to_batch_and_check(parent_ctx, node)
+
+    async def _a_flush_batch(self, ctx: BatchContext):
+        if not ctx.batch:
             return
-            
-        batch_list = [node.model_dump(exclude_none=True) for node in self._current_batch]
+
+        batch_list = [node.model_dump(exclude_none=True) for node in ctx.batch]
         batch_string = json.dumps(batch_list, indent=2)
         prompt = self.template.generate_trace_batch_evaluation(batch_data=batch_string)
 
-        res: BatchFindingsList = await a_generate(prompt, BatchFindingsList, self.model)
+        # Bound the number of in-flight LLM calls across concurrent subtrees.
+        async with self._semaphore:
+            res: BatchFindingsList = await a_generate(prompt, BatchFindingsList, self.model)
         self._store_findings(res.findings)
-        self._current_batch = []
-        self._current_batch_size = 0
+        ctx.batch = []
+        ctx.size = 0
 
     # ---------------------------------------------------------
     # UTILITIES & EXTRACTION
@@ -183,29 +225,29 @@ class TraceScanner:
 
     def _collapse_io(self, parent_input: Any, parent_output: Any, children: List[BaseSpan]) -> tuple[Any, Any]:
         """
-        Compares parent I/O with children I/O. If an exact match is found, 
+        Compares parent I/O with children I/O. If an exact match is found,
         returns None for that field to avoid redundant LLM evaluation / attribution.
         """
         collapsed_input = parent_input
         collapsed_output = parent_output
-        
+
         for child in children:
             if collapsed_input is not None and collapsed_input == child.input:
                 collapsed_input = None
             if collapsed_output is not None and collapsed_output == child.output:
                 collapsed_output = None
-            
+
             # Early exit if both are already collapsed
             if collapsed_input is None and collapsed_output is None:
                 break
-                
+
         return collapsed_input, collapsed_output
 
     def _extract_span_with_findings(self, span: BaseSpan, child_findings: List[BatchFinding]) -> SpanNode:
         """Strips useless metadata, keeps I/O, tools, and attaches child findings."""
 
         c_input, c_output = self._collapse_io(span.input, span.output, span.children)
-        
+
         extracted = SpanNode(
             spanUuid=span.uuid,
             parentUuid=span.parent_uuid,
@@ -221,21 +263,21 @@ class TraceScanner:
             tools_called=span.tools_called,
             child_findings=child_findings if child_findings else None
         )
-        
+
         # 2. Map Subclass-Specific Critical Fields
         if isinstance(span, LlmSpan):
             extracted.model = span.model
-            
+
         elif isinstance(span, AgentSpan):
             extracted.available_tools = span.available_tools
             extracted.agent_handoffs = span.agent_handoffs
-            
+
         elif isinstance(span, RetrieverSpan):
             extracted.embedder = span.embedder
-            
+
         elif isinstance(span, ToolSpan):
             extracted.description = span.description
-            
+
         return extracted
 
     def _extract_trace_root(self, trace: Trace) -> SpanNode:
@@ -243,7 +285,7 @@ class TraceScanner:
         root_findings = self._get_child_findings(trace.root_spans)
 
         c_input, c_output = self._collapse_io(trace.input, trace.output, trace.root_spans)
-        
+
         return SpanNode(
             spanUuid=trace.uuid,
             parentUuid=None,

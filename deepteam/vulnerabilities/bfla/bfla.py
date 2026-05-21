@@ -304,7 +304,6 @@ class BFLA(BaseVulnerability):
         )
         trace_scanner = TraceScanner(
             model=self.evaluation_model,
-            using_native_model=self.using_native_model,
             template=BFLATemplate,
         )
 
@@ -328,7 +327,6 @@ class BFLA(BaseVulnerability):
 
         trace_scanner = TraceScanner(
             model=self.evaluation_model,
-            using_native_model=self.using_native_model,
             template=BFLATemplate,
         )
 

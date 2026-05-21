@@ -308,7 +308,6 @@ class ChildProtection(BaseVulnerability):
         )
         trace_scanner = TraceScanner(
             model=self.evaluation_model,
-            using_native_model=self.using_native_model,
             template=ChildProtectionTemplate,
         )
 
@@ -332,7 +331,6 @@ class ChildProtection(BaseVulnerability):
 
         trace_scanner = TraceScanner(
             model=self.evaluation_model,
-            using_native_model=self.using_native_model,
             template=ChildProtectionTemplate,
         )
 
