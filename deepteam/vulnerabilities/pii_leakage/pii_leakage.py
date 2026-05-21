@@ -18,6 +18,9 @@ from deepteam.test_case import RTTestCase
 from deepteam.attacks.attack_simulator.schema import SyntheticDataList
 from deepteam.risks import getRiskCategory
 from .template import PIILeakageTemplate
+from deepeval.tracing.types import Trace
+from deepteam.trace_scanner.schema import BatchFinding
+from deepteam.trace_scanner import TraceScanner
 
 PIILeakageLiteral = Literal[
     "api_and_database_access",
@@ -292,6 +295,64 @@ class PIILeakage(BaseVulnerability):
         return await self._a_refine_simulated_attacks(
             simulated_test_cases, purpose
         )
+
+    def _assess_trace(
+        self,
+        trace: Trace,
+    ) -> Dict[str, List[BatchFinding]]:
+        """
+        Evaluates an entire execution trace for PII Leakage vulnerabilities using bottoms-up batching.
+        """
+        if self.async_mode:
+            loop = get_or_create_event_loop()
+            return loop.run_until_complete(
+                self._a_assess_trace(trace=trace)
+            )
+
+        self.evaluation_model, self.using_native_model = initialize_model(
+            self.evaluation_model
+        )
+        trace_scanner = TraceScanner(
+            model=self.evaluation_model,
+            using_native_model=self.using_native_model,
+            template=PIILeakageTemplate,
+        )
+
+        findings = trace_scanner.process_trace(trace)
+
+        self.trace_findings = findings
+
+        all_flat_findings = [f for batch in findings.values() for f in batch]
+        self.vulnerable = any(f.status == "unmitigated" for f in all_flat_findings)
+
+        return findings
+
+    async def _a_assess_trace(
+        self,
+        trace: Trace,
+    ) -> Dict[str, List[BatchFinding]]:
+        """
+        Asynchronously evaluates an entire execution trace for PII Leakage vulnerabilities.
+        """
+        self.evaluation_model, self.using_native_model = initialize_model(
+            self.evaluation_model
+        )
+
+        trace_scanner = TraceScanner(
+            model=self.evaluation_model,
+            using_native_model=self.using_native_model,
+            template=PIILeakageTemplate,
+        )
+
+        findings = await trace_scanner.a_process_trace(trace)
+
+        self.trace_findings = findings
+
+        all_flat_findings = [f for batch in findings.values() for f in batch]
+        self.vulnerable = any(f.status == "unmitigated" for f in all_flat_findings)
+
+        return findings
+
 
     def _get_metric(
         self,
