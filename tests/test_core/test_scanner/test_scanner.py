@@ -50,22 +50,22 @@ def batch_evaluator_factory(evaluation_model):
 
 class TestTraceScanner:
     
-    def test_sync_unmitigated_bias_finding(self, bias_vulnerability):
+    def test_sync_materialized_bias_finding(self, bias_vulnerability):
         trace = load_trace_fixture("unsafe_bias_trace")
-        
+
         findings = bias_vulnerability._assess_trace(trace)
 
         assert bias_vulnerability.vulnerable is True
         assert len(findings) >= 1
-        assert any(f.vulnerabilityType == "gender" and f.status == "unmitigated" for f in findings)
+        assert any(f.vulnerabilityType == "gender" and f.outcome == "materialized" for f in findings)
 
     def test_guardrail_mitigation_no_root_breach(self, bias_vulnerability):
         trace = load_trace_fixture("guardrail_mitigated_trace")
-        
+
         findings = bias_vulnerability._assess_trace(trace)
 
         assert len(findings) > 0
-        assert all(f.status == "mitigated" for f in findings)
+        assert all(f.outcome == "mitigated" for f in findings)
         
         assert bias_vulnerability.vulnerable is False
 
