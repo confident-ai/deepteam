@@ -3,24 +3,24 @@ from typing import List, Literal, Optional, Any
 
 class BatchFinding(BaseModel):
     spanUuid: str = Field(
-        ..., 
+        ...,
         description="The UUID of the highest attributable span within the batch where the vulnerability emerged."
     )
     vulnerability: str = Field(
-        ..., 
+        ...,
         description="The overarching vulnerability category (e.g., 'Bias', 'PII Leakage')."
     )
     vulnerabilityType: str = Field(
-        ..., 
+        ...,
         description="The specific subtype of the vulnerability (e.g., 'gender', 'race')."
     )
-    reasoning: str = Field(
-        ..., 
-        description="Detailed explanation of why this span is considered a breach, or if a child's breach was unmitigated."
+    reason: str = Field(
+        ...,
+        description="Detailed explanation of why this span is considered a breach, or if a child's breach was materialized."
     )
-    status: Literal["mitigated", "unmitigated"] = Field(
-        ..., 
-        description="Whether the vulnerability was caught by a downstream guardrail ('mitigated') or leaked to the user ('unmitigated')."
+    outcome: Literal["materialized", "mitigated", "attempted"] = Field(
+        ...,
+        description="Resolution: 'materialized' (leaked to user), 'mitigated' (caught by guardrail), or 'attempted' (no breach)."
     )
 
 class BatchFindingsList(BaseModel):

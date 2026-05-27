@@ -317,7 +317,7 @@ class PromptLeakage(BaseVulnerability):
         findings = trace_scanner.process_trace(trace)
 
         self.trace_findings = findings
-        self.vulnerable = any(f.status == "unmitigated" for f in findings)
+        self.vulnerable = any(f.outcome == "materialized" for f in findings)
 
         return findings
 
@@ -340,7 +340,7 @@ class PromptLeakage(BaseVulnerability):
         findings = await trace_scanner.a_process_trace(trace)
 
         self.trace_findings = findings
-        self.vulnerable = any(f.status == "unmitigated" for f in findings)
+        self.vulnerable = any(f.outcome == "materialized" for f in findings)
 
         return findings
 
