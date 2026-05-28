@@ -1,0 +1,2128 @@
+{
+  "content/docs/(agentic)/red-teaming-agentic-vulnerabilities-goal-theft.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 5
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 2
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    }
+  ],
+  "content/docs/(agentic)/red-teaming-agentic-vulnerabilities-recursive-hijacking.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 5
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 2
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    }
+  ],
+  "content/docs/(agentic)/red-teaming-vulnerabilities-agent-identity-abuse.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    }
+  ],
+  "content/docs/(agentic)/red-teaming-vulnerabilities-autonomous-agent-drift.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    }
+  ],
+  "content/docs/(agentic)/red-teaming-vulnerabilities-excessive-agency.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 6
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(agentic)/red-teaming-vulnerabilities-exploit-tool-agent.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    }
+  ],
+  "content/docs/(agentic)/red-teaming-vulnerabilities-external-system-abuse.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    }
+  ],
+  "content/docs/(agentic)/red-teaming-vulnerabilities-indirect-instruction.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    }
+  ],
+  "content/docs/(agentic)/red-teaming-vulnerabilities-inter-agent-communication-compromise.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    }
+  ],
+  "content/docs/(agentic)/red-teaming-vulnerabilities-robustness.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 6
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(agentic)/red-teaming-vulnerabilities-tool-orchestration-abuse.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    }
+  ],
+  "content/docs/(business)/red-teaming-vulnerabilities-competition.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 6
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(business)/red-teaming-vulnerabilities-intellectual-property.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 7
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(business)/red-teaming-vulnerabilities-misinformation.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 6
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(concepts)/red-teaming-risk-assessment.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 8
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(concepts)/red-teaming-test-case.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 7
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    }
+  ],
+  "content/docs/(guards)/guardrails-cybersecurity-guard.mdx": [
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 2
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    }
+  ],
+  "content/docs/(guards)/guardrails-hallucination-guard.mdx": [
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 2
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    }
+  ],
+  "content/docs/(guards)/guardrails-illegal-guard.mdx": [
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 2
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    }
+  ],
+  "content/docs/(guards)/guardrails-privacy-guard.mdx": [
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 2
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    }
+  ],
+  "content/docs/(guards)/guardrails-prompt-injection-guard.mdx": [
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 2
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    }
+  ],
+  "content/docs/(guards)/guardrails-topical-guard.mdx": [
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 2
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    }
+  ],
+  "content/docs/(guards)/guardrails-toxicity-guard.mdx": [
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 2
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    }
+  ],
+  "content/docs/(multi-turn)/red-teaming-adversarial-attacks-bad-likert-judge.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 1
+    }
+  ],
+  "content/docs/(multi-turn)/red-teaming-adversarial-attacks-crescendo-jailbreaking.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 4
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "spike-spiegel-21",
+      "name": "Mayank Solanki",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/83648453?v=4",
+      "url": "https://github.com/spike-spiegel-21",
+      "commits": 1
+    }
+  ],
+  "content/docs/(multi-turn)/red-teaming-adversarial-attacks-linear-jailbreaking.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 9
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 5
+    },
+    {
+      "login": "spike-spiegel-21",
+      "name": "Mayank Solanki",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/83648453?v=4",
+      "url": "https://github.com/spike-spiegel-21",
+      "commits": 1
+    }
+  ],
+  "content/docs/(multi-turn)/red-teaming-adversarial-attacks-sequential-jailbreaking.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 1
+    }
+  ],
+  "content/docs/(multi-turn)/red-teaming-adversarial-attacks-tree-jailbreaking.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 8
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 5
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "spike-spiegel-21",
+      "name": "Mayank Solanki",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/83648453?v=4",
+      "url": "https://github.com/spike-spiegel-21",
+      "commits": 1
+    }
+  ],
+  "content/docs/(owasp)/frameworks-owasp-top-10-for-agentic-applications.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 5
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 2
+    }
+  ],
+  "content/docs/(owasp)/frameworks-owasp-top-10-for-llms.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 7
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 5
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 1
+    }
+  ],
+  "content/docs/(responsible-ai)/red-teaming-vulnerabilities-bias.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 12
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 5
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(responsible-ai)/red-teaming-vulnerabilities-child-protection.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    }
+  ],
+  "content/docs/(responsible-ai)/red-teaming-vulnerabilities-ethics.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    }
+  ],
+  "content/docs/(responsible-ai)/red-teaming-vulnerabilities-fairness.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    }
+  ],
+  "content/docs/(responsible-ai)/red-teaming-vulnerabilities-toxicity.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 7
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(safety)/red-teaming-vulnerabilities-graphic-content.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 6
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(safety)/red-teaming-vulnerabilities-illegal-activity.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 5
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(safety)/red-teaming-vulnerabilities-personal-safety.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 4
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(safety)/red-teaming-vulnerabilities-unexpected-code-execution.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    }
+  ],
+  "content/docs/(security)/red-teaming-vulnerabilities-bfla.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 1
+    }
+  ],
+  "content/docs/(security)/red-teaming-vulnerabilities-bola.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 1
+    }
+  ],
+  "content/docs/(security)/red-teaming-vulnerabilities-cross-context-retrieval.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    }
+  ],
+  "content/docs/(security)/red-teaming-vulnerabilities-debug-access.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 5
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 1
+    }
+  ],
+  "content/docs/(security)/red-teaming-vulnerabilities-rbac.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 1
+    }
+  ],
+  "content/docs/(security)/red-teaming-vulnerabilities-shell-injection.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 5
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 1
+    }
+  ],
+  "content/docs/(security)/red-teaming-vulnerabilities-sql-injection.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 5
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 1
+    }
+  ],
+  "content/docs/(security)/red-teaming-vulnerabilities-ssrf.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 1
+    }
+  ],
+  "content/docs/(security)/red-teaming-vulnerabilities-system-reconnaissance.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    }
+  ],
+  "content/docs/(security)/red-teaming-vulnerabilities-tool-metadata-poisoning.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 4
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-adversarial-attacks-adversarial-poetry.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 5
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 5
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-adversarial-attacks-authority-escalation.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 2
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-adversarial-attacks-base64-encoding.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 5
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-adversarial-attacks-character-stream.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-adversarial-attacks-context-flooding.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-adversarial-attacks-embedded-instruction-json.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 2
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-adversarial-attacks-emotional-manipulation.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 2
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-adversarial-attacks-gray-box-attack.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 5
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 4
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-adversarial-attacks-leetspeak.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 5
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-adversarial-attacks-math-problem.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 5
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-adversarial-attacks-multilingual.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 5
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 4
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-adversarial-attacks-prompt-injection.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 5
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-adversarial-attacks-roleplay.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 2
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 1
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-adversarial-attacks-rot13-encoding.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 5
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-adversarial-attacks-synthetic-context-injection.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 2
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-agentic-attacks-context-poisoning.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 5
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 2
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-agentic-attacks-input-bypass.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 4
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 2
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-agentic-attacks-permission-escalation.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 4
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 2
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-agentic-attacks-semantic-manipulation.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 3
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 2
+    }
+  ],
+  "content/docs/(single-turn)/red-teaming-agentic-attacks-system-override.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 4
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 2
+    }
+  ],
+  "content/docs/(vulns-data-privacy)/red-teaming-vulnerabilities-pii-leakage.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 7
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/(vulns-data-privacy)/red-teaming-vulnerabilities-prompt-leakage.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 6
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/data-privacy.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "Jeffrey Ip",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 13
+    },
+    {
+      "login": "BloggerBust",
+      "name": "BloggerBust",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/10637462?v=4",
+      "url": "https://github.com/BloggerBust",
+      "commits": 3
+    },
+    {
+      "login": "joaopmatias",
+      "name": "João Matias",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/17345950?v=4",
+      "url": "https://github.com/joaopmatias",
+      "commits": 1
+    },
+    {
+      "login": "PLNech",
+      "name": "Paul-Louis NECH",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/1821404?v=4",
+      "url": "https://github.com/PLNech",
+      "commits": 1
+    },
+    {
+      "login": "pritamsoni-hsr",
+      "name": "Pritam Soni",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/23050213?v=4",
+      "url": "https://github.com/pritamsoni-hsr",
+      "commits": 1
+    }
+  ],
+  "content/docs/frameworks-aegis.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 2
+    }
+  ],
+  "content/docs/frameworks-beavertails.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 2
+    }
+  ],
+  "content/docs/frameworks-eu-ai-act.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 4
+    }
+  ],
+  "content/docs/frameworks-introduction.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    }
+  ],
+  "content/docs/frameworks-mitre-atlas.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    }
+  ],
+  "content/docs/frameworks-nist-ai-rmf.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    }
+  ],
+  "content/docs/getting-started.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "Jeffrey Ip",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 136
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 8
+    },
+    {
+      "login": "ChristianBernhard",
+      "name": "Christian Bernhard",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/44226023?v=4",
+      "url": "https://github.com/ChristianBernhard",
+      "commits": 3
+    },
+    {
+      "login": "BloggerBust",
+      "name": "BloggerBust",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/10637462?v=4",
+      "url": "https://github.com/BloggerBust",
+      "commits": 2
+    },
+    {
+      "login": "Andrea23Romano",
+      "name": "Andrea23Romano",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/103339491?v=4",
+      "url": "https://github.com/Andrea23Romano",
+      "commits": 1
+    },
+    {
+      "login": "bderenzi",
+      "name": "Brian DeRenzi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/94682?v=4",
+      "url": "https://github.com/bderenzi",
+      "commits": 1
+    },
+    {
+      "login": "bmerkle",
+      "name": "Bernhard Merkle",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/232471?v=4",
+      "url": "https://github.com/bmerkle",
+      "commits": 1
+    },
+    {
+      "login": "chkimes",
+      "name": "Chad Kimes",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/1936066?v=4",
+      "url": "https://github.com/chkimes",
+      "commits": 1
+    },
+    {
+      "login": "connorbrinton",
+      "name": "Connor Brinton",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/1848731?v=4",
+      "url": "https://github.com/connorbrinton",
+      "commits": 1
+    },
+    {
+      "login": "Deeds67",
+      "name": "Pierre Marais",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/8532893?v=4",
+      "url": "https://github.com/Deeds67",
+      "commits": 1
+    },
+    {
+      "login": "dunnkers",
+      "name": "Jeroen Overschie",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/744430?v=4",
+      "url": "https://github.com/dunnkers",
+      "commits": 1
+    },
+    {
+      "login": "elsatch",
+      "name": "César García",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/653433?v=4",
+      "url": "https://github.com/elsatch",
+      "commits": 1
+    },
+    {
+      "login": "fabiofumarola",
+      "name": "fabio fumarola",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/1550672?v=4",
+      "url": "https://github.com/fabiofumarola",
+      "commits": 1
+    },
+    {
+      "login": "joaopmatias",
+      "name": "João Matias",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/17345950?v=4",
+      "url": "https://github.com/joaopmatias",
+      "commits": 1
+    },
+    {
+      "login": "NeelayS",
+      "name": "Neelay Shah",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/44301912?v=4",
+      "url": "https://github.com/NeelayS",
+      "commits": 1
+    },
+    {
+      "login": "NimJay",
+      "name": "Nim Jayawardena",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/10292865?v=4",
+      "url": "https://github.com/NimJay",
+      "commits": 1
+    },
+    {
+      "login": "r-sniper",
+      "name": "Rahul Shah",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/23214902?v=4",
+      "url": "https://github.com/r-sniper",
+      "commits": 1
+    }
+  ],
+  "content/docs/guardrails-introduction.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 4
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 2
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    }
+  ],
+  "content/docs/red-teaming-adversarial-attacks.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 7
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 3
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/red-teaming-custom-vulnerability.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 7
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 6
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 4
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    }
+  ],
+  "content/docs/red-teaming-introduction.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 13
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 11
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "SKM162",
+      "name": "SKM162",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/51273744?v=4",
+      "url": "https://github.com/SKM162",
+      "commits": 2
+    },
+    {
+      "login": "executeautomation",
+      "name": "ExecuteAutomation",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/10337030?v=4",
+      "url": "https://github.com/executeautomation",
+      "commits": 1
+    },
+    {
+      "login": "spike-spiegel-21",
+      "name": "Mayank Solanki",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/83648453?v=4",
+      "url": "https://github.com/spike-spiegel-21",
+      "commits": 1
+    }
+  ],
+  "content/docs/red-teaming-vulnerabilities.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 9
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 7
+    },
+    {
+      "login": "karthick965938",
+      "name": "Karthick Nagarajan",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/16076431?v=4",
+      "url": "https://github.com/karthick965938",
+      "commits": 1
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 1
+    }
+  ],
+  "content/docs/red-teaming-yaml-cli.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 8
+    },
+    {
+      "login": "kritinv",
+      "name": "Kritin_Vongthongsri",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/73642562?v=4",
+      "url": "https://github.com/kritinv",
+      "commits": 2
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 2
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 1
+    }
+  ],
+  "content/docs/what-is-llm-red-teaming.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 7
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 4
+    },
+    {
+      "login": "sid-murali",
+      "name": "sid-murali",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/211296557?v=4",
+      "url": "https://github.com/sid-murali",
+      "commits": 1
+    }
+  ],
+  "content/guides/(ai-agents)/guide-agentic-ai-red-teaming.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 3
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    }
+  ],
+  "content/guides/(ai-agents)/guide-red-teaming-agentic-rag.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 3
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 2
+    }
+  ],
+  "content/guides/(ai-agents)/guide-red-teaming-conversational-agents.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 3
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    }
+  ],
+  "content/guides/(custom)/guide-custom-attacks.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 5
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 2
+    }
+  ],
+  "content/guides/(custom)/guide-custom-red-teaming-pipelines.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 4
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 2
+    }
+  ],
+  "content/guides/(custom)/guide-custom-vulnerability.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 11
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    }
+  ],
+  "content/guides/(frameworks)/guide-safety-frameworks.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 2
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    }
+  ],
+  "content/guides/(guardrails)/guide-deploying-guardrails.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 2
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    }
+  ],
+  "content/guides/(model-security)/guide-red-teaming-anthropic.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    }
+  ],
+  "content/guides/(model-security)/guide-red-teaming-fine-tuned.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    }
+  ],
+  "content/guides/(model-security)/guide-red-teaming-gemini.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    }
+  ],
+  "content/guides/(model-security)/guide-red-teaming-llama.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    }
+  ],
+  "content/guides/(model-security)/guide-red-teaming-mistral.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    }
+  ],
+  "content/guides/(model-security)/guide-red-teaming-models.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 2
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    }
+  ],
+  "content/guides/(model-security)/guide-red-teaming-open-weight.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    }
+  ],
+  "content/guides/(model-security)/guide-red-teaming-openai.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 1
+    }
+  ],
+  "content/guides/(operations)/guide-cli-yaml.mdx": [
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 2
+    },
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 1
+    }
+  ],
+  "content/guides/(responsible)/guide-responsible-ai.mdx": [
+    {
+      "login": "A-Vamshi",
+      "name": "A-Vamshi",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/123094948?v=4",
+      "url": "https://github.com/A-Vamshi",
+      "commits": 2
+    },
+    {
+      "login": "penguine-ip",
+      "name": "penguine",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/143328635?v=4",
+      "url": "https://github.com/penguine-ip",
+      "commits": 2
+    }
+  ]
+}
