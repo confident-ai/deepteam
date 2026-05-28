@@ -13,7 +13,7 @@ const CloudPlatformCallout: React.FC = () => {
       <span className={styles.content}>
         <span className={styles.title}>Collaborate in Confident Cloud</span>
         <span className={styles.body}>
-          Review evals, traces, annotate, manage datasets, and version prompts.
+          Run risk assessments, schedule assessments, scan traces and secure your LLM systems.
         </span>
       </span>
       <span className={styles.cta}>

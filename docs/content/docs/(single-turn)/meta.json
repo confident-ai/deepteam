@@ -16,10 +16,8 @@
     "red-teaming-adversarial-attacks-roleplay",
     "red-teaming-adversarial-attacks-rot13-encoding",
     "red-teaming-adversarial-attacks-synthetic-context-injection",
-    "red-teaming-agentic-attacks-agent-goal-hijacking",
     "red-teaming-agentic-attacks-context-poisoning",
     "red-teaming-agentic-attacks-input-bypass",
-    "red-teaming-agentic-attacks-objective-reframing",
     "red-teaming-agentic-attacks-permission-escalation",
     "red-teaming-agentic-attacks-semantic-manipulation",
     "red-teaming-agentic-attacks-system-override"

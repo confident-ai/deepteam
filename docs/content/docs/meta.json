@@ -15,13 +15,9 @@
     "(single-turn)",
     "(multi-turn)",
 
-    "---[Bot]Agentic Attacks---",
-    "red-teaming-agentic-introduction",
-    "red-teaming-agentic-attacks",
-
     "---[Bug]Vulnerabilities---",
     "red-teaming-vulnerabilities",
-    "red-teaming-vulnerabilities-custom",
+    "red-teaming-custom-vulnerability",
     "(vulns-data-privacy)",
     "(responsible-ai)",
     "(security)",

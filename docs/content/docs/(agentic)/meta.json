@@ -11,21 +11,6 @@
     "red-teaming-vulnerabilities-inter-agent-communication-compromise",
     "red-teaming-vulnerabilities-autonomous-agent-drift",
     "red-teaming-vulnerabilities-exploit-tool-agent",
-    "red-teaming-vulnerabilities-external-system-abuse",
-    "red-teaming-vulnerabilities-hallucination",
-    "red-teaming-agentic-vulnerabilities-context-amnesia",
-    "red-teaming-agentic-vulnerabilities-context-hallucination",
-    "red-teaming-agentic-vulnerabilities-data-exfiltration",
-    "red-teaming-agentic-vulnerabilities-decision-manipulation",
-    "red-teaming-agentic-vulnerabilities-direct-control-hijacking",
-    "red-teaming-agentic-vulnerabilities-goal-interpretation-drift",
-    "red-teaming-agentic-vulnerabilities-goal-interpretation",
-    "red-teaming-agentic-vulnerabilities-hierarchical-goal",
-    "red-teaming-agentic-vulnerabilities-induced-hallucination",
-    "red-teaming-agentic-vulnerabilities-memory-poisoning",
-    "red-teaming-agentic-vulnerabilities-permission-escalation",
-    "red-teaming-agentic-vulnerabilities-role-inheritance",
-    "red-teaming-agentic-vulnerabilities-semantic-manipulation",
-    "red-teaming-agentic-vulnerabilities-temporal-attack"
+    "red-teaming-vulnerabilities-external-system-abuse"
   ]
 }
