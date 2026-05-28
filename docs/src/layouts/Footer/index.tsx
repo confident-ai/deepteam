@@ -121,7 +121,7 @@ const Footer = () => {
             <span>
               &copy; {new Date().getFullYear()} Confident AI Inc. Made with{" "}
               <span className={styles.heart} aria-hidden="true">
-                💜
+                ❤️
               </span>{" "}
               and confidence.
             </span>
