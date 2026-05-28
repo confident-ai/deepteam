@@ -1,0 +1,25 @@
+{
+  "title": "Guides",
+  "pages": [
+    "---[Bot]AI Agent Security---",
+    "(ai-agents)",
+
+    "---[Cpu]Model Security---",
+    "(model-security)",
+
+    "---[Scale]Responsible AI & Ethics---",
+    "(responsible)",
+
+    "---[BookOpen]Frameworks & Compliance---",
+    "(frameworks)",
+
+    "---[ShieldCheck]Guardrails---",
+    "(guardrails)",
+
+    "---[Wrench]Customizations---",
+    "(custom)",
+
+    "---[Terminal]Operations---",
+    "(operations)"
+  ]
+}

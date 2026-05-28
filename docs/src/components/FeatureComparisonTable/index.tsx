@@ -1,6 +1,6 @@
+import { Check, X } from "lucide-react";
 import React from "react";
-import styles from "./FeatureComparisonTable.module.css";
-
+import styles from "./FeatureComparisonTable.module.scss";
 
 interface DatasetItem {
   feature: string;
@@ -2307,43 +2307,43 @@ interface FeatureComparisonTableProps {
   competitor: string;
 }
   
-export default function FeatureComparisonTable({ type, competitor }: FeatureComparisonTableProps) {
+const FeatureComparisonTable: React.FC<FeatureComparisonTableProps> = ({ type, competitor }) => {
   const [topKey, subKey] = type.split("::");
   const data = datasets[topKey]?.[subKey as keyof (typeof datasets)[typeof topKey]] || [];
 
   const renderValue = (value: string | boolean) => {
     if (typeof value === "string") {
-      return <span className={styles.cellText}>{value}</span>;
+      return <span className={styles.text}>{value}</span>;
     }
 
     return value ? (
-      <img alt="yes" src="/icons/tick.svg" className={styles.tick} />
+      <Check aria-label="yes" role="img" className={styles.tick} />
     ) : (
-      <img alt="no" src="/icons/cross.svg" className={styles.cross} />
+      <X aria-label="no" role="img" className={styles.cross} />
     );
   };
 
   return (
     <div className={styles.tableContainer}>
-      <div className={styles.featureTable}>
-        <div className={styles.featureHeader}>
-          <div className={styles.featureCell}></div>
-          <div className={styles.centeredCell}>DeepEval</div>
-          <div className={styles.centeredCell}>{competitor}</div>
+      <div className={styles.table}>
+        <div className={styles.header}>
+          <div className={styles.cell}></div>
+          <div className={styles.centered}>DeepEval</div>
+          <div className={styles.centered}>{competitor}</div>
         </div>
         <div>
-          {data.map((item, idx) => (
-            <div key={idx} className={styles.featureRow}>
-              <div className={styles.featureCell}>
-                <span className={styles.featureTitle}>{item.feature}</span>
-                <div className={styles.featureDescription}>
+          {data.map((item: DatasetItem, idx: number) => (
+            <div key={idx} className={styles.row}>
+              <div className={styles.cell}>
+                <span className={styles.title}>{item.feature}</span>
+                <div className={styles.description}>
                   {item.description}
                 </div>
               </div>
-              <div className={styles.centeredCell}>
+              <div className={styles.centered}>
                 {renderValue(item.deepeval)}
               </div>
-              <div className={styles.centeredCell}>
+              <div className={styles.centered}>
                 {renderValue(item.competitor)}
               </div>
             </div>
@@ -2352,4 +2352,6 @@ export default function FeatureComparisonTable({ type, competitor }: FeatureComp
       </div>
     </div>
   );
-} 
+}; 
+
+export default FeatureComparisonTable;

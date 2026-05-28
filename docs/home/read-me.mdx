@@ -1,0 +1,283 @@
+import { ASSETS } from "@site/src/assets";
+import HomeRedTeamDemo from "@site/src/sections/home/HomeRedTeamDemo";
+import AdversaryCards from "@site/src/sections/home/AdversaryCards";
+import FrameworkCards from "@site/src/sections/home/FrameworkCards";
+import AgentTraceTerminal from "@site/src/components/AgentTraceTerminal";
+import ClaudeCodeTerminal from "@site/src/sections/home/ClaudeCodeTerminal";
+import TraceLoopConnector from "@site/src/sections/home/TraceLoopConnector";
+import VibeCodingLoop from "@site/src/sections/home/VibeCodingLoop";
+import IntegrationGrid from "@site/src/components/IntegrationGrid";
+import RepoContributors from "@site/src/sections/home/RepoContributors";
+import { PrimaryButton } from "@site/src/components/Buttons";
+import { CONFIDENT_HOSTS_BY_NAME } from "@site/src/utils/utm";
+import {
+  GoldenGenerationDemo,
+  MultiTurnSimulationDemo,
+} from "@site/src/sections/home/DatasetDemos";
+import { externalRelForOutboundHref } from "@/src/utils/outbound-link-rel";
+import {
+  Bot,
+  Compass,
+  FileSearch,
+  MessagesSquare,
+  Route,
+  GitMerge,
+  Gauge,
+  FileText,
+  Cloud,
+  ShieldCheck,
+  ArrowUpRight,
+} from "lucide-react";
+
+<br />
+
+<br />
+
+## Security test your LLMs.
+
+Framework-aligned risk assessments straight from Python — OWASP Top 10, NIST AI RMF, MITRE ATLAS, and more. Surface jailbreaks, vulnerabilities, and agentic risks before they ship.
+
+<HomeRedTeamDemo />
+
+<br />
+
+<br />
+
+## LLM as your adversary.
+
+Use an LLM as your adversary to find vulnerabilities in your LLM system — DeepTeam uses LLMs to simulate adversarial attacks across every vulnerability and attack vectors so you find the failures before real attackers do.
+
+<AdversaryCards />
+
+<br />
+
+<br />
+
+## Aligned with the frameworks that matter.
+
+OWASP Top 10 for LLMs, MITRE ATLAS, NIST AI RMF, EU AI Act — plus safety benchmark datasets like BeaverTails and Aegis. Every major taxonomy plugged into a single framework.
+
+<FrameworkCards />
+
+<br />
+
+<br />
+
+## Trace, pinpoint, and patch — without leaving your editor.
+
+DeepTeam scans your full agent trace captured by DeepEval and pinpoints the exact span where a vulnerability materialized — root-cause visibility locally, fix by adding guards, and secure your application.
+
+<AgentTraceTerminal />
+
+<TraceLoopConnector />
+
+<ClaudeCodeTerminal />
+
+<br />
+
+<br />
+
+## Used by agents, loved by vibe-coders.
+
+Cursor, Claude Code, and Codex shell out to one CLI — DeepEval captures the trace, DeepTeam scans it for vulnerabilities, and your coding agent adds the guards. The build → eval → secure → patch loop your coding agent has been missing.
+
+<VibeCodingLoop />
+
+<br />
+
+<br />
+
+## Any model. Any framework. Any pipeline.
+
+DeepTeam plugs into the LLM providers you already use, the safety frameworks your auditors require, and the CI/CD runners your team already trusts — continuous red teaming with zero glue code.
+
+<IntegrationGrid />
+
+<br />
+
+<br />
+
+## Built by amazing humans.
+
+Nothing would be possible without our community of amazing contributors, thank you!
+
+<RepoContributors />
+
+<br />
+
+<br />
+
+## Ah yes, FAQs.
+
+<FAQs
+  qas={[
+    {
+      question: "What is DeepTeam?",
+      answer:
+        "DeepTeam is the open-source LLM red teaming framework. It simulates adversarial attacks against your LLM applications, AI agents, RAG systems, and prompts to surface jailbreaks, vulnerabilities, and agentic risks before attackers do.",
+    },
+    {
+      question: "How is DeepTeam different from DeepEval?",
+      answer:
+        "DeepEval is the open-source evaluation framework for measuring LLM quality (faithfulness, relevancy, hallucinations, and more). DeepTeam is the security-and-safety framework: it red teams the same systems for vulnerabilities. Both are built by Confident AI and share the same authoring surface.",
+    },
+    {
+      question: "Is DeepTeam the same as Confident AI?",
+      answer:
+        "No. DeepTeam is the open-source red teaming framework, while Confident AI is the enterprise platform — it adds managed assessments, collaboration, dashboards, and continuous production monitoring for teams that need to scale red teaming across an organization.",
+    },
+    {
+      question: "What can I red team with DeepTeam?",
+      answer:
+        "Chatbots, RAG pipelines, AI agents, prompts, fine-tuned models, and end-to-end LLM workflows. DeepTeam supports both single-turn adversarial attacks (prompt injection, roleplay, leetspeak, base64, and 15+ more) and multi-turn jailbreak chains (Crescendo, Linear, Tree, Sequential, Bad-Likert-Judge).",
+    },
+    {
+      question: "Which safety frameworks does DeepTeam align with?",
+      answer:
+        "OWASP Top 10 for LLMs, OWASP Top 10 for Agentic Applications, NIST AI RMF, MITRE ATLAS, and the EU AI Act — plus safety benchmark datasets like BeaverTails and Aegis. Each framework is wired in as a one-line risk-category assessment via the red_team() function.",
+    },
+    {
+      question: "Does DeepTeam only work with OpenAI models?",
+      answer:
+        "No. DeepTeam is model-agnostic. It works with OpenAI, Anthropic, Gemini, Azure OpenAI, AWS Bedrock, Vertex AI, Mistral, LiteLLM, Portkey, and any custom callback — both for the target LLM you're red teaming and for the simulator LLM that crafts the adversarial attacks.",
+    },
+    {
+      question: "Can I use DeepTeam in CI/CD?",
+      answer:
+        "Yes. DeepTeam runs as a CLI and integrates with GitHub Actions, GitLab CI, Jenkins, CircleCI, Buildkite, and Azure Pipelines — so you can catch newly introduced vulnerabilities on every pull request instead of waiting for a quarterly audit.",
+    },
+    {
+      question: "Do I need a dataset to start using DeepTeam?",
+      answer:
+        "No. DeepTeam generates adversarial test cases on the fly from the vulnerabilities and attacks you select — no curated dataset required. You can also bring your own examples or production traces if you have them.",
+    },
+    {
+      question: "Who is DeepTeam for?",
+      answer:
+        "AI engineers, ML teams, security engineers, and AppSec teams building or deploying LLM products who need a reproducible way to measure safety, surface vulnerabilities, and ship with confidence to regulated environments.",
+    },
+    {
+      question: "Does DeepTeam collect data through OpenTelemetry?",
+      answer:
+        "DeepTeam only collects the names of vulnerabilities and attacks that were run through OpenTelemetry. It does not collect your prompts, inputs, outputs, or assessment results through that instrumentation.",
+    },
+  ]}
+/>
+
+<br />
+
+<br />
+
+## This is the CTA :)
+
+<PrimaryButton href="/docs/introduction" endIcon={<ArrowUpRight aria-hidden />}>
+  Start Evaluating
+</PrimaryButton>
+
+<br />
+
+<br />
+
+
+{/* 
+
+TODO: Commenting out these sections for now, might wanna update them or remove them altogether.
+
+## No dataset? No problem.
+
+Generate synthetic goldens from your knowledge base, or simulate full conversations across user personas — all before a single real user shows up.
+
+<Tabs items={["Generate goldens", "Simulate conversations"]}>
+<Tab value="Generate goldens">
+
+<GoldenGenerationDemo />
+
+</Tab>
+<Tab value="Simulate conversations">
+
+<MultiTurnSimulationDemo />
+
+</Tab>
+</Tabs>
+
+<br />
+
+<br />
+
+## Evaluate in code, scale with platform.
+
+DeepEval integrates natively with Confident AI, an AI observability and evaluation platform for AI quality. It is our Vercel for DeepEval. The same test file you run on your laptop now poweres engineering, product, QAs, and domain experts.
+
+<PrimaryButton
+  href={CONFIDENT_HOSTS_BY_NAME.WWW}
+  target="_blank"
+  rel={externalRelForOutboundHref(CONFIDENT_HOSTS_BY_NAME.WWW)}
+  data-utm-content="home_enterprise"
+  endIcon={<Compass aria-hidden />}
+>
+  Explore enterprise
+</PrimaryButton>
+
+<Tabs items={["Regression Testing", "Experimentation", "Tracing & Observability", "Production Monitoring", "Dataset Management", "Prompt Versioning", "Human Annotation"]}>
+<Tab value="Regression Testing">
+
+<ImageDisplayer
+  src="/img/confident-regression-testing.png"
+  alt="Confident AI regression testing dashboard"
+/>
+
+</Tab>
+<Tab value="Experimentation">
+
+<ImageDisplayer
+  src="/img/confident-experimentation.png"
+  alt="Confident AI experimentation view"
+/>
+
+</Tab>
+<Tab value="Tracing & Observability">
+
+<ImageDisplayer
+  src="/img/confident-tracing-observability.png"
+  alt="Confident AI tracing and observability"
+/>
+
+</Tab>
+<Tab value="Production Monitoring">
+
+<ImageDisplayer
+  src="/img/confident-production-monitoring.png"
+  alt="Confident AI production monitoring"
+/>
+
+</Tab>
+<Tab value="Dataset Management">
+
+<ImageDisplayer
+  src="/img/confident-dataset-management.png"
+  alt="Confident AI dataset management"
+/>
+
+</Tab>
+<Tab value="Prompt Versioning">
+
+<ImageDisplayer
+  src="/img/confident-prompt-versioning.png"
+  alt="Confident AI prompt versioning"
+/>
+
+</Tab>
+<Tab value="Human Annotation">
+
+<ImageDisplayer
+  src="/img/confident-human-annotation.png"
+  alt="Confident AI human annotation"
+/>
+
+</Tab>
+</Tabs>
+
+<br />
+
+<br />
+ */}

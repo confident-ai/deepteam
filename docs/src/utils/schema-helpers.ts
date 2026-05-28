@@ -1,4 +1,4 @@
-const BASE_URL = "https://trydeepteam.com";
+import { siteUrl as BASE_URL } from "@/lib/shared";
 
 export interface ArticleSchemaProps {
   title: string
@@ -37,11 +37,12 @@ export interface BlogPost {
   date: string;
 }
 
+
 export function buildWebSiteSchema(): object {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "DeepTeam by Confident AI - The LLM Red Teaming Framework", 
+    name: "DeepTeam - The LLM Red Teaming Framework",
     url: BASE_URL,
   };
 }
@@ -129,12 +130,34 @@ export function buildBreadcrumbSchema(trail: BreadcrumbItem[]): object | null {
   };
 }
 
+export interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+export function buildFAQPageSchema(qas: FAQItem[]): object | null {
+  if (!qas || qas.length === 0) return null;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: qas.map(({ question, answer }) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: answer,
+      },
+    })),
+  };
+}
+
 export function buildBlogHomeSchema(posts: BlogPost[]): object {
   return {
     "@context": "https://schema.org",
     "@type": "Blog",
-    name: "DeepTeam AI Safety Blog",
-    description: "Insights, research, and discoveries in LLM red teaming, AI safety, and adversarial testing from the DeepTeam community.",
+    name: "DeepTeam LLM Red Teaming Blog",
+    description: "Deep dives into LLM red teaming, jailbreaks, adversarial attacks, and AI safety.",
     url: `${BASE_URL}/blog`,
     publisher: {
       "@type": "Organization",

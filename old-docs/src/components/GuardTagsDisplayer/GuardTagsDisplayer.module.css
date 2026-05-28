@@ -1,0 +1,37 @@
+.tagsDisplayer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.pill {
+  padding: 2px 10px;
+  font-size: 12px;
+  border-radius: 0.5rem;
+}
+
+.singleTurn {
+  background-color: #e9f5fe;
+  border: 1px solid #badbff;
+  color: #002a70;
+}
+
+.usesLLM {
+  background-color: #fefceb;
+  border: 1px solid #eeda83;
+  color: #4a3900;
+}
+
+.input {
+  background-color: #f0f9ff;
+  border: 1px solid #7dd3fc;
+  color: #0c4a6e;
+}
+
+.output {
+  background-color: #f0fdf4;
+  border: 1px solid #86efac;
+  color: #14532d;
+} 

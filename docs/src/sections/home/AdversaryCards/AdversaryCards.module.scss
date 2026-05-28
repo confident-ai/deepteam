@@ -1,0 +1,160 @@
+/* --------------------------------------------------------------------
+ * AdversaryCards — 2-up card grid for the "LLM as your adversary"
+ * section. Each card: animated SVG glyph + heading + description.
+ * ------------------------------------------------------------------ */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  width: 100%;
+  margin: 1.25rem 0 2rem;
+
+  border: 1px solid var(--color-fd-border);
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem 1.15rem 1.4rem;
+  box-sizing: border-box;
+
+  // Vertical separators only between columns (none on outer edges).
+  &:not(:last-child) {
+    border-right: 1px solid var(--color-fd-border);
+  }
+
+  @media (max-width: 720px) {
+    &:not(:last-child) {
+      border-right: none;
+      border-bottom: 1px solid var(--color-fd-border);
+    }
+  }
+}
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 3rem;
+}
+
+.glyph {
+  width: 4rem;
+  height: 3rem;
+  color: var(--color-fd-foreground);
+  overflow: visible;
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+  color: var(--color-fd-foreground);
+}
+
+.description {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  font-weight: 300;
+  color: var(--color-fd-muted-foreground);
+  text-wrap: pretty;
+}
+
+/* -------------------- Glyph: Vulnerability pills -------------------- */
+
+.glyphPill {
+  fill: currentColor;
+  opacity: 0;
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: pillSweep 3s ease-in-out infinite;
+}
+
+@keyframes pillSweep {
+  0% {
+    opacity: 0;
+    transform: translateX(-3px) scale(0.85);
+  }
+  20%,
+  70% {
+    opacity: 0.9;
+    transform: translateX(0) scale(1);
+  }
+  90%,
+  100% {
+    opacity: 0;
+    transform: translateX(3px) scale(0.85);
+  }
+}
+
+/* -------------------- Glyph: Multi-turn attacks (bubbles + attack flags) -------------------- */
+
+.glyphConvBubble {
+  opacity: 0.85;
+}
+
+.glyphConvBubbleUser {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+}
+
+.glyphConvBubbleAgent {
+  fill: currentColor;
+}
+
+.glyphAttackFlag {
+  fill: var(--color-fd-border);
+  animation: attackFlagPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes attackFlagPulse {
+  0%,
+  10% {
+    fill: var(--color-fd-border);
+    transform: scale(0.6);
+    transform-origin: center;
+    transform-box: fill-box;
+  }
+  25%,
+  75% {
+    // Amber/rust accent reads as "attack landed" without hard-coding
+    // deepteam's red against an otherwise monochrome page.
+    // Fallback for Safari < 16.2 (no color-mix support).
+    fill: #c2410c;
+    fill: color-mix(in oklab, #dc2626 70%, currentColor);
+    transform: scale(1);
+  }
+  90%,
+  100% {
+    fill: var(--color-fd-border);
+    transform: scale(0.6);
+  }
+}
+
+/* Respect reduced-motion preferences. */
+@media (prefers-reduced-motion: reduce) {
+  .glyphPill,
+  .glyphAttackFlag {
+    animation: none;
+  }
+
+  .glyphPill {
+    opacity: 0.85;
+  }
+
+  .glyphAttackFlag {
+    fill: #c2410c;
+    fill: color-mix(in oklab, #dc2626 70%, currentColor);
+  }
+}
