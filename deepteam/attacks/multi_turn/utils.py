@@ -7,11 +7,41 @@ from deepteam.test_case import RTTurn
 
 
 def append_target_turn(
-    turns: List[RTTurn], target_response: RTTurn, turn_level_attack: str = None
+    turns: List[RTTurn],
+    target_response,
+    turn_level_attack: str = None,
 ):
+    """
+    Append a model response to the turn history as an RTTurn.
+
+    Normalizes input so the turn history always contains RTTurn objects,
+    regardless of what model_callback returns. This guarantees that
+    downstream code iterating the history can safely access .role and
+    .content on every element.
+
+    Args:
+        turns: The conversation history to append to.
+        target_response: The model's response. Accepts:
+            - RTTurn: appended as-is.
+            - str: wrapped as RTTurn(role="assistant", content=target_response).
+            - other: coerced via str() and wrapped as an assistant RTTurn.
+        turn_level_attack: Optional name of the turn-level attack that
+            produced this response. Set as an attribute on the resulting
+            RTTurn for downstream tracking.
+    """
+    # Normalize to RTTurn so the history is always typed consistently.
+    if isinstance(target_response, RTTurn):
+        turn = target_response
+    elif isinstance(target_response, str):
+        turn = RTTurn(role="assistant", content=target_response)
+    else:
+        # Fallback for any other model-specific return types
+        turn = RTTurn(role="assistant", content=str(target_response))
+
     if turn_level_attack:
-        target_response.turn_level_attack = turn_level_attack
-    turns.append(target_response)
+        turn.turn_level_attack = turn_level_attack
+
+    turns.append(turn)
 
 
 def update_turn_history(
