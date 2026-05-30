@@ -7,7 +7,7 @@ from enum import Enum
 
 from deepeval.test_case import Turn
 from deepteam.vulnerabilities.types import VulnerabilityType
-from deepteam.test_case import RTTestCase
+from deepteam.test_case import RTTestCase, RTTurn
 
 
 class TestCasesList(list):
@@ -145,6 +145,53 @@ class RiskAssessment(BaseModel):
             )
         )
 
+    @classmethod
+    def load(cls, path: str) -> "RiskAssessment":
+        """Load a previously saved RiskAssessment from a JSON file.
+
+        Args:
+            path: Path to the JSON file produced by `save()`.
+
+        Returns:
+            A fully reconstructed RiskAssessment instance with
+            properly typed vulnerability enums and RTTurn objects.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
+            json.JSONDecodeError: If the file is not valid JSON.
+        """
+        with open(path, "r") as f:
+            data = json.load(f)
+
+        enum_lookup = _build_vulnerability_type_lookup()
+
+        for tc in data.get("test_cases", []):
+            vt_value = tc.get("vulnerability_type")
+            if vt_value is not None:
+                tc["vulnerability_type"] = _resolve_vulnerability_type(
+                    vt_value, enum_lookup
+                )
+
+            # Reconstruct RTTurn objects for multi-turn test cases
+            raw_turns = tc.get("turns")
+            if raw_turns is not None:
+                tc["turns"] = [
+                    RTTurn(**turn) if isinstance(turn, dict) else turn
+                    for turn in raw_turns
+                ]
+
+        # Reconstruct vulnerability_type enums in overview results
+        for vtr in data.get("overview", {}).get(
+            "vulnerability_type_results", []
+        ):
+            vt_value = vtr.get("vulnerability_type")
+            if vt_value is not None:
+                vtr["vulnerability_type"] = _resolve_vulnerability_type(
+                    vt_value, enum_lookup
+                )
+
+        return cls(**data)
+
     def save(self, to: str) -> str:
         try:
             new_filename = (
@@ -174,6 +221,55 @@ class RiskAssessment(BaseModel):
 
         except OSError as e:
             raise OSError(f"Failed to save file to '{to}': {e}") from e
+
+
+def _build_vulnerability_type_lookup() -> Dict[str, list]:
+    """Build a reverse lookup from enum *value* → list of enum members
+    across all known VulnerabilityType enum classes."""
+    import importlib
+    import pkgutil
+    import deepteam.vulnerabilities as _vuln_pkg
+
+    enum_classes: list = []
+    for _importer, modname, _ispkg in pkgutil.walk_packages(
+        _vuln_pkg.__path__, prefix=_vuln_pkg.__name__ + "."
+    ):
+        if not modname.endswith(".types"):
+            continue
+        try:
+            mod = importlib.import_module(modname)
+        except Exception:
+            continue
+        for attr_name in dir(mod):
+            attr = getattr(mod, attr_name)
+            if (
+                isinstance(attr, type)
+                and issubclass(attr, Enum)
+                and attr is not Enum
+            ):
+                enum_classes.append(attr)
+
+    lookup: Dict[str, list] = {}
+    for cls in enum_classes:
+        for member in cls:
+            lookup.setdefault(member.value, []).append(member)
+    return lookup
+
+
+def _resolve_vulnerability_type(value: str, lookup: Dict[str, list]):
+    """Resolve a string enum value back to the correct enum member.
+
+    If the value is ambiguous (present in multiple enum classes),
+    returns the first match — which is sufficient for all built-in
+    vulnerability types where only `privilege_escalation` overlaps.
+
+    Falls back to returning the raw string if no match is found
+    (e.g. custom vulnerability types).
+    """
+    candidates = lookup.get(value)
+    if candidates:
+        return candidates[0]
+    return value
 
 
 def construct_risk_assessment_overview(
