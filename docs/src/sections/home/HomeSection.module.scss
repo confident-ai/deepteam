@@ -1,0 +1,378 @@
+/* --------------------------------------------------------------------
+ * Home hero section
+ *
+ * Compact, developer-modern sizing: small type, tight padding,
+ * 1px icon arrow on the primary CTA, no flourish.
+ * ------------------------------------------------------------------ */
+
+.hero {
+  --site-shell-pad-x: 1rem;
+
+  width: 100%;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+  max-width: 30rem;
+  padding: 2rem 1rem;
+
+  .title {
+    margin: 0;
+    /* Geist Pixel Grid for a security-console feel. Pixel grid encodes
+     * its own spacing so we run letter-spacing flat. */
+    font-family: var(--font-geist-pixel-grid), ui-monospace, monospace;
+    font-size: clamp(42px, 5.5vw, 64px);
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: 0;
+    color: var(--color-fd-foreground);
+    text-wrap: balance;
+  }
+
+  .titleAccent {
+    color: var(--color-deepteam-red);
+  }
+
+  .description {
+    margin: 0;
+    max-width: 28rem;
+    font-size: 14px;
+    line-height: 1.65;
+    font-weight: 300;
+    color: var(--color-fd-muted-foreground);
+    text-wrap: pretty;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding-top: 0.3rem;
+  }
+
+  @media (min-width: 768px) {
+    padding: 2rem var(--site-shell-pad-x);
+  }
+}
+
+.banner {
+  border-top: 1px solid var(--color-fd-border);
+  height: 2rem;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.bannerTrack {
+  display: flex;
+  flex-shrink: 0;
+  gap: 2.5rem;
+  white-space: nowrap;
+  animation: bannerScroll 30s linear infinite;
+  // Scroll content left → right (reverse of the keyframe).
+  animation-direction: reverse;
+}
+
+.bannerItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.5rem;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--color-fd-muted-foreground);
+  white-space: nowrap;
+
+  &::after {
+    content: "";
+    display: inline-block;
+    width: 0.25em;
+    height: 0.25em;
+    background: currentColor;
+  }
+}
+
+@keyframes bannerScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    // Duplicated content length is 200%; shift by half for a seamless loop.
+    transform: translateX(-50%);
+  }
+}
+
+/* -------------------------------------------------------------------
+ * Hero footer — install command (with a rotating deepteam-red scan
+ * glow around it) + a single-line stat dial that rolls between three
+ * verifiable claims. Replaces the deleted brand-logo grid and
+ * scrolling stats banner.
+ * ----------------------------------------------------------------- */
+
+.heroFooter {
+  margin-top: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.95rem;
+}
+
+/* Custom property declarations so the angle vars are animatable —
+ * without `@property`, browsers treat custom properties as opaque
+ * strings and `animation` can't interpolate between angle values, so
+ * gradients would snap from 0deg → 360deg instead of sweeping. */
+@property --scan-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@property --plasma-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* Shield silhouette — 12-vertex polygon roughly approximating the
+ * classic pointed-bottom security shield. `clip-path` is applied to
+ * the WHOLE frame so the scan glow (::before) and plasma field
+ * (::after) both follow the shield outline instead of bleeding
+ * outside as a rectangle. */
+/* Rectangular install block with a rotating deepteam-red gradient
+ * border — the simpler fallback after the shield experiment. The 1px
+ * padding IS the border thickness; the ::before paints a conic
+ * gradient that sweeps around the perimeter, and the inner
+ * .installCommand has a solid background so the gradient is only
+ * visible as a thin animated outline. */
+.installBlock {
+  position: relative;
+  padding: 1px;
+  isolation: isolate;
+  width: fit-content;
+  --scan-angle: 0deg;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: conic-gradient(
+      from var(--scan-angle),
+      transparent 0deg,
+      var(--color-deepteam-red) 60deg,
+      transparent 120deg,
+      transparent 240deg,
+      var(--color-deepteam-red) 300deg,
+      transparent 360deg
+    );
+    animation: installScan 3s linear infinite;
+  }
+}
+
+@keyframes installScan {
+  to {
+    --scan-angle: 360deg;
+  }
+}
+
+.installCommand {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.7rem 1.1rem;
+  background: var(--color-fd-background);
+  font-family: var(--font-mono, ui-monospace), SFMono-Regular, Menlo,
+    "JetBrains Mono", Consolas, monospace;
+  font-size: 13.5px;
+  line-height: 1;
+  color: var(--color-fd-foreground);
+  user-select: all;
+
+  > code {
+    background: none;
+    padding: 0;
+    font: inherit;
+    /* Reserve horizontal room so the decoder animation, which swaps
+     * each glyph for narrower / wider random chars during the fade,
+     * doesn't visibly twitch the parent width during the ~1.5s run. */
+    min-width: 11ch;
+    display: inline-block;
+  }
+}
+
+.installPrompt {
+  color: var(--color-deepteam-red);
+  font-weight: 600;
+}
+
+.statRoller {
+  font-family: var(--font-mono, ui-monospace), SFMono-Regular, Menlo,
+    monospace;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  color: var(--color-fd-muted-foreground);
+}
+
+.statWindow {
+  /* A 1-line-tall window. `overflow: hidden` + a top/bottom mask
+   * produces the "slot-machine dial" look — the next line eases in
+   * from a soft fade rather than appearing abruptly at the edge. */
+  display: inline-block;
+  vertical-align: middle;
+  height: 1.5em;
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 28%,
+    black 72%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 28%,
+    black 72%,
+    transparent 100%
+  );
+}
+
+.statTrack {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  /* 12s total cycle: ~3.4s hold per stat + ~0.6s roll between. The
+   * 4th <li> repeats the 1st so the wrap from final → first reads as
+   * one continuous roll instead of snapping back. */
+  animation: statRoll 12s infinite;
+
+  > li {
+    height: 1.5em;
+    line-height: 1.5em;
+    display: block;
+    white-space: nowrap;
+  }
+}
+
+@keyframes statRoll {
+  0%,
+  25% {
+    transform: translateY(0);
+  }
+  33%,
+  58% {
+    transform: translateY(-1.5em);
+  }
+  66%,
+  91% {
+    transform: translateY(-3em);
+  }
+  100% {
+    transform: translateY(-4.5em);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .installBlock::before {
+    animation: none;
+    /* Hold a static red glow rather than disappear entirely. */
+    background: conic-gradient(
+      from 45deg,
+      transparent 0deg,
+      var(--color-deepteam-red) 90deg,
+      transparent 180deg,
+      transparent 360deg
+    );
+  }
+
+
+  .statTrack {
+    animation: none;
+    transform: translateY(0);
+  }
+}
+
+.logoGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(4, 2.25rem);
+  gap: 1px;
+
+  width: 100%;
+  min-width: 0;
+  background: var(--color-fd-border);
+
+  // Only top + bottom edges — left/right are intentionally omitted so the
+  // grid reads flush with the pane's own vertical borders.
+  border-top: 1px solid var(--color-fd-border);
+  border-bottom: 1px solid var(--color-fd-border);
+
+  .cell {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    height: 2.25rem;
+    padding: 0.55rem 1.25rem;
+    overflow: hidden;
+    background: var(--color-fd-background);
+  }
+
+  .logo {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    opacity: 0.9;
+    transition: opacity 160ms ease;
+  }
+
+  // Inline <svg> fallback — older mobile Safari (iPhone 12 on iOS <= 15,
+  // and intermittently 16) can't derive intrinsic dimensions from a
+  // viewBox-only SVG inside a flex parent, collapsing the element to
+  // 0×0 so the logo never appears. Force a definite size; the SVG's
+  // default preserveAspectRatio="xMidYMid meet" keeps the artwork
+  // centered and undistorted. <img> elements (next/image fallback)
+  // are unaffected because they have intrinsic width/height attrs.
+  svg.logo {
+    width: 100%;
+    height: 100%;
+  }
+
+  .cell:hover .logo {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 1023px) {
+  .banner,
+  .logoGrid {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  .logoGrid {
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+    grid-template-rows: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    .title {
+      font-size: clamp(32px, 7vw, 42px);
+    }
+
+    .description {
+      font-size: 14px;
+    }
+  }
+}

@@ -1,0 +1,245 @@
+/* --------------------------------------------------------------------
+ * FrameworkCards — 3-up card grid for the "Aligned with the frameworks
+ * that matter" section. Each card: animated SVG glyph + heading +
+ * description. Shares the same shell look as AdversaryCards.
+ * ------------------------------------------------------------------ */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  width: 100%;
+  margin: 1.25rem 0 2rem;
+
+  border: 1px solid var(--color-fd-border);
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem 1.15rem 1.4rem;
+  box-sizing: border-box;
+
+  &:not(:last-child) {
+    border-right: 1px solid var(--color-fd-border);
+  }
+
+  @media (max-width: 720px) {
+    &:not(:last-child) {
+      border-right: none;
+      border-bottom: 1px solid var(--color-fd-border);
+    }
+  }
+}
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 3rem;
+}
+
+.glyph {
+  width: 4rem;
+  height: 3rem;
+  color: var(--color-fd-foreground);
+  overflow: visible;
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+  color: var(--color-fd-foreground);
+}
+
+.description {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  font-weight: 300;
+  color: var(--color-fd-muted-foreground);
+  text-wrap: pretty;
+}
+
+/* -------------------- Glyph: Shield + crosshair -------------------- */
+
+.shieldOutline {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linejoin: round;
+  opacity: 0.85;
+}
+
+.shieldCrosshair {
+  transform-origin: 32px 24px;
+  transform-box: view-box;
+  animation: crosshairPulse 2.6s ease-in-out infinite;
+}
+
+.crosshairRing {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+}
+
+.crosshairTick {
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+}
+
+.crosshairDot {
+  fill: currentColor;
+}
+
+@keyframes crosshairPulse {
+  0%,
+  100% {
+    transform: scale(0.85);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* -------------------- Glyph: Compliance doc + seal -------------------- */
+
+.docOutline {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linejoin: round;
+  opacity: 0.85;
+}
+
+.docLine {
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  opacity: 0;
+  animation: docLineDraw 3.2s ease-in-out infinite;
+}
+
+@keyframes docLineDraw {
+  0% {
+    opacity: 0;
+    transform: translateX(-2px);
+    transform-box: fill-box;
+  }
+  15%,
+  60% {
+    opacity: 0.85;
+    transform: translateX(0);
+  }
+  80%,
+  100% {
+    opacity: 0;
+    transform: translateX(-2px);
+  }
+}
+
+.docSealRing {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  transform-origin: 40px 36px;
+  transform-box: view-box;
+  animation: sealStamp 3.2s ease-in-out infinite;
+}
+
+.docSealCheck {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform-origin: 40px 36px;
+  transform-box: view-box;
+  animation: sealStamp 3.2s ease-in-out infinite;
+  animation-delay: 0.05s;
+}
+
+@keyframes sealStamp {
+  0%,
+  60% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  70%,
+  88% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  95%,
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+/* -------------------- Glyph: Dataset stack -------------------- */
+
+.stackLayer {
+  animation: stackFlash 2.4s ease-in-out infinite;
+  opacity: 0.35;
+}
+
+.stackPlate {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+}
+
+.stackTick {
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+
+@keyframes stackFlash {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  20%,
+  35% {
+    opacity: 1;
+  }
+}
+
+/* Respect reduced-motion preferences. */
+@media (prefers-reduced-motion: reduce) {
+  .shieldCrosshair,
+  .docLine,
+  .docSealRing,
+  .docSealCheck,
+  .stackLayer {
+    animation: none;
+  }
+
+  .docLine {
+    opacity: 0.85;
+  }
+
+  .docSealRing,
+  .docSealCheck {
+    opacity: 1;
+  }
+
+  .stackLayer {
+    opacity: 0.85;
+  }
+}

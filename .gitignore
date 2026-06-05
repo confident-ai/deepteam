@@ -16,6 +16,16 @@ eggs/
 .eggs/
 lib/
 lib64/
+
+# Un-ignore the Next.js docs `lib/` — the broad Python `lib/` pattern
+# above catches it accidentally, which silently dropped every file in
+# `docs/lib/` from git and broke the Vercel build (esbuild couldn't
+# resolve `./lib/remark-admonitions`, `./lib/authors`, etc. on the
+# remote checkout). Re-include both the directory entry and every
+# file inside; `docs/.gitignore` still handles per-file overrides
+# (e.g. the contributors SHA cache) within that subtree.
+!/docs/lib/
+!/docs/lib/**
 parts/
 sdist/
 var/
