@@ -91,7 +91,7 @@ const MultiTurnAttacksGlyph: React.FC = () => {
 const CARDS: Card[] = [
   {
     icon: <VulnerabilityPillsGlyph />,
-    heading: "60+ adversarial vulnerabilities",
+    heading: "120+ vulnerabilities",
     description:
       "Bias, Toxicity, PII leakage, SQL Injection, BFLA, BOLA, RBAC, Hallucination, and dozens more — every major LLM risk category covered out of the box.",
   },

@@ -29,7 +29,6 @@ import RepoContributors from "@site/src/sections/home/RepoContributors";
 import AttackTagsDisplayer from "@site/src/components/AttackTagsDisplayer";
 import GuardTagsDisplayer from "@site/src/components/GuardTagsDisplayer";
 import ColabButton from "@site/src/components/ColabButton";
-import Envelope from "@site/src/components/Envelope";
 
 function DefaultLLMModel() {
   return <code>{DEFAULT_LLM_MODEL}</code>;
@@ -69,7 +68,6 @@ export function getMDXComponents(components?: MDXComponents) {
     AttackTagsDisplayer,
     GuardTagsDisplayer,
     ColabButton,
-    Envelope,
     ...components,
   } satisfies MDXComponents;
 }

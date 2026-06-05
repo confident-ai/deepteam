@@ -55,8 +55,8 @@ export function baseOptions(): BaseLayoutProps {
             height: "24px",
             width: "102px",
             backgroundColor: "var(--color-fd-foreground)",
-            WebkitMask: 'url("/icons/DeepTeam.svg") no-repeat center / contain',
-            mask: 'url("/icons/DeepTeam.svg") no-repeat center / contain',
+            WebkitMask: 'url("/icons/deepteam.svg") no-repeat center / contain',
+            mask: 'url("/icons/deepteam.svg") no-repeat center / contain',
           }}
         />
       ),

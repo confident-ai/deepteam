@@ -1,31 +1,26 @@
-import type { Metadata } from 'next';
-import Script from 'next/script';
-import { RootProvider } from 'fumadocs-ui/provider/next';
-import './global.css';
-import 'katex/dist/katex.css';
-import { Geist, Space_Grotesk } from 'next/font/google';
-import { GeistPixelGrid } from 'geist/font/pixel';
-import UtmCapture from '@/src/layouts/UtmCapture';
-import SchemaInjector from '@/src/components/SchemaInjector/SchemaInjector';
-import { buildWebSiteSchema } from '@/src/utils/schema-helpers';
-import {
-  appName,
-  siteDescription,
-  siteTitle,
-  siteUrl,
-} from '@/lib/shared';
+import type { Metadata } from "next";
+import Script from "next/script";
+import { RootProvider } from "fumadocs-ui/provider/next";
+import "./global.css";
+import "katex/dist/katex.css";
+import { Geist, Space_Grotesk } from "next/font/google";
+import { GeistPixelGrid } from "geist/font/pixel";
+import UtmCapture from "@/src/layouts/UtmCapture";
+import SchemaInjector from "@/src/components/SchemaInjector/SchemaInjector";
+import { buildWebSiteSchema } from "@/src/utils/schema-helpers";
+import { appName, siteDescription, siteTitle, siteUrl } from "@/lib/shared";
 
 const sans = Geist({
-  subsets: ['latin'],
-  variable: '--font-sans',
-  display: 'swap',
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
 });
 
 const heading = Space_Grotesk({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-heading',
-  display: 'swap',
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-heading",
+  display: "swap",
 });
 
 const disabledSearchHotKey = [
@@ -50,9 +45,9 @@ export const metadata: Metadata = {
     template: `%s | ${siteTitle}`,
   },
   description: siteDescription,
-  alternates: { canonical: '/' },
+  alternates: { canonical: "/" },
   openGraph: {
-    type: 'website',
+    type: "website",
     siteName: appName,
     url: siteUrl,
     title: siteTitle,
@@ -63,10 +58,10 @@ export const metadata: Metadata = {
     // the old Docusaurus `themeConfig.image = 'img/social_card.png'`
     // default so guides/blog/home never end up with a blank link
     // preview on social shares.
-    images: '/img/social_card.png',
+    images: "/img/social_card.png",
   },
   twitter: {
-    card: 'summary_large_image',
+    card: "summary_large_image",
     title: siteTitle,
     description: siteDescription,
     // Deliberately no `images:` here — we rely on X's documented
@@ -86,19 +81,19 @@ export const metadata: Metadata = {
 // (docusaurus.config.ts:161-181). Rendered once in <head> via the App
 // Router layout — Next will keep JSON-LD scripts where they are placed.
 const organizationJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'Confident AI Inc.',
-  alternateName: 'Confident AI',
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Confident AI Inc.",
+  alternateName: "Confident AI",
   url: siteUrl,
-  logo: `${siteUrl}/icons/DeepTeam.svg`,
+  logo: `${siteUrl}/icons/deepteam.svg`,
   sameAs: [
-    'https://github.com/confident-ai/deepteam',
-    'https://discord.gg/3SEyvpgu2f',
+    "https://github.com/confident-ai/deepteam",
+    "https://discord.gg/3SEyvpgu2f",
   ],
 };
 
-export default function Layout({ children }: LayoutProps<'/'>) {
+export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
@@ -116,7 +111,9 @@ export default function Layout({ children }: LayoutProps<'/'>) {
         */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationJsonLd),
+          }}
         />
         <SchemaInjector schema={buildWebSiteSchema()} />
       </head>

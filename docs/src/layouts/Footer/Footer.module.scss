@@ -44,8 +44,8 @@
   width: 85px; // Locked to the SVG's 298:70 aspect ratio (20 * 4.257).
   margin: 0;
   background-color: var(--color-fd-foreground);
-  mask: url("/icons/DeepTeam.svg") no-repeat left / contain;
-  -webkit-mask: url("/icons/DeepTeam.svg") no-repeat left / contain;
+  mask: url("/icons/deepteam.svg") no-repeat left / contain;
+  -webkit-mask: url("/icons/deepteam.svg") no-repeat left / contain;
 }
 
 .tagline {
