@@ -1,5 +1,8 @@
 <p align="center">
-    <img src="https://github.com/confident-ai/deepteam/blob/main/assets/deepteam-logo2.png" alt="DeepTeam Logo" width="55%">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="assets/hero/wordmark-dark.svg">
+        <img alt="DeepTeam." src="assets/hero/wordmark-light.svg" width="520">
+    </picture>
 </p>
 
 <h1 align="center">The LLM Red Teaming Framework</h1>
@@ -17,8 +20,8 @@
     <a href="https://github.com/confident-ai/deepteam/releases">
         <img alt="GitHub release" src="https://img.shields.io/github/v/release/confident-ai/deepteam">
     </a>
-    <a href="https://discord.com/invite/3SEyvpgu2f">
-        <img alt="Discord" src="https://img.shields.io/discord/1167926797498376322?color=7289da&logo=discord&logoColor=white">
+    <a href="https://discord.gg/3SEyvpgu2f">
+        <img alt="discord-invite" src="https://dcbadge.limes.pink/api/server/3SEyvpgu2f?style=flat">
     </a>
     <a href="https://github.com/confident-ai/deepteam/blob/main/LICENSE.md">
         <img alt="License" src="https://img.shields.io/github/license/confident-ai/deepteam.svg?color=yellow">
