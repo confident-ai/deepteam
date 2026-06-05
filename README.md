@@ -1,7 +1,7 @@
 <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="assets/hero/wordmark-dark.svg">
-        <img alt="DeepTeam." src="assets/hero/wordmark-light.svg" width="520">
+        <source media="(prefers-color-scheme: dark)" srcset="assets/hero/wordmark-dark-v2.svg">
+        <img alt="DeepTeam." src="assets/hero/wordmark-light-v2.svg" width="520">
     </picture>
 </p>
 
