@@ -370,18 +370,24 @@ async function main() {
     if (list.length > 0) manifest[rel] = list;
   }
 
-  // Hosted builds can have incomplete git history without being marked as
-  // shallow. Never let a partial regeneration replace a richer checked-in
-  // manifest entry for a page that still exists.
+  // Hosted builds can have incomplete git history without being marked
+  // as shallow. Fall back to the checked-in entry ONLY when the
+  // regeneration produced nothing at all for that page — never when it
+  // produced a real (possibly shorter) list. The regen is the source of
+  // truth for the *current* repo, so a shorter list still beats a
+  // longer-but-stale one. The previous "preserve if existing is longer"
+  // rule silently kept old entries forever whenever a page outgrew its
+  // own real history — most visibly after the docs were bootstrapped
+  // from a sibling repo, where a popular page like `getting-started`
+  // dragged in cross-repo PR authors who never touched this codebase.
   const existingManifest = loadExistingManifest();
   let preserved = 0;
   for (const [rel, existingList] of Object.entries(existingManifest)) {
     if (!fileSet.has(rel) || !Array.isArray(existingList)) continue;
     const generatedList = manifest[rel];
-    if (
-      !Array.isArray(generatedList) ||
-      existingList.length > generatedList.length
-    ) {
+    const generatedIsEmpty =
+      !Array.isArray(generatedList) || generatedList.length === 0;
+    if (generatedIsEmpty && existingList.length > 0) {
       manifest[rel] = existingList;
       preserved += 1;
     }

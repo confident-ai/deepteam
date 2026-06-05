@@ -47,7 +47,10 @@ export const FAQs: React.FC<FAQsProps> = ({ qas }) => {
       <SchemaInjector schema={schema} />
       <Accordions type="single">
         {qas.map(({ question, answer }) => (
-          <Accordion key={question} title={question}>
+          <Accordion
+            key={question}
+            title={<span className="faq-question">{question}</span>}
+          >
             {answer}
           </Accordion>
         ))}

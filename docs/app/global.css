@@ -13,6 +13,10 @@
   --font-sans: var(--font-sans), "Geist", ui-sans-serif, system-ui, sans-serif;
   --font-heading: var(--font-heading), "Space Grotesk", "Inter", ui-sans-serif,
     system-ui, sans-serif;
+  --font-pixel: var(--font-geist-pixel-grid), ui-monospace, "Courier New",
+    monospace;
+
+  --color-deepteam-red: #de0064;
 
   --fd-layout-width: 90rem;
   --site-shell-max-width: 1400px;
@@ -88,6 +92,7 @@
 
 :root {
   --color-bg-inverse: #000000;
+  --color-deepteam-red: #de0064;
 }
 
 .dark {
@@ -102,6 +107,14 @@
   margin-left: auto;
   margin-right: auto;
   width: 100%;
+}
+
+.docs-page-surface h2 {
+  font-family: var(--font-geist-pixel-grid), ui-monospace, monospace !important;
+}
+
+.faq-question {
+  font-family: var(--font-geist-pixel-grid), ui-monospace, monospace !important;
 }
 
 /* (fix: remove or correct the invalid selector) */

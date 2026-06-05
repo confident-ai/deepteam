@@ -4,6 +4,7 @@ import { RootProvider } from 'fumadocs-ui/provider/next';
 import './global.css';
 import 'katex/dist/katex.css';
 import { Geist, Space_Grotesk } from 'next/font/google';
+import { GeistPixelGrid } from 'geist/font/pixel';
 import UtmCapture from '@/src/layouts/UtmCapture';
 import SchemaInjector from '@/src/components/SchemaInjector/SchemaInjector';
 import { buildWebSiteSchema } from '@/src/utils/schema-helpers';
@@ -101,7 +102,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <html
       lang="en"
-      className={`${sans.variable} ${heading.variable}`}
+      className={`${sans.variable} ${heading.variable} ${GeistPixelGrid.variable}`}
       suppressHydrationWarning
     >
       <head>
