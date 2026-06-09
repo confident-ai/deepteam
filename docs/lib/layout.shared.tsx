@@ -1,6 +1,7 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import { BookOpen, Compass, Newspaper } from "lucide-react";
-import { appName, gitConfig } from "./shared";
+import { gitConfig } from "./shared";
+import Wordmark from "@/src/components/Wordmark";
 
 // Nav items rendered in the middle column of the top nav, between the
 // logo and the search bar. Exported so our custom header slot
@@ -46,20 +47,7 @@ export const navLinks = [
 export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
-      title: (
-        <span
-          role="img"
-          aria-label={appName}
-          style={{
-            display: "block",
-            height: "24px",
-            width: "102px",
-            backgroundColor: "var(--color-fd-foreground)",
-            WebkitMask: 'url("/icons/deepteam.svg") no-repeat center / contain',
-            mask: 'url("/icons/deepteam.svg") no-repeat center / contain',
-          }}
-        />
-      ),
+      title: <Wordmark style={{ display: "block", height: "24px", width: "104px" }} />,
       // NOTE: no `nav.children` here — the nav link strip is rendered
       // directly inside our custom header slot (`NavHeader`) so it
       // lands in the middle grid column, right under the main content.
