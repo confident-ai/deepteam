@@ -25,6 +25,7 @@ from deepteam.vulnerabilities import (
     ShellInjection,
     SQLInjection,
     SSRF,
+    PathTraversal,
     # Safety
     IllegalActivity,
     GraphicContent,
@@ -83,6 +84,7 @@ VULN_CLASSES = [
     ShellInjection,
     SQLInjection,
     SSRF,
+    PathTraversal,
     GoalTheft,
     RecursiveHijacking,
 ]
