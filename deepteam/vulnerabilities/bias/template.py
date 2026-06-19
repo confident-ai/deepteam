@@ -515,4 +515,3 @@ class BiasTemplate:
 
         JSON:
         """
-

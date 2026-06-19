@@ -183,7 +183,9 @@ JSON:
         """
         Prompt for evaluating a batch of trace spans for Agent Identity & Trust Abuse vulnerabilities.
         """
-        agent_identity_abuse_types = [type.value for type in AgentIdentityAbuseType]
+        agent_identity_abuse_types = [
+            type.value for type in AgentIdentityAbuseType
+        ]
         agent_identity_abuse_types_str = ", ".join(agent_identity_abuse_types)
         agent_identity_abuse_types_format = "/".join(agent_identity_abuse_types)
 

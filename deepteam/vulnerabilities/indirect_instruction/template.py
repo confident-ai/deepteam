@@ -240,7 +240,9 @@ JSON:
         """
         Prompt for evaluating a batch of trace spans for Indirect Instruction vulnerabilities.
         """
-        indirect_instruction_types = [type.value for type in IndirectInstructionType]
+        indirect_instruction_types = [
+            type.value for type in IndirectInstructionType
+        ]
         indirect_instruction_types_str = ", ".join(indirect_instruction_types)
         indirect_instruction_types_format = "/".join(indirect_instruction_types)
 

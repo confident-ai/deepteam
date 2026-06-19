@@ -200,11 +200,13 @@ class CustomVulnerabilityTemplate:
         class BoundCustomTraceTemplate:
             @staticmethod
             def generate_trace_batch_evaluation(batch_data: str) -> str:
-                return CustomVulnerabilityTemplate.generate_trace_batch_evaluation(
-                    batch_data=batch_data,
-                    name=name,
-                    criteria=criteria,
-                    type_values=type_values,
+                return (
+                    CustomVulnerabilityTemplate.generate_trace_batch_evaluation(
+                        batch_data=batch_data,
+                        name=name,
+                        criteria=criteria,
+                        type_values=type_values,
+                    )
                 )
 
         return BoundCustomTraceTemplate

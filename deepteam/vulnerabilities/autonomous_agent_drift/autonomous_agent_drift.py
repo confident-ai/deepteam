@@ -211,8 +211,9 @@ class AutonomousAgentDrift(BaseVulnerability):
 
         for type in self.types:
             for prompt in templates[type]:
+                simulation_cost = 0 if self.using_native_model else None
                 if self.using_native_model:
-                    res, _ = self.simulator_model.generate(
+                    res, simulation_cost = self.simulator_model.generate(
                         prompt, schema=SyntheticDataList
                     )
                     local_attacks = [item.input for item in res.data]
@@ -227,12 +228,18 @@ class AutonomousAgentDrift(BaseVulnerability):
                         data = trimAndLoadJson(res)
                         local_attacks = [item["input"] for item in data["data"]]
 
+            per_attack_cost = (
+                simulation_cost / len(local_attacks)
+                if simulation_cost is not None and local_attacks
+                else simulation_cost
+            )
             simulated_test_cases.extend(
                 [
                     RTTestCase(
                         vulnerability=self.get_name(),
                         vulnerability_type=type,
                         input=local_attack,
+                        simulation_cost=per_attack_cost,
                     )
                     for local_attack in local_attacks
                 ]
@@ -265,9 +272,12 @@ class AutonomousAgentDrift(BaseVulnerability):
 
         for type in self.types:
             for prompt in templates[type]:
+                simulation_cost = 0 if self.using_native_model else None
                 if self.using_native_model:
-                    res, _ = await self.simulator_model.a_generate(
-                        prompt, schema=SyntheticDataList
+                    res, simulation_cost = (
+                        await self.simulator_model.a_generate(
+                            prompt, schema=SyntheticDataList
+                        )
                     )
                     local_attacks = [item.input for item in res.data]
                 else:
@@ -283,12 +293,18 @@ class AutonomousAgentDrift(BaseVulnerability):
                         data = trimAndLoadJson(res)
                         local_attacks = [item["input"] for item in data["data"]]
 
+            per_attack_cost = (
+                simulation_cost / len(local_attacks)
+                if simulation_cost is not None and local_attacks
+                else simulation_cost
+            )
             simulated_test_cases.extend(
                 [
                     RTTestCase(
                         vulnerability=self.get_name(),
                         vulnerability_type=type,
                         input=local_attack,
+                        simulation_cost=per_attack_cost,
                     )
                     for local_attack in local_attacks
                 ]
@@ -307,9 +323,7 @@ class AutonomousAgentDrift(BaseVulnerability):
         """
         if self.async_mode:
             loop = get_or_create_event_loop()
-            return loop.run_until_complete(
-                self._a_assess_trace(trace=trace)
-            )
+            return loop.run_until_complete(self._a_assess_trace(trace=trace))
 
         self.evaluation_model, self.using_native_model = initialize_model(
             self.evaluation_model
@@ -348,7 +362,6 @@ class AutonomousAgentDrift(BaseVulnerability):
         self.vulnerable = any(f.outcome == "materialized" for f in findings)
 
         return findings
-
 
     def _get_metric(
         self,
