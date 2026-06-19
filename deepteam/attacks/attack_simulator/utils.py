@@ -4,6 +4,8 @@ import os
 import time
 import asyncio
 import logging
+from contextvars import ContextVar
+from contextlib import contextmanager
 from deepeval.metrics.utils import trimAndLoadJson, initialize_model
 from deepeval.models import DeepEvalBaseLLM
 from deepteam.attacks.single_turn.escalation_constants import (
@@ -14,13 +16,55 @@ from deepteam.attacks.single_turn.escalation_constants import (
 MAX_RETRIES = os.getenv("DEEPTEAM_MAX_RETRIES", 3)
 
 
-def generate(
+def add_cost(*costs):
+    """Combine simulation/evaluation costs where ``None`` means 'no cost
+    reported' (non-native models). Returns ``None`` only when every input is
+    ``None``; otherwise treats ``None`` as ``0``.
+    """
+    if all(c is None for c in costs):
+        return None
+    return sum(c or 0 for c in costs)
+
+
+# Context-local simulation-cost accumulator. When a ``cost_accumulator()``
+# scope is active, every ``generate``/``a_generate`` call records its cost into
+# it. This lets callers (e.g. attack enhancement) capture the cost of an entire
+# nested operation without threading cost through every method. ContextVars are
+# concurrency-safe: each asyncio task gets its own copy, and child tasks created
+# inside a scope share the same accumulator object.
+_cost_acc: ContextVar = ContextVar("deepteam_simulation_cost_acc", default=None)
+
+
+def _record_cost(cost):
+    """Add ``cost`` to the active accumulator, if any is in scope."""
+    acc = _cost_acc.get()
+    if acc is not None:
+        acc[0] = add_cost(acc[0], cost)
+
+
+@contextmanager
+def cost_accumulator():
+    """Open a context-local accumulator that captures the simulation cost of all
+    ``generate``/``a_generate`` calls made within the scope.
+
+    Yields a single-element list whose ``[0]`` holds the running total (``None``
+    until a native-model cost is recorded).
+    """
+    acc = [None]
+    token = _cost_acc.set(acc)
+    try:
+        yield acc
+    finally:
+        _cost_acc.reset(token)
+
+
+def generate_with_cost(
     prompt: str,
     schema: BaseModel,
     model: DeepEvalBaseLLM = None,
-) -> BaseModel:
+):
     """
-    Generate schema using the provided model with retry logic.
+    Generate schema using the provided model with retry logic, returning cost.
 
     Args:
         prompt: The prompt to send to the model
@@ -28,7 +72,9 @@ def generate(
         model: The model to use
 
     Returns:
-        The validated schema object
+        A tuple ``(res, cost)`` where ``res`` is the validated schema object and
+        ``cost`` is the model-reported cost for native models, or ``None`` for
+        non-native models that do not report cost.
     """
     _, using_native_model = initialize_model(model=model)
     last_error = None
@@ -37,34 +83,40 @@ def generate(
     for attempt in range(MAX_RETRIES):
         try:
             if using_native_model:
-                res, _ = model.generate(prompt=retry_prompt, schema=schema)
+                res, cost = model.generate(prompt=retry_prompt, schema=schema)
                 if res is None:
-                    raise ValueError("Model returned None. This could be because of your model's guardrails, please use a different model.")
-                return res
+                    raise ValueError(
+                        "Model returned None. This could be because of your model's guardrails, please use a different model."
+                    )
+                return res, cost
             else:
                 try:
                     res = model.generate(prompt=retry_prompt, schema=schema)
                     if res is None:
-                        raise ValueError("Model returned None. This could be because of your model's guardrails, please use a different model.")
+                        raise ValueError(
+                            "Model returned None. This could be because of your model's guardrails, please use a different model."
+                        )
 
                     if isinstance(res, str):
                         data = trimAndLoadJson(res)
-                        return schema(**data)
+                        return schema(**data), None
                     else:
-                        return res
+                        return res, None
                 except TypeError:
                     res = model.generate(retry_prompt)
                     if res is None:
-                        raise ValueError("Model returned None. This could be because of your model's guardrails, please use a different model.")
+                        raise ValueError(
+                            "Model returned None. This could be because of your model's guardrails, please use a different model."
+                        )
 
                     data = trimAndLoadJson(res)
                     if schema == SyntheticDataList:
                         data_list = [
                             SyntheticData(**item) for item in data["data"]
                         ]
-                        return SyntheticDataList(data=data_list)
+                        return SyntheticDataList(data=data_list), None
                     else:
-                        return schema(**data)
+                        return schema(**data), None
 
         except Exception as e:
             last_error = e
@@ -72,9 +124,7 @@ def generate(
                 escalated_prompt = (
                     f"{random_escalation_suffix(attempt)} \n\n {prompt}"
                 )
-                retry_prompt = append_critic_feedback(
-                    escalated_prompt, str(e)
-                )
+                retry_prompt = append_critic_feedback(escalated_prompt, str(e))
                 sleep_time = 2**attempt
                 logging.warning(
                     f"Generation failed on attempt {attempt + 1}. Retrying in {sleep_time}s... Error: {e}"
@@ -86,13 +136,27 @@ def generate(
     )
 
 
-async def a_generate(
+def generate(
+    prompt: str,
+    schema: BaseModel,
+    model: DeepEvalBaseLLM = None,
+) -> BaseModel:
+    """Backward-compatible wrapper around :func:`generate_with_cost` that
+    returns only the validated schema object. Records cost into the active
+    :func:`cost_accumulator` scope, if any."""
+    res, cost = generate_with_cost(prompt, schema, model)
+    _record_cost(cost)
+    return res
+
+
+async def a_generate_with_cost(
     prompt: str,
     schema: BaseModel,
     model: "DeepEvalBaseLLM" = None,
-) -> BaseModel:
+):
     """
-    Asynchronously generate schema using the provided model with retry logic.
+    Asynchronously generate schema using the provided model with retry logic,
+    returning cost.
 
     Args:
         prompt: The prompt to send to the model
@@ -100,7 +164,9 @@ async def a_generate(
         model: The model to use
 
     Returns:
-        The validated schema object
+        A tuple ``(res, cost)`` where ``res`` is the validated schema object and
+        ``cost`` is the model-reported cost for native models, or ``None`` for
+        non-native models that do not report cost.
     """
     _, using_native_model = initialize_model(model=model)
     last_error = None
@@ -109,34 +175,44 @@ async def a_generate(
     for attempt in range(MAX_RETRIES):
         try:
             if using_native_model:
-                res, _ = await model.a_generate(prompt=retry_prompt, schema=schema)
+                res, cost = await model.a_generate(
+                    prompt=retry_prompt, schema=schema
+                )
                 if res is None:
-                    raise ValueError("Model returned None. This could be because of your model's guardrails, please use a different model.")
-                return res
+                    raise ValueError(
+                        "Model returned None. This could be because of your model's guardrails, please use a different model."
+                    )
+                return res, cost
             else:
                 try:
-                    res = await model.a_generate(prompt=retry_prompt, schema=schema)
+                    res = await model.a_generate(
+                        prompt=retry_prompt, schema=schema
+                    )
                     if res is None:
-                        raise ValueError("Model returned None. This could be because of your model's guardrails, please use a different model.")
+                        raise ValueError(
+                            "Model returned None. This could be because of your model's guardrails, please use a different model."
+                        )
 
                     if isinstance(res, str):
                         data = trimAndLoadJson(res)
-                        return schema(**data)
+                        return schema(**data), None
                     else:
-                        return res
+                        return res, None
                 except TypeError:
                     res = await model.a_generate(retry_prompt)
                     if res is None:
-                        raise ValueError("Model returned None. This could be because of your model's guardrails, please use a different model.")
+                        raise ValueError(
+                            "Model returned None. This could be because of your model's guardrails, please use a different model."
+                        )
 
                     data = trimAndLoadJson(res)
                     if schema == SyntheticDataList:
                         data_list = [
                             SyntheticData(**item) for item in data["data"]
                         ]
-                        return SyntheticDataList(data=data_list)
+                        return SyntheticDataList(data=data_list), None
                     else:
-                        return schema(**data)
+                        return schema(**data), None
 
         except Exception as e:
             last_error = e
@@ -144,9 +220,7 @@ async def a_generate(
                 escalated_prompt = (
                     f"{random_escalation_suffix(attempt)} \n\n {prompt}"
                 )
-                retry_prompt = append_critic_feedback(
-                    escalated_prompt, str(e)
-                )
+                retry_prompt = append_critic_feedback(escalated_prompt, str(e))
                 sleep_time = 2**attempt
                 logging.warning(
                     f"Async generation failed on attempt {attempt + 1}. Retrying in {sleep_time}s... Error: {e}"
@@ -156,3 +230,16 @@ async def a_generate(
     raise RuntimeError(
         f"Failed to async generate after {MAX_RETRIES} attempts. Last error: {last_error}"
     )
+
+
+async def a_generate(
+    prompt: str,
+    schema: BaseModel,
+    model: "DeepEvalBaseLLM" = None,
+) -> BaseModel:
+    """Backward-compatible wrapper around :func:`a_generate_with_cost` that
+    returns only the validated schema object. Records cost into the active
+    :func:`cost_accumulator` scope, if any."""
+    res, cost = await a_generate_with_cost(prompt, schema, model)
+    _record_cost(cost)
+    return res
