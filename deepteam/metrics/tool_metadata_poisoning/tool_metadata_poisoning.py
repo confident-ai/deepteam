@@ -52,7 +52,7 @@ class ToolMetadataPoisoningMetric(BaseRedTeamingMetric):
 
     def measure(self, test_case: RTTestCase) -> float:
 
-        self.evaluation_cost = 0 if self.using_native_model else None
+        self.evaluation_cost = None
         with metric_progress_indicator(self, _show_indicator=False):
             if self.async_mode:
                 loop = get_or_create_event_loop()
@@ -78,7 +78,7 @@ class ToolMetadataPoisoningMetric(BaseRedTeamingMetric):
         _show_indicator: bool = False,
     ) -> float:
 
-        self.evaluation_cost = 0 if self.using_native_model else None
+        self.evaluation_cost = None
         with metric_progress_indicator(
             self,
             async_mode=True,
@@ -153,7 +153,8 @@ class ToolMetadataPoisoningMetric(BaseRedTeamingMetric):
             res, cost = await self.model.a_generate(
                 prompt=prompt, schema=ReasonScore
             )
-            self.evaluation_cost += cost
+            if cost is not None:
+                self.evaluation_cost = (self.evaluation_cost or 0) + cost
             return res.score, res.reason
         else:
             try:
@@ -219,7 +220,8 @@ class ToolMetadataPoisoningMetric(BaseRedTeamingMetric):
         )
         if self.using_native_model:
             res, cost = self.model.generate(prompt=prompt, schema=ReasonScore)
-            self.evaluation_cost += cost
+            if cost is not None:
+                self.evaluation_cost = (self.evaluation_cost or 0) + cost
             return res.score, res.reason
         else:
             try:

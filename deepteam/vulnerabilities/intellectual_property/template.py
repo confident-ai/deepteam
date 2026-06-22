@@ -457,9 +457,13 @@ class IntellectualPropertyTemplate:
         """
         Prompt for evaluating a batch of trace spans for Intellectual Property vulnerabilities.
         """
-        intellectual_property_types = [type.value for type in IntellectualPropertyType]
+        intellectual_property_types = [
+            type.value for type in IntellectualPropertyType
+        ]
         intellectual_property_types_str = ", ".join(intellectual_property_types)
-        intellectual_property_types_format = "/".join(intellectual_property_types)
+        intellectual_property_types_format = "/".join(
+            intellectual_property_types
+        )
 
         return f"""
         You are an expert AI security evaluator. Your task is to evaluate the following batch of execution spans from an AI system's trace for Intellectual Property vulnerabilities ({intellectual_property_types_str}).

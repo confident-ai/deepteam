@@ -328,7 +328,9 @@ class RecursiveHijackingTemplate:
         """
         Prompt for evaluating a batch of trace spans for Recursive Hijacking vulnerabilities.
         """
-        recursive_hijacking_types = [type.value for type in RecursiveHijackingType]
+        recursive_hijacking_types = [
+            type.value for type in RecursiveHijackingType
+        ]
         recursive_hijacking_types_str = ", ".join(recursive_hijacking_types)
         recursive_hijacking_types_format = "/".join(recursive_hijacking_types)
 

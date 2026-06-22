@@ -1,12 +1,16 @@
 import asyncio
 from enum import Enum
-from typing import List, Optional, Union
+from typing import List, Optional, Tuple, Union
 
 from deepeval.models import DeepEvalBaseLLM
 from deepeval.metrics.utils import initialize_model
 
 from deepteam.test_case import RTTestCase
-from deepteam.attacks.attack_simulator.utils import generate, a_generate
+from deepteam.attacks.attack_simulator.utils import (
+    generate_with_cost,
+    a_generate_with_cost,
+    add_cost,
+)
 from .template import AttackEngineTemplates
 from .types import TransformedAttack, AttackVariations, ValidationResult
 
@@ -47,7 +51,7 @@ class AttackEngine:
                 vulnerability_type=vulnerability_type,
                 generation_guidelines=self.generation_guidelines,
             )
-            transformed: TransformedAttack = generate(
+            transformed, refine_cost = generate_with_cost(
                 transform_prompt, TransformedAttack, self.simulator_model
             )
             transformed_input = transformed.input.strip()
@@ -65,25 +69,37 @@ class AttackEngine:
                         generation_guidelines=self.generation_guidelines,
                     )
                 )
-                variations: AttackVariations = generate(
+                variations, variation_cost = generate_with_cost(
                     variation_prompt, AttackVariations, self.simulator_model
                 )
+                refine_cost = add_cost(refine_cost, variation_cost)
                 candidates = [transformed_input] + [
                     item.strip() for item in variations.inputs
                 ]
 
-            valid_inputs = self._validate_candidates_with_llm(
+            valid_inputs, validation_cost = self._validate_candidates_with_llm(
                 candidates=candidates,
                 vulnerability=vulnerability,
                 vulnerability_type=vulnerability_type,
                 purpose=effective_purpose,
             )
+            refine_cost = add_cost(refine_cost, validation_cost)
             if not valid_inputs:
                 valid_inputs = [transformed_input]
 
+            # Carry the baseline simulation_cost forward and add this refine
+            # pass's cost, split evenly across the refined test cases produced.
+            combined_cost = add_cost(test_case.simulation_cost, refine_cost)
+            per_refined_cost = (
+                combined_cost / len(valid_inputs)
+                if combined_cost is not None and valid_inputs
+                else combined_cost
+            )
             refined_test_cases.extend(
                 [
-                    self._clone_with_new_input(test_case, refined_input)
+                    self._clone_with_new_input(
+                        test_case, refined_input, per_refined_cost
+                    )
                     for refined_input in valid_inputs
                 ]
             )
@@ -125,7 +141,7 @@ class AttackEngine:
             vulnerability_type=vulnerability_type,
             generation_guidelines=self.generation_guidelines,
         )
-        transformed: TransformedAttack = await a_generate(
+        transformed, refine_cost = await a_generate_with_cost(
             transform_prompt, TransformedAttack, self.simulator_model
         )
         transformed_input = transformed.input.strip()
@@ -143,24 +159,38 @@ class AttackEngine:
                     generation_guidelines=self.generation_guidelines,
                 )
             )
-            variations: AttackVariations = await a_generate(
+            variations, variation_cost = await a_generate_with_cost(
                 variation_prompt, AttackVariations, self.simulator_model
             )
+            refine_cost = add_cost(refine_cost, variation_cost)
             candidates = [transformed_input] + [
                 item.strip() for item in variations.inputs
             ]
 
-        valid_inputs = await self._a_validate_candidates_with_llm(
-            candidates=candidates,
-            vulnerability=vulnerability,
-            vulnerability_type=vulnerability_type,
-            purpose=effective_purpose,
+        valid_inputs, validation_cost = (
+            await self._a_validate_candidates_with_llm(
+                candidates=candidates,
+                vulnerability=vulnerability,
+                vulnerability_type=vulnerability_type,
+                purpose=effective_purpose,
+            )
         )
+        refine_cost = add_cost(refine_cost, validation_cost)
         if not valid_inputs:
             valid_inputs = [transformed_input]
 
+        # Carry the baseline simulation_cost forward and add this refine pass's
+        # cost, split evenly across the refined test cases produced.
+        combined_cost = add_cost(test_case.simulation_cost, refine_cost)
+        per_refined_cost = (
+            combined_cost / len(valid_inputs)
+            if combined_cost is not None and valid_inputs
+            else combined_cost
+        )
         return [
-            self._clone_with_new_input(test_case, refined_input)
+            self._clone_with_new_input(
+                test_case, refined_input, per_refined_cost
+            )
             for refined_input in valid_inputs
         ]
 
@@ -180,9 +210,10 @@ class AttackEngine:
         vulnerability: str,
         vulnerability_type: Optional[str],
         purpose: Optional[str] = None,
-    ) -> List[str]:
+    ) -> Tuple[List[str], Optional[float]]:
         effective_purpose = purpose if purpose is not None else self.purpose
         validated: List[str] = []
+        validation_cost = None
         for candidate in candidates[: self.variations]:
             if not candidate or not candidate.strip():
                 continue
@@ -194,15 +225,16 @@ class AttackEngine:
                 purpose=effective_purpose,
             )
             try:
-                result: ValidationResult = generate(
+                result, cost = generate_with_cost(
                     prompt, ValidationResult, self.simulator_model
                 )
+                validation_cost = add_cost(validation_cost, cost)
                 if result.is_valid:
                     validated.append(candidate)
             except Exception:
                 continue
 
-        return validated
+        return validated, validation_cost
 
     async def _a_validate_candidates_with_llm(
         self,
@@ -210,13 +242,13 @@ class AttackEngine:
         vulnerability: str,
         vulnerability_type: Optional[str],
         purpose: Optional[str] = None,
-    ) -> List[str]:
+    ) -> Tuple[List[str], Optional[float]]:
         effective_purpose = purpose if purpose is not None else self.purpose
         trimmed = [c for c in candidates[: self.variations] if c and c.strip()]
         if not trimmed:
             return []
 
-        async def validate_one(candidate: str) -> Optional[str]:
+        async def validate_one(candidate: str):
             prompt = AttackEngineTemplates.validate_attack_template(
                 candidate_input=candidate,
                 vulnerability=vulnerability,
@@ -224,19 +256,25 @@ class AttackEngine:
                 purpose=effective_purpose,
             )
             try:
-                result: ValidationResult = await a_generate(
+                result, cost = await a_generate_with_cost(
                     prompt, ValidationResult, self.simulator_model
                 )
-                return candidate if result.is_valid else None
+                return (candidate if result.is_valid else None), cost
             except Exception:
-                return None
+                return None, None
 
         results = await asyncio.gather(*[validate_one(c) for c in trimmed])
-        return [c for c in results if c]
+        validated = [c for c, _ in results if c]
+        validation_cost = None
+        for _, cost in results:
+            validation_cost = add_cost(validation_cost, cost)
+        return validated, validation_cost
 
     @staticmethod
     def _clone_with_new_input(
-        test_case: RTTestCase, refined_input: str
+        test_case: RTTestCase,
+        refined_input: str,
+        simulation_cost: Optional[float] = None,
     ) -> RTTestCase:
         return RTTestCase(
             vulnerability=test_case.vulnerability,
@@ -244,4 +282,5 @@ class AttackEngine:
             input=refined_input,
             attack_method=test_case.attack_method,
             metadata=test_case.metadata,
+            simulation_cost=simulation_cost,
         )

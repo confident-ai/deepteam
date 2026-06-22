@@ -132,7 +132,11 @@
     // deepteam's red against an otherwise monochrome page.
     // Fallback for Safari < 16.2 (no color-mix support).
     fill: #c2410c;
-    fill: color-mix(in oklab, #dc2626 70%, currentColor);
+    // NB: must NOT use `currentColor` inside this color-mix. Interpolating
+    // an SVG `fill` toward `color-mix(..., currentColor)` deterministically
+    // crashes the Blink renderer (SIGABRT) as of Chrome 149. `currentColor`
+    // here resolves to the glyph color, so reference the token directly.
+    fill: color-mix(in oklab, #dc2626 70%, var(--color-fd-foreground));
     transform: scale(1);
   }
   90%,
@@ -155,6 +159,6 @@
 
   .glyphAttackFlag {
     fill: #c2410c;
-    fill: color-mix(in oklab, #dc2626 70%, currentColor);
+    fill: color-mix(in oklab, #dc2626 70%, var(--color-fd-foreground));
   }
 }

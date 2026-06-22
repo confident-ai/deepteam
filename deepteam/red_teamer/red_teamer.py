@@ -543,6 +543,7 @@ class RedTeamer:
                 metric.measure(red_teaming_test_case)
                 red_teaming_test_case.score = metric.score
                 red_teaming_test_case.reason = metric.reason
+                red_teaming_test_case.evaluation_cost = metric.evaluation_cost
             except:
                 if ignore_errors:
                     red_teaming_test_case.error = f"Error evaluating target LLM output for the '{vulnerability_type.value}' vulnerability type"
@@ -584,6 +585,7 @@ class RedTeamer:
                 metric.measure(red_teaming_test_case)
                 red_teaming_test_case.score = metric.score
                 red_teaming_test_case.reason = metric.reason
+                red_teaming_test_case.evaluation_cost = metric.evaluation_cost
             except:
                 if ignore_errors:
                     red_teaming_test_case.error = f"Error evaluating target LLM output for the '{vulnerability_type.value}' vulnerability type"
@@ -624,6 +626,7 @@ class RedTeamer:
                 await metric.a_measure(red_teaming_test_case)
                 red_teaming_test_case.score = metric.score
                 red_teaming_test_case.reason = metric.reason
+                red_teaming_test_case.evaluation_cost = metric.evaluation_cost
             except:
                 if ignore_errors:
                     red_teaming_test_case.error = f"Error evaluating target LLM output for the '{vulnerability_type.value}' vulnerability type"
@@ -665,6 +668,7 @@ class RedTeamer:
                 await metric.a_measure(red_teaming_test_case)
                 red_teaming_test_case.score = metric.score
                 red_teaming_test_case.reason = metric.reason
+                red_teaming_test_case.evaluation_cost = metric.evaluation_cost
             except:
                 if ignore_errors:
                     red_teaming_test_case.error = f"Error evaluating target LLM output for the '{vulnerability_type.value}' vulnerability type"

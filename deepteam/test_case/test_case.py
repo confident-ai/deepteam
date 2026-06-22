@@ -1,3 +1,4 @@
+from nntplib import NNTPDataError
 from typing import List, Optional
 from enum import Enum
 from deepeval.test_case import LLMTestCase, Turn, ToolCall
@@ -25,6 +26,8 @@ class RTTestCase(LLMTestCase):
     score: Optional[float] = None
     reason: Optional[str] = None
     error: Optional[str] = None
+    simulation_cost: Optional[float] = None
+    evaluation_cost: Optional[float] = None
 
     def __repr__(self):
         attrs = [
