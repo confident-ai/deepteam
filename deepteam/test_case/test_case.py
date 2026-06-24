@@ -1,4 +1,3 @@
-from nntplib import NNTPDataError
 from typing import List, Optional
 from enum import Enum
 from deepeval.test_case import LLMTestCase, Turn, ToolCall
