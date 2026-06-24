@@ -1,4 +1,7 @@
+import os
 from typing import List
+
+CODE_CONTEXT_LIMIT = int(os.getenv("CODE_CONTEXT_LIMIT", "40000"))
 
 DEFAULT_CODE_SCAN_VULNERABILITIES: List[str] = [
     "Unexpected Code Execution",
