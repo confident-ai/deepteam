@@ -16,6 +16,7 @@ from .constants import (
 )
 from .template import CodeScanTemplate
 from .code_scanner import CodeScanner
+from .collect import collect_files, collect_changed_files
 
 __all__ = [
     "CodeChunk",
@@ -30,4 +31,6 @@ __all__ = [
     "CODE_CONTEXT_LIMIT",
     "CodeScanTemplate",
     "CodeScanner",
+    "collect_files",
+    "collect_changed_files",
 ]

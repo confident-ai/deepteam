@@ -10,6 +10,7 @@ from deepteam.attacks.attack_simulator.utils import generate, a_generate
 
 from .constants import CODE_CONTEXT_LIMIT
 from .schema import CodeChunk, CodeFinding, CodeFindingsList
+from .taxonomy import VulnerabilityRef
 from .template import CodeScanTemplate
 
 logger = logging.getLogger(__name__)
@@ -24,7 +25,7 @@ class CodeScanner:
         self,
         model: DeepEvalBaseLLM,
         template=CodeScanTemplate,
-        vulnerabilities: Optional[List[str]] = None,
+        vulnerabilities: Optional[List[VulnerabilityRef]] = None,
         guidance: Optional[str] = None,
         limit: int = CODE_CONTEXT_LIMIT,
         max_concurrent: int = 10,
@@ -61,8 +62,7 @@ class CodeScanner:
 
     def _build_prompt(self, batch: List[CodeChunk]) -> str:
         batch_string = json.dumps(
-            [chunk.model_dump(exclude_none=True) for chunk in batch], 
-            indent=2
+            [chunk.model_dump(exclude_none=True) for chunk in batch], indent=2
         )
         return self.template.generate_code_batch_evaluation(
             batch_data=batch_string,
@@ -74,16 +74,17 @@ class CodeScanner:
         findings: List[CodeFinding] = []
         for batch in self._make_batches(chunks):
             try:
-                prompt = self._build_prompt(batch)
-                res: CodeFindingsList = generate(
-                    prompt, CodeFindingsList, self.model
-                )
-                findings.extend(res.findings)
+                findings.extend(self._scan_batch(batch))
             except Exception as e:
                 logger.warning(
                     "code_scan batch failed (%d chunks): %s", len(batch), e
                 )
         return self._dedupe(findings)
+
+    def _scan_batch(self, batch: List[CodeChunk]) -> List[CodeFinding]:
+        prompt = self._build_prompt(batch)
+        res: CodeFindingsList = generate(prompt, CodeFindingsList, self.model)
+        return res.findings
 
     async def a_scan(self, chunks: List[CodeChunk]) -> List[CodeFinding]:
         semaphore = asyncio.Semaphore(self.max_concurrent)

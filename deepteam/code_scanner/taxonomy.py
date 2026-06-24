@@ -1,11 +1,21 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Type, Union
 
+from deepteam.vulnerabilities.base_vulnerability import BaseVulnerability
 from deepteam.vulnerabilities.constants import VULNERABILITY_INFO_MAP
+
+VulnerabilityRef = Union[str, Type[BaseVulnerability]]
 
 KNOWN_VULNERABILITIES: Dict[str, List[str]] = {
     name: list(info.allowed_types)
     for name, info in VULNERABILITY_INFO_MAP.items()
 }
+
+
+def to_name(vulnerability: VulnerabilityRef) -> str:
+    """Normalize a vulnerability class/instance or name string to its name."""
+    if isinstance(vulnerability, str):
+        return vulnerability
+    return vulnerability.name
 
 
 def vulnerability_names() -> List[str]:

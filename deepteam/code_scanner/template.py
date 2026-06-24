@@ -3,7 +3,11 @@ from typing import List, Optional
 from deepteam.code_scanner.constants import (
     DEFAULT_CODE_SCAN_VULNERABILITIES,
 )
-from deepteam.code_scanner.taxonomy import allowed_types
+from deepteam.code_scanner.taxonomy import (
+    VulnerabilityRef,
+    allowed_types,
+    to_name,
+)
 
 
 class CodeScanTemplate:
@@ -12,13 +16,15 @@ class CodeScanTemplate:
     """
 
     @staticmethod
-    def _render_catalog(vulnerabilities: List[str]) -> str:
+    def _render_catalog(vulnerabilities: List[VulnerabilityRef]) -> str:
         """
         Render `- Name: type1, type2` lines, pulling the allowed subtypes
         straight from the taxonomy so the judge can only use known labels.
+        Entries may be vulnerability classes or name strings.
         """
         lines = []
-        for name in vulnerabilities:
+        for vulnerability in vulnerabilities:
+            name = to_name(vulnerability)
             types = allowed_types(name)
             if not types:
                 continue
@@ -28,14 +34,14 @@ class CodeScanTemplate:
     @staticmethod
     def generate_code_batch_evaluation(
         batch_data: str,
-        vulnerabilities: Optional[List[str]] = None,
+        vulnerabilities: Optional[List[VulnerabilityRef]] = None,
         guidance: Optional[str] = None,
     ) -> str:
         """Build the evaluation prompt for one batch of code chunks.
 
         Args:
             batch_data: JSON array of code chunks. Each has `file_path`, `content`, optional `language`, and `start_line` (the absolute line number `content`'s first line maps to).
-            vulnerabilities: Category names to scan for. Defaults to `DEFAULT_CODE_SCAN_VULNERABILITIES`. Pass a subset to scope.
+            vulnerabilities: Vulnerability classes or name strings to scan for. Defaults to `DEFAULT_CODE_SCAN_VULNERABILITIES`. Pass a subset to scope.
             guidance: Optional free-text project guidance (e.g. "treat any PII exposure as high severity").
         """
         vulnerabilities = vulnerabilities or DEFAULT_CODE_SCAN_VULNERABILITIES
