@@ -54,3 +54,5 @@ class SpanNode(BaseModel):
     
     # Bottom-up propagation
     child_findings: Optional[List[BatchFinding]] = None
+
+    previous_findings: Optional[List[BatchFinding]] = None

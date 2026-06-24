@@ -12,6 +12,20 @@ from deepteam.utils import SPANS_CONTEXT_LIMIT
 from deepteam.attacks.attack_simulator.utils import generate, a_generate
 
 
+# Appended to a scanner's prompt only when prior detections from other
+# vulnerability scanners are present, so the LLM suppresses duplicate
+# attributions of an already-reported issue (see TraceScanner.previous_detections).
+PREVIOUS_DETECTIONS_INSTRUCTION = """
+
+PREVIOUSLY DETECTED ISSUES:
+Some spans include a `previous_findings` field listing issues that OTHER vulnerability
+scanners have already attributed to that span. If a finding you are about to report
+describes the SAME underlying issue already present in that span's `previous_findings`,
+OMIT it — it has already been counted. Only report issues that are genuinely distinct
+from what is already listed there.
+"""
+
+
 @dataclass
 class BatchContext:
     """Subtree-local accumulator for spans pending LLM evaluation.
@@ -31,11 +45,17 @@ class TraceScanner:
         template: Any,
         limit: int = SPANS_CONTEXT_LIMIT,
         max_concurrent: int = 10,
+        previous_detections: Optional[List[BatchFinding]] = None,
+        output_schema: Any = BatchFindingsList,
     ):
         self.model, self.using_native_model = initialize_model(model)
         self.template = template
         self.limit = limit
         self.max_concurrent = max_concurrent
+        self.output_schema = output_schema
+        self._prior_by_span: Dict[str, List[BatchFinding]] = {}
+        for finding in previous_detections or []:
+            self._prior_by_span.setdefault(finding.spanUuid, []).append(finding)
 
         # Internal State
         self._findings: List[BatchFinding] = []
@@ -55,7 +75,7 @@ class TraceScanner:
         if ctx.batch:
             self._flush_batch(ctx)
 
-        return self._findings
+        return self._results()
 
     async def a_process_trace(self, trace: Trace) -> List[BatchFinding]:
         self._reset_state()
@@ -75,7 +95,7 @@ class TraceScanner:
         if ctx.batch:
             await self._a_flush_batch(ctx)
 
-        return self._findings
+        return self._results()
 
     def _reset_state(self):
         self._findings = []
@@ -121,12 +141,9 @@ class TraceScanner:
         if not ctx.batch:
             return
 
-        batch_list = [node.model_dump(exclude_none=True) for node in ctx.batch]
-        batch_string = json.dumps(batch_list, indent=2)
-        prompt = self.template.generate_trace_batch_evaluation(batch_data=batch_string)
-
-        res: BatchFindingsList = generate(prompt, BatchFindingsList, self.model)
-        self._store_findings(res.findings)
+        prompt = self._build_prompt(self._serialize_batch(ctx.batch))
+        res = generate(prompt, self.output_schema, self.model)
+        self._handle_result(res)
         ctx.batch = []
         ctx.size = 0
 
@@ -173,16 +190,32 @@ class TraceScanner:
         if not ctx.batch:
             return
 
-        batch_list = [node.model_dump(exclude_none=True) for node in ctx.batch]
-        batch_string = json.dumps(batch_list, indent=2)
-        prompt = self.template.generate_trace_batch_evaluation(batch_data=batch_string)
+        prompt = self._build_prompt(self._serialize_batch(ctx.batch))
 
         # Bound the number of in-flight LLM calls across concurrent subtrees.
         async with self._semaphore:
-            res: BatchFindingsList = await a_generate(prompt, BatchFindingsList, self.model)
-        self._store_findings(res.findings)
+            res = await a_generate(prompt, self.output_schema, self.model)
+        self._handle_result(res)
         ctx.batch = []
         ctx.size = 0
+
+    def _serialize_batch(self, batch: List[SpanNode]) -> str:
+        batch_list = [node.model_dump(exclude_none=True) for node in batch]
+        return json.dumps(batch_list, indent=2)
+
+    def _build_prompt(self, batch_string: str) -> str:
+        prompt = self.template.generate_trace_batch_evaluation(batch_data=batch_string)
+        if self._prior_by_span:
+            prompt += PREVIOUS_DETECTIONS_INSTRUCTION
+        return prompt
+
+    def _handle_result(self, res: Any):
+        """Accumulate one batch's LLM result into scanner state."""
+        self._store_findings(res.findings)
+
+    def _results(self) -> Any:
+        """Final value returned by process_trace / a_process_trace."""
+        return self._findings
 
     # ---------------------------------------------------------
     # UTILITIES & EXTRACTION
@@ -261,7 +294,8 @@ class TraceScanner:
             retrieval_context=span.retrieval_context,
             expected_output=span.expected_output,
             tools_called=span.tools_called,
-            child_findings=child_findings if child_findings else None
+            child_findings=child_findings if child_findings else None,
+            previous_findings=self._prior_by_span.get(span.uuid) or None,
         )
 
         # 2. Map Subclass-Specific Critical Fields
@@ -298,5 +332,6 @@ class TraceScanner:
             retrieval_context=getattr(trace, "retrieval_context", None),
             expected_output=getattr(trace, "expected_output", None),
             tools_called=[tc.model_dump(exclude_none=True) for tc in trace.tools_called] if getattr(trace, "tools_called", None) else None,
-            child_findings=root_findings if root_findings else None
+            child_findings=root_findings if root_findings else None,
+            previous_findings=self._prior_by_span.get(trace.uuid) or None,
         )
