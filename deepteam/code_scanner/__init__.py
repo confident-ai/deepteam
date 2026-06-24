@@ -10,6 +10,8 @@ from .taxonomy import (
     is_known,
     vulnerability_names,
 )
+from .constants import DEFAULT_CODE_SCAN_VULNERABILITIES
+from .template import CodeScanTemplate
 
 __all__ = [
     "CodeChunk",
@@ -20,4 +22,6 @@ __all__ = [
     "allowed_types",
     "is_known",
     "vulnerability_names",
+    "DEFAULT_CODE_SCAN_VULNERABILITIES",
+    "CodeScanTemplate",
 ]

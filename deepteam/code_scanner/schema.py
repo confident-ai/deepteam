@@ -1,12 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List, Literal, Optional
 
-Severity = Literal[
-    "low",
-    "medium",
-    "high",
-    "critical"
-]
+Severity = Literal["low", "medium", "high", "critical"]
 
 
 class CodeChunk(BaseModel):
