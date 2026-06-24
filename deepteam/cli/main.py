@@ -24,6 +24,8 @@ from deepteam.vulnerabilities import (
     DebugAccess,
     ShellInjection,
     SQLInjection,
+    ShellCommandPayloadEmission,
+    SQLInjectionPayloadEmission,
     SSRF,
     # Safety
     IllegalActivity,
@@ -82,6 +84,8 @@ VULN_CLASSES = [
     DebugAccess,
     ShellInjection,
     SQLInjection,
+    ShellCommandPayloadEmission,
+    SQLInjectionPayloadEmission,
     SSRF,
     GoalTheft,
     RecursiveHijacking,
