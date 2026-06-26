@@ -85,3 +85,17 @@ class TestScanCli:
     def test_bad_format(self, runner, scan_dir):
         r = runner.invoke(climain.app, ["scan", scan_dir, "--format", "xml"])
         assert r.exit_code != 0
+
+    def test_comment_flag_posts_findings(self, runner, scan_dir, monkeypatch):
+        import deepteam.code_scanner as pkg
+
+        calls = []
+        monkeypatch.setattr(
+            pkg, "post_pr_comments", lambda findings: calls.append(findings)
+        )
+        r = runner.invoke(
+            climain.app,
+            ["scan", scan_dir, "--comment", "--no-fail-on-findings"],
+        )
+        assert r.exit_code == 0
+        assert len(calls) == 1 and len(calls[0]) == 1

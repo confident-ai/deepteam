@@ -438,6 +438,11 @@ def scan(
         "--fail-on-findings/--no-fail-on-findings",
         help="Exit with code 1 if any findings remain (useful in CI).",
     ),
+    comment: bool = typer.Option(
+        False,
+        "--comment",
+        help="Post findings to Confident AI so deepteam[bot] comments on the PR (GitHub Actions only).",
+    ),
 ):
     """Scan source code for AI-security vulnerabilities."""
     from deepteam.code_scanner import (
@@ -446,6 +451,7 @@ def scan(
         collect_files,
         filter_by_severity,
         load_config,
+        post_pr_comments,
         to_json,
         to_markdown,
         to_sarif,
@@ -497,6 +503,9 @@ def scan(
         typer.echo(f"Wrote {len(findings)} finding(s) to {output}", err=True)
     else:
         typer.echo(rendered)
+
+    if comment:
+        post_pr_comments(findings)
 
     if fail_on_findings and findings:
         raise typer.Exit(code=1)
