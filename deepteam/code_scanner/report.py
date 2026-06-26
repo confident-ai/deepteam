@@ -44,7 +44,9 @@ def to_json(findings: List[CodeFinding]) -> str:
 def to_markdown(findings: List[CodeFinding]) -> str:
     """Render findings as a PR-comment-friendly Markdown summary."""
     if not findings:
-        return "## \U0001f6e1️ deepteam code scan\n\nNo vulnerabilities found."
+        return (
+            "## DeepTeam Code Vulnerabiltiy Scan\n\nNo vulnerabilities found."
+        )
 
     counts = {s: 0 for s in SEVERITY_ORDER}
     for f in findings:
@@ -55,9 +57,9 @@ def to_markdown(findings: List[CodeFinding]) -> str:
         for s in ("critical", "high", "medium", "low")
     )
     lines = [
-        "## \U0001f6e1️ deepteam code scan",
+        "## DeepTeam Code Vulnerabiltiy Scan",
         "",
-        f"**{len(findings)} finding(s)** — {summary}",
+        f"**{len(findings)} finding(s)**: {summary}",
     ]
 
     by_file: Dict[str, List[CodeFinding]] = {}
@@ -75,12 +77,12 @@ def to_markdown(findings: List[CodeFinding]) -> str:
             if f.lineEnd and f.lineEnd != f.lineStart:
                 loc += f"-{f.lineEnd}"
             lines.append(
-                f"- {_SEVERITY_EMOJI[f.severity]} **{f.severity}** · "
-                f"`{f.vulnerability} / {f.vulnerabilityType}` — {loc}"
+                f"- {_SEVERITY_EMOJI[f.severity]} **{f.severity.capitalize()}**: "
+                f"`{f.vulnerability} / {f.vulnerabilityType}` [{loc}]"
             )
             lines.append(f"  {f.reason}")
             if f.recommendation:
-                lines.append(f"  _Fix:_ {f.recommendation}")
+                lines.append(f"  **Fix**: {f.recommendation}")
 
     return "\n".join(lines)
 
