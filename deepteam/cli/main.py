@@ -396,5 +396,111 @@ def run(
     return result
 
 
+@app.command("scan")
+def scan(
+    path: str = typer.Argument(".", help="File or directory to scan."),
+    diff: Optional[str] = typer.Option(
+        None,
+        "--diff",
+        help="Scan only files changed between two git refs, e.g. 'main..HEAD'.",
+    ),
+    config_file: Optional[str] = typer.Option(
+        None,
+        "-c",
+        "--config",
+        help="Config YAML path (otherwise auto-discovered at the scan root).",
+    ),
+    output_format: str = typer.Option(
+        "markdown",
+        "-f",
+        "--format",
+        help="Output format: markdown | sarif | json.",
+    ),
+    min_severity: Optional[str] = typer.Option(
+        None,
+        "--min-severity",
+        help="Only report findings at or above: low | medium | high | critical.",
+    ),
+    model: Optional[str] = typer.Option(
+        None,
+        "-m",
+        "--model",
+        help="Evaluation model (e.g. gpt-5.5). Overrides the config.",
+    ),
+    output: Optional[str] = typer.Option(
+        None,
+        "-o",
+        "--output",
+        help="Write the report to a file instead of stdout.",
+    ),
+    fail_on_findings: bool = typer.Option(
+        True,
+        "--fail-on-findings/--no-fail-on-findings",
+        help="Exit with code 1 if any findings remain (useful in CI).",
+    ),
+):
+    """Scan source code for AI-security vulnerabilities."""
+    from deepteam.code_scanner import (
+        CodeScanner,
+        collect_changed_files,
+        collect_files,
+        filter_by_severity,
+        load_config,
+        to_json,
+        to_markdown,
+        to_sarif,
+    )
+
+    formatters = {
+        "markdown": to_markdown,
+        "sarif": to_sarif,
+        "json": to_json,
+    }
+    if output_format not in formatters:
+        raise typer.BadParameter(
+            f"format must be one of {', '.join(formatters)}"
+        )
+
+    config.apply_env()
+
+    scan_root = path if os.path.isdir(path) else os.path.dirname(path) or "."
+    cfg = load_config(path=config_file, directory=scan_root)
+
+    eval_model = load_model(model or cfg.model)
+
+    if diff:
+        base, _, head = diff.partition("..")
+        chunks = collect_changed_files(
+            path,
+            base=base,
+            head=head or None,
+            include=cfg.include,
+            exclude=cfg.exclude,
+        )
+    else:
+        chunks = collect_files(path, include=cfg.include, exclude=cfg.exclude)
+
+    typer.echo(f"Scanning {len(chunks)} code chunk(s)...", err=True)
+
+    scanner = CodeScanner(
+        model=eval_model,
+        vulnerabilities=cfg.vulnerabilities,
+        instruction=cfg.instruction,
+    )
+    findings = scanner.scan(chunks)
+    findings = filter_by_severity(findings, min_severity or cfg.min_severity)
+
+    rendered = formatters[output_format](findings)
+    if output:
+        with open(output, "w") as f:
+            f.write(rendered)
+        typer.echo(f"Wrote {len(findings)} finding(s) to {output}", err=True)
+    else:
+        typer.echo(rendered)
+
+    if fail_on_findings and findings:
+        raise typer.Exit(code=1)
+
+
 if __name__ == "__main__":
     app()
