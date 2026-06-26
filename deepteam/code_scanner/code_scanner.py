@@ -26,14 +26,14 @@ class CodeScanner:
         model: DeepEvalBaseLLM,
         template=CodeScanTemplate,
         vulnerabilities: Optional[List[VulnerabilityRef]] = None,
-        guidance: Optional[str] = None,
+        instruction: Optional[str] = None,
         limit: int = CODE_CONTEXT_LIMIT,
         max_concurrent: int = 10,
     ):
         self.model, self.using_native_model = initialize_model(model)
         self.template = template
         self.vulnerabilities = vulnerabilities
-        self.guidance = guidance
+        self.instruction = instruction
         self.limit = limit
         self.max_concurrent = max_concurrent
 
@@ -67,7 +67,7 @@ class CodeScanner:
         return self.template.generate_code_batch_evaluation(
             batch_data=batch_string,
             vulnerabilities=self.vulnerabilities,
-            guidance=self.guidance,
+            instruction=self.instruction,
         )
 
     def scan(self, chunks: List[CodeChunk]) -> List[CodeFinding]:

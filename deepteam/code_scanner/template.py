@@ -35,23 +35,23 @@ class CodeScanTemplate:
     def generate_code_batch_evaluation(
         batch_data: str,
         vulnerabilities: Optional[List[VulnerabilityRef]] = None,
-        guidance: Optional[str] = None,
+        instruction: Optional[str] = None,
     ) -> str:
         """Build the evaluation prompt for one batch of code chunks.
 
         Args:
             batch_data: JSON array of code chunks. Each has `file_path`, `content`, optional `language`, and `start_line` (the absolute line number `content`'s first line maps to).
             vulnerabilities: Vulnerability classes or name strings to scan for. Defaults to `DEFAULT_CODE_SCAN_VULNERABILITIES`. Pass a subset to scope.
-            guidance: Optional free-text project guidance (e.g. "treat any PII exposure as high severity").
+            instruction: Optional free-text project instruction (e.g. "treat any PII exposure as high severity").
         """
         vulnerabilities = vulnerabilities or DEFAULT_CODE_SCAN_VULNERABILITIES
         catalog = CodeScanTemplate._render_catalog(vulnerabilities)
 
-        guidance_block = ""
-        if guidance and guidance.strip():
-            guidance_block = (
-                "\n        ADDITIONAL PROJECT GUIDANCE (apply on top of the "
-                f"above):\n        {guidance.strip()}\n"
+        instruction_block = ""
+        if instruction and instruction.strip():
+            instruction_block = (
+                "\n        ADDITIONAL PROJECT INSTRUCTION (apply on top of the "
+                f"above):\n        {instruction.strip()}\n"
             )
 
         return f"""
@@ -88,7 +88,7 @@ class CodeScanTemplate:
         4. `vulnerabilityType` MUST be one of the exact types listed for the
            chosen category above.
         5. Give a precise `reason`, an actionable `recommendation`, and the
-           offending `codeSnippet`.{guidance_block}
+           offending `codeSnippet`.{instruction_block}
         **
         EXAMPLE JSON OUTPUT
 
