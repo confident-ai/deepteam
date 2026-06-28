@@ -58,9 +58,11 @@ class TestGithubReport:
         gr.post_pr_comments([_finding()])
 
         assert (
-            captured["url"] == "https://api.test/v1/deepteam/code-scan/comments"
+            captured["url"]
+            == "https://api.test/v1/github-app/code-scan/comments"
         )
         body = captured["json"]
+        assert body["app"] == "deepteam"
         assert body["repo"] == "octo/repo"
         assert body["pr"] == 42
         assert body["oidc"] == "jwt"

@@ -7,8 +7,9 @@ from deepeval.confident.api import get_base_api_url
 
 from .schema import CodeFinding
 
-PR_COMMENTS_ENDPOINT = "/v1/deepteam/code-scan/comments"
+PR_COMMENTS_ENDPOINT = "/v1/github-app/code-scan/comments"
 _OIDC_AUDIENCE = "confident-code-scan"
+_APP = "deepteam"
 
 
 def _github_oidc_token() -> Optional[str]:
@@ -21,9 +22,7 @@ def _github_oidc_token() -> Optional[str]:
         return None
     resp = requests.get(
         f"{req_url}&audience={_OIDC_AUDIENCE}",
-        headers={
-            "Authorization": f"bearer {req_token}"
-        },
+        headers={"Authorization": f"bearer {req_token}"},
         timeout=15,
     )
     resp.raise_for_status()
@@ -82,6 +81,7 @@ def post_pr_comments(
 
     base = api_url or get_base_api_url()
     payload = {
+        "app": _APP,
         "repo": repo,
         "pr": pr_number,
         "oidc": oidc,
