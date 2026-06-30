@@ -62,6 +62,20 @@ There are **NINE** optional command line flags:
 - [Optional] `--fail-on-findings` / `--no-fail-on-findings`: exit with code `1` if any findings remain. Defaulted to `True`.
 - [Optional] `--comment`: post findings so `deepteam[bot]` comments on the pull request, see [GitHub Bot](/docs/code-scanning-github-bot).
 
+## Output Formats
+
+Pick the report format with `-f` / `--format`, which defaults to `markdown`:
+
+- `markdown`: a human-readable report grouped by file, with a severity badge and a suggested fix per finding. This is what the [GitHub bot](/docs/code-scanning-github-bot) posts on a pull request.
+- `sarif`: SARIF 2.1.0, for security dashboards such as GitHub code scanning (upload it with the `github/codeql-action/upload-sarif` action).
+- `json`: the raw findings, for custom tooling or storage.
+
+Use `-o` to write the report to a file instead of stdout:
+
+```bash
+deepteam scan . --format sarif -o results.sarif
+```
+
 ## Configuration File
 
 You can declare your scan settings in a `.deepteam-code-scan.yaml` file at your scan root, which is picked up automatically.
