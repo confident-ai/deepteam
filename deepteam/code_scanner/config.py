@@ -24,6 +24,7 @@ class CodeScanConfig:
     exclude: Optional[List[str]] = None
     vulnerabilities: Optional[List[str]] = None
     model: Optional[str] = None
+    provider: Optional[str] = None
     diffs_only: bool = False
 
 
@@ -59,5 +60,6 @@ def load_config(
         exclude=raw.get("exclude"),
         vulnerabilities=raw.get("vulnerabilities"),
         model=raw.get("model"),
+        provider=raw.get("provider"),
         diffs_only=bool(raw.get("diffs_only", False)),
     )

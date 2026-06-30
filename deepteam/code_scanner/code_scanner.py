@@ -9,6 +9,7 @@ from deepeval.metrics.utils import initialize_model
 from deepteam.attacks.attack_simulator.utils import generate, a_generate
 
 from .constants import CODE_CONTEXT_LIMIT
+from .engines import ScanEngine
 from .schema import CodeChunk, CodeFinding, CodeFindingsList
 from .taxonomy import VulnerabilityRef
 from .template import CodeScanTemplate
@@ -23,14 +24,21 @@ class CodeScanner:
 
     def __init__(
         self,
-        model: DeepEvalBaseLLM,
+        model: Optional[DeepEvalBaseLLM] = None,
         template=CodeScanTemplate,
         vulnerabilities: Optional[List[VulnerabilityRef]] = None,
         instruction: Optional[str] = None,
         limit: int = CODE_CONTEXT_LIMIT,
         max_concurrent: int = 10,
+        engine: Optional[ScanEngine] = None,
     ):
-        self.model, self.using_native_model = initialize_model(model)
+        # An `engine` delegates the prompt -> findings step to a harness
+        # (Codex/Claude/Cursor). When it is None we use deepeval's own judge.
+        self.engine = engine
+        if engine is None:
+            self.model, self.using_native_model = initialize_model(model)
+        else:
+            self.model, self.using_native_model = None, False
         self.template = template
         self.vulnerabilities = vulnerabilities
         self.instruction = instruction
@@ -83,7 +91,10 @@ class CodeScanner:
 
     def _scan_batch(self, batch: List[CodeChunk]) -> List[CodeFinding]:
         prompt = self._build_prompt(batch)
-        res: CodeFindingsList = generate(prompt, CodeFindingsList, self.model)
+        if self.engine is not None:
+            res: CodeFindingsList = self.engine.generate_findings(prompt)
+        else:
+            res = generate(prompt, CodeFindingsList, self.model)
         return res.findings
 
     async def a_scan(self, chunks: List[CodeChunk]) -> List[CodeFinding]:
@@ -112,9 +123,12 @@ class CodeScanner:
     ) -> List[CodeFinding]:
         prompt = self._build_prompt(batch)
         async with semaphore:
-            res: CodeFindingsList = await a_generate(
-                prompt, CodeFindingsList, self.model
-            )
+            if self.engine is not None:
+                res: CodeFindingsList = await self.engine.a_generate_findings(
+                    prompt
+                )
+            else:
+                res = await a_generate(prompt, CodeFindingsList, self.model)
         return res.findings
 
     @staticmethod

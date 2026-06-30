@@ -16,6 +16,12 @@ from .constants import (
 )
 from .template import CodeScanTemplate
 from .code_scanner import CodeScanner
+from .engines import (
+    PROVIDERS,
+    ScanEngine,
+    build_engine,
+    resolve_provider,
+)
 from .collect import collect_files, collect_changed_files
 from .github_report import post_pr_comments
 from .config import (
@@ -45,6 +51,10 @@ __all__ = [
     "CODE_CONTEXT_LIMIT",
     "CodeScanTemplate",
     "CodeScanner",
+    "PROVIDERS",
+    "ScanEngine",
+    "build_engine",
+    "resolve_provider",
     "collect_files",
     "collect_changed_files",
     "post_pr_comments",
