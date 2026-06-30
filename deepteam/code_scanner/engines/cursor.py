@@ -1,5 +1,3 @@
-"""Cursor scan engine (uses CURSOR_API_KEY). Requires the cursor-sdk."""
-
 import asyncio
 import importlib.util
 import os
@@ -10,7 +8,9 @@ from .base import OUTPUT_FORMAT_INSTRUCTION, extract_findings, missing_sdk
 
 
 class CursorEngine:
-    """Delegates scanning to the Cursor SDK (uses CURSOR_API_KEY)."""
+    """
+    Delegates scanning to the Cursor SDK (uses CURSOR_API_KEY).
+    """
 
     def __init__(self, model: Optional[str] = None):
         if importlib.util.find_spec("cursor_sdk") is None:
@@ -20,8 +20,6 @@ class CursorEngine:
     def generate_findings(self, prompt: str) -> CodeFindingsList:
         from cursor_sdk import Agent
 
-        # Cursor exposes no read-only sandbox; we pass code inline and never ask
-        # it to edit, so it has no reason to touch the filesystem.
         options = {"local": {"cwd": os.getcwd()}}
         if self.model:
             options["model"] = self.model

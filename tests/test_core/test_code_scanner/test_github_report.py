@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-import deepteam.code_scanner.github_report as gr
+import deepteam.code_scanner.github.report as gr
 from deepteam.code_scanner import CodeFinding
 
 

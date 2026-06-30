@@ -23,7 +23,7 @@ from .engines import (
     resolve_provider,
 )
 from .collect import collect_files, collect_changed_files
-from .github_report import post_pr_comments
+from .github import post_pr_comments
 from .config import (
     CONFIG_FILENAMES,
     CodeScanConfig,

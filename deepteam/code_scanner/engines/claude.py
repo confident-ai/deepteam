@@ -1,5 +1,3 @@
-"""Claude scan engine (uses ANTHROPIC_API_KEY). Requires the claude-agent-sdk."""
-
 import asyncio
 import importlib.util
 from typing import Optional
@@ -9,7 +7,9 @@ from .base import OUTPUT_FORMAT_INSTRUCTION, extract_findings, missing_sdk
 
 
 class ClaudeAgentEngine:
-    """Delegates scanning to the Claude Agent SDK (uses ANTHROPIC_API_KEY)."""
+    """
+    Delegates scanning to the Claude Agent SDK (uses ANTHROPIC_API_KEY).
+    """
 
     def __init__(self, model: Optional[str] = None):
         if importlib.util.find_spec("claude_agent_sdk") is None:
@@ -19,7 +19,6 @@ class ClaudeAgentEngine:
     async def a_generate_findings(self, prompt: str) -> CodeFindingsList:
         from claude_agent_sdk import query, ClaudeAgentOptions
 
-        # No tools: the code is inline in the prompt, so the agent only answers.
         options_kwargs = {"allowed_tools": []}
         if self.model:
             options_kwargs["model"] = self.model

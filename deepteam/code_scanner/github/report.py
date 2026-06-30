@@ -5,7 +5,7 @@ from typing import List, Optional
 import requests
 from deepeval.confident.api import get_base_api_url
 
-from .schema import CodeFinding
+from ..schema import CodeFinding
 
 PR_COMMENTS_ENDPOINT = "/v1/github-app/code-scan/comments"
 _OIDC_AUDIENCE = "confident-code-scan"
@@ -85,7 +85,10 @@ def post_pr_comments(
         "repo": repo,
         "pr": pr_number,
         "oidc": oidc,
-        "findings": [f.model_dump(exclude_none=True) for f in findings],
+        "findings": [
+            finding.model_dump(exclude_none=True) 
+            for finding in findings
+        ],
     }
     resp = requests.post(
         f"{base}{PR_COMMENTS_ENDPOINT}", json=payload, timeout=30

@@ -1,5 +1,3 @@
-"""Codex scan engine (uses OPENAI_API_KEY). Requires the openai-codex SDK."""
-
 import importlib.util
 from typing import Optional
 
@@ -8,7 +6,9 @@ from .base import OUTPUT_FORMAT_INSTRUCTION, extract_findings, missing_sdk
 
 
 class CodexEngine:
-    """Delegates scanning to the Codex SDK (uses OPENAI_API_KEY)."""
+    """
+    Delegates scanning to the Codex SDK (uses OPENAI_API_KEY).
+    """
 
     def __init__(self, model: Optional[str] = None):
         if importlib.util.find_spec("openai_codex") is None:
