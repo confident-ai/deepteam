@@ -50,13 +50,14 @@ deepteam scan . --diff "main..HEAD"
 
 ### Command Line Flags
 
-There are **EIGHT** optional command line flags:
+There are **NINE** optional command line flags:
 
 - [Optional] `--diff`: scan only files changed between two git refs, e.g. `"main..HEAD"`.
 - [Optional] `-c`, `--config`: path to a config YAML. Auto-discovered at the scan root if not set.
 - [Optional] `-f`, `--format`: output format, one of `markdown`, `sarif`, or `json`. Defaulted to `markdown`.
 - [Optional] `--min-severity`: only report findings at or above `low`, `medium`, `high`, or `critical`.
-- [Optional] `-m`, `--model`: evaluation model, e.g. `gpt-4o`. Overrides the config.
+- [Optional] `-p`, `--provider`: scan engine, one of `codex`, `claude`, `cursor`, or `deepeval`. Defaulted to the provider inferred from the API key that is set, else `deepeval`.
+- [Optional] `-m`, `--model`: model for the chosen provider, e.g. `gpt-4o`. Overrides the config.
 - [Optional] `-o`, `--output`: write the report to a file instead of stdout.
 - [Optional] `--fail-on-findings` / `--no-fail-on-findings`: exit with code `1` if any findings remain. Defaulted to `True`.
 - [Optional] `--comment`: post findings so `deepteam[bot]` comments on the pull request, see [GitHub Bot](/docs/code-scanning-github-bot).
@@ -74,17 +75,25 @@ instruction: |
 
 exclude:
   - "tests/**"
+
+# Optional: delegate the scan to an agentic harness instead of the built-in
+# judge. Omit both to auto-detect from the API key that is set.
+# provider: codex
+# model: gpt-4o
 ```
 
-There are **SEVEN** optional parameters when creating a code scan configuration:
+There are **EIGHT** optional parameters when creating a code scan configuration:
 
 - [Optional] `min_severity`: minimum severity to report, one of `low`, `medium`, `high`, or `critical`. Defaulted to `low`.
 - [Optional] `instruction`: project-specific guidance passed to the scanner. Defaulted to `None`.
 - [Optional] `include`: glob patterns a file must match to be scanned. Defaulted to `None`.
 - [Optional] `exclude`: glob patterns to skip. Defaulted to `None`.
 - [Optional] `vulnerabilities`: restrict the scan to a subset of vulnerability names. Defaulted to a curated set of code-visible categories.
-- [Optional] `model`: default evaluation model. Defaulted to `None`.
+- [Optional] `provider`: scan engine, one of `codex`, `claude`, `cursor`, or `deepeval`. Defaulted to the provider inferred from the API key that is set, else `deepeval`.
+- [Optional] `model`: default model for the chosen provider. Defaulted to `None`.
 - [Optional] `diffs_only`: only scan changed files. Defaulted to `False`.
+
+To run the scan through an agentic harness instead of the built-in judge, set `provider` to `codex`, `claude`, or `cursor` and install the matching extra (for example `pip install deepteam[codex]`). If you only set the API key (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `CURSOR_API_KEY`), the provider is auto-detected, so no config change is needed.
 
 ## Python API
 
