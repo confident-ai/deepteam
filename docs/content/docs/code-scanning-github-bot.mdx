@@ -1,0 +1,65 @@
+---
+title: Code Scanning GitHub Bot
+sidebar_label: GitHub Bot
+---
+
+`deepteam` can review every pull request and comment its findings as **`deepteam[bot]`**. The scan runs in your own CI using your `OPENAI_API_KEY`, and the comment is posted by the bot through GitHub Actions [OIDC](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect), so there are no bot tokens to store.
+
+:::info
+The workflow only needs `contents: read` and `id-token: write`, not `pull-requests: write`. The comment is posted server-side by the bot, and the OIDC token is bound to the exact repository and pull request the workflow ran for.
+:::
+
+## Quick Summary
+
+There are **TWO** ways to set up the bot:
+
+- [Hosted GitHub App](/docs/code-scanning-github-bot#hosted-github-app) - install the app and it configures everything for you.
+- [Manual Setup](/docs/code-scanning-github-bot#manual-setup) - add the scan workflow to your repository yourself.
+
+## Hosted GitHub App
+
+The quickest path is the hosted DeepTeam GitHub App, which sets everything up for you:
+
+1. Install the app at [github.com/apps/deepteam](https://github.com/apps/deepteam), selecting the repositories you want scanned.
+2. Enter your email when redirected. The bot automatically opens a pull request that adds the scan workflow to each repository.
+3. Merge that pull request and add an `OPENAI_API_KEY` [repository secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions).
+
+From then on, every pull request is scanned and commented on automatically.
+
+## Manual Setup
+
+If you'd rather not use the hosted onboarding, you can commit the workflow yourself:
+
+```yaml title=".github/workflows/deepteam-code-scan.yml"
+name: DeepTeam Code Scan
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install deepteam
+      - name: Scan & comment as deepteam[bot]
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: deepteam scan . --diff "origin/${{ github.base_ref }}..HEAD" --comment
+```
+
+Then add an `OPENAI_API_KEY` repository secret and install the [DeepTeam GitHub App](https://github.com/apps/deepteam) on the repository so the bot is authorized to comment.
+
+:::note
+If your Confident AI account is in the EU region, set `CONFIDENT_BASE_URL: "https://eu.api.confident-ai.com"` under the step's `env`. The hosted app configures this for you automatically.
+:::
