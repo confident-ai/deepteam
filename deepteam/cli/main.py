@@ -1,3 +1,4 @@
+import asyncio
 import yaml
 import typer
 import importlib.util
@@ -394,6 +395,149 @@ def run(
         result.file_path = file
 
     return result
+
+
+@app.command("scan")
+def scan(
+    path: str = typer.Argument(".", help="File or directory to scan."),
+    diff: Optional[str] = typer.Option(
+        None,
+        "--diff",
+        help="Scan only files changed between two git refs, e.g. 'main..HEAD'.",
+    ),
+    config_file: Optional[str] = typer.Option(
+        None,
+        "-c",
+        "--config",
+        help="Config YAML path (otherwise auto-discovered at the scan root).",
+    ),
+    output_format: str = typer.Option(
+        "markdown",
+        "-f",
+        "--format",
+        help="Output format: markdown | sarif | json.",
+    ),
+    min_severity: Optional[str] = typer.Option(
+        None,
+        "--min-severity",
+        help="Only report findings at or above: low | medium | high | critical.",
+    ),
+    provider: Optional[str] = typer.Option(
+        None,
+        "-p",
+        "--provider",
+        help=(
+            "Scan engine: codex | claude | cursor | deepeval. Defaults from the "
+            "API key that is set (OPENAI_API_KEY=codex, ANTHROPIC_API_KEY=claude, "
+            "CURSOR_API_KEY=cursor), else the built-in deepeval judge."
+        ),
+    ),
+    model: Optional[str] = typer.Option(
+        None,
+        "-m",
+        "--model",
+        help="Model for the chosen provider. Overrides the config.",
+    ),
+    output: Optional[str] = typer.Option(
+        None,
+        "-o",
+        "--output",
+        help="Write the report to a file instead of stdout.",
+    ),
+    fail_on_findings: bool = typer.Option(
+        True,
+        "--fail-on-findings/--no-fail-on-findings",
+        help="Exit with code 1 if any findings remain (useful in CI).",
+    ),
+    comment: bool = typer.Option(
+        False,
+        "--comment",
+        help="Post findings to Confident AI so deepteam[bot] comments on the PR (GitHub Actions only).",
+    ),
+):
+    """Scan source code for AI-security vulnerabilities."""
+    from deepteam.code_scanner import (
+        CodeScanner,
+        build_engine,
+        collect_changed_files,
+        collect_files,
+        filter_by_severity,
+        load_config,
+        post_pr_comments,
+        resolve_provider,
+        to_json,
+        to_markdown,
+        to_sarif,
+    )
+
+    formatters = {
+        "markdown": to_markdown,
+        "sarif": to_sarif,
+        "json": to_json,
+    }
+    if output_format not in formatters:
+        raise typer.BadParameter(
+            f"format must be one of {', '.join(formatters)}"
+        )
+
+    config.apply_env()
+
+    scan_root = path if os.path.isdir(path) else os.path.dirname(path) or "."
+    cfg = load_config(path=config_file, directory=scan_root)
+
+    resolved_provider = resolve_provider(provider or cfg.provider)
+    model_name = model or cfg.model
+    engine = build_engine(resolved_provider, model_name)
+    # deepeval's judge needs a deepeval model; harness engines manage their own.
+    eval_model = load_model(model_name) if engine is None else None
+    typer.echo(
+        f"Scanning with provider '{resolved_provider}'"
+        + (f" (model: {model_name})" if model_name else ""),
+        err=True,
+    )
+
+    if diff:
+        base, _, head = diff.partition("..")
+        chunks = collect_changed_files(
+            path,
+            base=base,
+            head=head or None,
+            include=cfg.include,
+            exclude=cfg.exclude,
+        )
+    else:
+        chunks = collect_files(path, include=cfg.include, exclude=cfg.exclude)
+
+    typer.echo(f"Scanning {len(chunks)} code chunk(s)...", err=True)
+
+    scanner = CodeScanner(
+        model=eval_model,
+        engine=engine,
+        vulnerabilities=cfg.vulnerabilities,
+        instruction=cfg.instruction,
+        # Harness engines spawn an agent per batch, so keep concurrency modest.
+        max_concurrent=4 if engine is not None else 10,
+    )
+    # Harness engines benefit from concurrent batches; run them async.
+    if engine is not None:
+        findings = asyncio.run(scanner.a_scan(chunks))
+    else:
+        findings = scanner.scan(chunks)
+    findings = filter_by_severity(findings, min_severity or cfg.min_severity)
+
+    rendered = formatters[output_format](findings)
+    if output:
+        with open(output, "w") as f:
+            f.write(rendered)
+        typer.echo(f"Wrote {len(findings)} finding(s) to {output}", err=True)
+    else:
+        typer.echo(rendered)
+
+    if comment:
+        post_pr_comments(findings)
+
+    if fail_on_findings and findings:
+        raise typer.Exit(code=1)
 
 
 if __name__ == "__main__":

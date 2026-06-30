@@ -1,0 +1,8 @@
+min_severity: medium
+
+instruction: |
+  This is a customer-support agent. Treat hardcoded API keys and any
+  eval/exec on LLM output as critical.
+
+exclude:
+  - "tests/**"

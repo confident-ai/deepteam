@@ -38,6 +38,10 @@
     "guardrails-introduction",
     "(guards)",
 
+    "---[FileSearch]Code Scanning---",
+    "code-scanning-introduction",
+    "code-scanning-github-bot",
+
     "---[Boxes]Others---",
     "data-privacy"
   ]

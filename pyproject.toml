@@ -17,6 +17,15 @@ pyyaml = ">=6.0.2"
 requests = ">=2.31.0"
 tabulate = ">=0.9.0"
 tqdm = ">=4.66.1"
+openai-codex = { version = "*", optional = true, python = ">=3.10", allow-prereleases = true }
+claude-agent-sdk = { version = "*", optional = true, python = ">=3.10" }
+cursor-sdk = { version = "*", optional = true, python = ">=3.10" }
+
+[tool.poetry.extras]
+codex = ["openai-codex"]
+claude = ["claude-agent-sdk"]
+cursor = ["cursor-sdk"]
+harnesses = ["openai-codex", "claude-agent-sdk", "cursor-sdk"]
 
 [tool.poetry.group.dev.dependencies]
 black = ">=25.1.0"
