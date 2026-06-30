@@ -1,9 +1,3 @@
-"""
-Code-scan engines: the built-in deepeval judge (a `None` engine) plus optional
-agentic harnesses (Codex, Claude, Cursor). `resolve_provider` and `build_engine`
-tie the modules together; the harness SDKs are imported lazily.
-"""
-
 import importlib.util
 import os
 from typing import Optional

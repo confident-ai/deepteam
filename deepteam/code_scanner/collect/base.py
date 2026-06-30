@@ -1,10 +1,8 @@
 import fnmatch
-import os
-import subprocess
 from pathlib import Path
 from typing import List, Optional
 
-from .schema import CodeChunk
+from ..schema import CodeChunk
 
 DEFAULT_MAX_FILE_BYTES = 1_500_000
 DEFAULT_MAX_CHUNK_CHARS = 12_000
@@ -172,90 +170,3 @@ def _chunk_path(
     if text is None:
         return []
     return _chunk_text(rel_path, text, language, max_chunk_chars)
-
-
-def _iter_files(root: Path):
-    """Yield (absolute_path, posix_relative_path) for candidate files."""
-    if root.is_file():
-        yield root, root.name
-        return
-    for dirpath, dirnames, filenames in os.walk(root):
-        # Prune skipped directories in place so os.walk doesn't descend them.
-        dirnames[:] = [
-            directory for directory in dirnames if directory not in SKIP_DIRS
-        ]
-        for filename in filenames:
-            abs_path = Path(dirpath) / filename
-            rel_path = os.path.relpath(abs_path, root).replace(os.sep, "/")
-            yield abs_path, rel_path
-
-
-def collect_files(
-    path: str,
-    include: Optional[List[str]] = None,
-    exclude: Optional[List[str]] = None,
-    max_file_bytes: int = DEFAULT_MAX_FILE_BYTES,
-    max_chunk_chars: int = DEFAULT_MAX_CHUNK_CHARS,
-) -> List[CodeChunk]:
-    """Collect scannable code chunks from a file or directory tree.
-
-    Args:
-        path: A source file or a directory to walk.
-        include: Optional glob allow-list (matched against the relative path).
-            If given, a file must match at least one pattern.
-        exclude: Optional glob deny-list (matched against the relative path).
-        max_file_bytes: Skip files larger than this.
-        max_chunk_chars: Split files into chunks no larger than this.
-    """
-    root = Path(path)
-    chunks: List[CodeChunk] = []
-    for abs_path, rel_path in _iter_files(root):
-        if not _passes_filters(rel_path, include, exclude):
-            continue
-        chunks.extend(
-            _chunk_path(abs_path, rel_path, max_file_bytes, max_chunk_chars)
-        )
-    return chunks
-
-
-def _git_changed_files(root: Path, base: str, head: Optional[str]) -> List[str]:
-    ref = f"{base}..{head}" if head else base
-    try:
-        out = subprocess.run(
-            ["git", "-C", str(root), "diff", "--name-only", ref],
-            capture_output=True,
-            text=True,
-            check=True,
-        ).stdout
-    except (subprocess.CalledProcessError, FileNotFoundError) as e:
-        raise RuntimeError(f"git diff --name-only {ref} failed: {e}") from e
-    return [line.strip() for line in out.splitlines() if line.strip()]
-
-
-def collect_changed_files(
-    path: str,
-    base: str,
-    head: Optional[str] = None,
-    include: Optional[List[str]] = None,
-    exclude: Optional[List[str]] = None,
-    max_file_bytes: int = DEFAULT_MAX_FILE_BYTES,
-    max_chunk_chars: int = DEFAULT_MAX_CHUNK_CHARS,
-) -> List[CodeChunk]:
-    """Collect chunks for only the files changed between two git refs.
-
-    Scans whole changed files (not line-level hunks), coarse but reliable for
-    PR/commit scanning. `path` should be the repository root. If `head` is
-    omitted, compares `base` against the working tree.
-    """
-    root = Path(path)
-    chunks: List[CodeChunk] = []
-    for rel_path in _git_changed_files(root, base, head):
-        abs_path = root / rel_path
-        if not abs_path.is_file():
-            continue  # deleted or renamed away
-        if not _passes_filters(rel_path, include, exclude):
-            continue
-        chunks.extend(
-            _chunk_path(abs_path, rel_path, max_file_bytes, max_chunk_chars)
-        )
-    return chunks
