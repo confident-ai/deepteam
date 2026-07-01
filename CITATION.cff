@@ -6,8 +6,8 @@ authors:
   - family-names: Vongthongsri
     given-names: Kritin
 title: deepteam
-version: 1.0.6
-date-released: "2025-11-12"
+version: 1.0.7
+date-released: "2026-07-01"
 url: https://confident-ai.com
 repository-code: https://github.com/confident-ai/deepteam
 license: Apache-2.0
