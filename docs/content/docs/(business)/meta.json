@@ -2,6 +2,7 @@
   "title": "Business",
   "pages": [
     "red-teaming-vulnerabilities-misinformation",
+    "red-teaming-vulnerabilities-hallucination",
     "red-teaming-vulnerabilities-intellectual-property",
     "red-teaming-vulnerabilities-competition"
   ]
