@@ -337,13 +337,14 @@ class CustomVulnerability(BaseVulnerability):
     def _assess_trace(
         self,
         trace: Trace,
+        previous_detections: Optional[List[BatchFinding]] = None,
     ) -> List[BatchFinding]:
         """
         Evaluates an entire execution trace for custom vulnerabilities using bottoms-up batching.
         """
         if self.async_mode:
             loop = get_or_create_event_loop()
-            return loop.run_until_complete(self._a_assess_trace(trace=trace))
+            return loop.run_until_complete(self._a_assess_trace(trace=trace, previous_detections=previous_detections))
 
         self.evaluation_model, self.using_native_model = initialize_model(
             self.evaluation_model
@@ -351,6 +352,7 @@ class CustomVulnerability(BaseVulnerability):
         trace_scanner = TraceScanner(
             model=self.evaluation_model,
             template=self._get_trace_template(),
+            previous_detections=previous_detections,
         )
 
         findings = trace_scanner.process_trace(trace)
@@ -363,6 +365,7 @@ class CustomVulnerability(BaseVulnerability):
     async def _a_assess_trace(
         self,
         trace: Trace,
+        previous_detections: Optional[List[BatchFinding]] = None,
     ) -> List[BatchFinding]:
         """
         Asynchronously evaluates an entire execution trace for custom vulnerabilities.
@@ -374,6 +377,7 @@ class CustomVulnerability(BaseVulnerability):
         trace_scanner = TraceScanner(
             model=self.evaluation_model,
             template=self._get_trace_template(),
+            previous_detections=previous_detections,
         )
 
         findings = await trace_scanner.a_process_trace(trace)
