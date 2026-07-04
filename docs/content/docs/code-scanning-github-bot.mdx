@@ -18,6 +18,27 @@ There are **TWO** ways to set up the bot:
 
 Both run the scan through **Claude** by default, which is the recommended provider. To use Codex, Cursor, or the built-in judge instead, see [Choosing a Provider](/docs/code-scanning-github-bot#choosing-a-provider).
 
+## How It Works
+
+The scan runs in your own CI and posts results through Confident AI, so the comment appears from `deepteam[bot]` with no bot token stored in your repo. Authentication uses the GitHub Actions OIDC token, which Confident AI verifies is bound to this repository and pull request before commenting.
+
+```mermaid
+sequenceDiagram
+    participant Dev as Developer
+    participant CI as GitHub Actions
+    participant Scan as deepteam scan
+    participant CAI as Confident AI
+    participant GH as GitHub
+
+    Dev->>CI: Open or update a pull request
+    CI->>Scan: deepteam scan --provider claude --comment
+    Scan->>Scan: Scan the diff and classify findings
+    Scan->>CAI: POST findings + GitHub OIDC token
+    CAI->>CAI: Verify OIDC (repository and PR)
+    CAI->>GH: Post review comments as deepteam[bot]
+    GH-->>Dev: Inline comments + summary on the PR
+```
+
 ## Hosted GitHub App
 
 The quickest path is the hosted DeepTeam GitHub App, which sets everything up for you:

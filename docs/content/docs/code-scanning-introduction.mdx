@@ -30,6 +30,30 @@ By default the report is printed as Markdown and the command exits with code `1`
 Code scanning is particularly useful for **CI/CD pipelines**, where you want to catch AI-security issues on every pull request before they are merged.
 :::
 
+## How It Works
+
+`deepteam scan` collects your code (whole files or just a git diff), batches it, sends each batch to the chosen [provider](/docs/code-scanning-github-bot#choosing-a-provider), and maps every result into `deepteam`'s vulnerability taxonomy. It then renders a report and, optionally, comments on your pull request.
+
+```mermaid
+sequenceDiagram
+    participant CLI as deepteam scan
+    participant Collector as Collector
+    participant Scanner as CodeScanner
+    participant Engine as Provider engine
+    participant Report as Report
+
+    CLI->>Collector: collect files or git diff
+    Collector-->>CLI: CodeChunks
+    CLI->>Scanner: scan(chunks)
+    loop For each batch of chunks
+        Scanner->>Engine: generate_findings(prompt)
+        Engine-->>Scanner: findings (deepteam taxonomy)
+    end
+    Scanner-->>CLI: deduped findings
+    CLI->>Report: render (markdown / sarif / json)
+    Note over CLI: With --comment, findings post as deepteam[bot]
+```
+
 ## Running a Scan
 
 The `deepteam scan` command takes a `path` argument, which can be a file or a directory and is defaulted to `.`.
