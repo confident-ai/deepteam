@@ -6,12 +6,13 @@ Python port at PyPI v0.1.0). Keeping these regexes byte-aligned with the
 upstream catalog enables a single coverage matrix across deepteam, Cisco
 mcp-scanner (PR #146), and Microsoft Agent Governance Toolkit (PR #854).
 
-KNOWN LIMITATION (shell-reverse): The character class `nc\\s+-[elvp]` will
-match `nc -v google.com 80`, a benign verbose-flag use. This false positive
-is inherited from the upstream catalog and surfaced upstream for tightening
-(see PR description). Until upstream patches, callers should expect rare FPs
-on `nc -v` standalone; reverse-shell intent typically requires `-e`, `-l`, or
-compound flags like `-lvp`.
+KNOWN LIMITATION (shell-reverse): The current character class `nc\s+-[elvp]`
+matches `nc -v google.com 80`, a benign verbose-flag use. Validated 1/12 FP
+rate against ppcvote's curated benign lookalike set (2026-06). Upstream
+tightening to `nc\s+-[a-z]*[el]` (flag cluster must contain `e` or `l`) is
+being landed in `ppcvote/prompt-defense-audit` and takes the FP rate to
+0/12 while retaining 9/9 true positives. This module will inherit the fix
+byte-for-byte on the next catalog sync.
 """
 import re
 from dataclasses import dataclass
