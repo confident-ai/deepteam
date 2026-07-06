@@ -13,7 +13,7 @@ class ClaudeAgentEngine:
 
     def __init__(self, model: Optional[str] = None):
         if importlib.util.find_spec("claude_agent_sdk") is None:
-            raise missing_sdk("claude")
+            raise missing_sdk("claude-code")
         self.model = model
 
     async def a_generate_findings(self, prompt: str) -> CodeFindingsList:

@@ -23,7 +23,7 @@ cursor-sdk = { version = "*", optional = true, python = ">=3.10" }
 
 [tool.poetry.extras]
 codex = ["openai-codex"]
-claude = ["claude-agent-sdk"]
+claude-code = ["claude-agent-sdk"]
 cursor = ["cursor-sdk"]
 harnesses = ["openai-codex", "claude-agent-sdk", "cursor-sdk"]
 

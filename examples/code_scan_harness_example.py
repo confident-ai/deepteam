@@ -3,22 +3,21 @@ Smoke-test the DeepTeam code scanner through an agentic harness, using that vend
 
 Each harness SDK is an optional extra. Install the one you want and set its key:
 
-    poetry add "deepteam[codex]"   && export OPENAI_API_KEY=...      # Codex
-    poetry add "deepteam[claude]"  && export ANTHROPIC_API_KEY=...   # Claude Code
-    poetry add "deepteam[cursor]"  && export CURSOR_API_KEY=...      # Cursor CLI
+    poetry add "deepteam[codex]"       && export OPENAI_API_KEY=...      # Codex
+    poetry add "deepteam[claude-code]" && export ANTHROPIC_API_KEY=...   # Claude Code
+    poetry add "deepteam[cursor]"      && export CURSOR_API_KEY=...      # Cursor CLI
 
 Then run this script, naming the provider (and optionally a model):
 
     poetry run python examples/code_scan_harness_example.py codex
-    poetry run python examples/code_scan_harness_example.py claude <model>
+    poetry run python examples/code_scan_harness_example.py claude-code <model>
     poetry run python examples/code_scan_harness_example.py cursor
     poetry run python examples/code_scan_harness_example.py
-    poetry run python examples/code_scan_harness_example.py deepeval gpt-4o
 
 The exact same selection works on the CLI:
 
     poetry run deepteam scan . --provider codex
-    poetry run deepteam scan . --provider claude --model <model>
+    poetry run deepteam scan . --provider claude-code --model <model>
 """
 
 import sys
@@ -30,7 +29,7 @@ from deepteam.code_scanner import (
     resolve_provider,
 )
 
-VULNERABLE_CODE = '''\
+VULNERABLE_CODE = """\
 import subprocess
 
 
@@ -39,7 +38,7 @@ def handle(llm_output: str):
     subprocess.run(llm_output, shell=True)
     api_key = "sk-this-should-not-be-here-1234567890"
     return api_key
-'''
+"""
 
 
 def main() -> None:
