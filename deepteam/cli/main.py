@@ -427,9 +427,9 @@ def scan(
         "-p",
         "--provider",
         help=(
-            "Scan engine: codex | claude | cursor | deepeval. Defaults from the "
-            "API key that is set (OPENAI_API_KEY=codex, ANTHROPIC_API_KEY=claude, "
-            "CURSOR_API_KEY=cursor), else the built-in deepeval judge."
+            "Scan engine: codex | claude-code | cursor. Defaults from the API "
+            "key that is set (OPENAI_API_KEY=codex, ANTHROPIC_API_KEY=claude-code, "
+            "CURSOR_API_KEY=cursor), else deepteam's built-in scanner (OpenAI API)."
         ),
     ),
     model: Optional[str] = typer.Option(

@@ -80,7 +80,7 @@ There are **NINE** optional command line flags:
 - [Optional] `-c`, `--config`: path to a config YAML. Auto-discovered at the scan root if not set.
 - [Optional] `-f`, `--format`: output format, one of `markdown`, `sarif`, or `json`. Defaulted to `markdown`.
 - [Optional] `--min-severity`: only report findings at or above `low`, `medium`, `high`, or `critical`.
-- [Optional] `-p`, `--provider`: scan engine, one of `codex`, `claude`, `cursor`, or `deepeval`. Defaulted to the provider inferred from the API key that is set, else `deepeval`.
+- [Optional] `-p`, `--provider`: scan engine, one of `codex`, `claude-code`, or `cursor`. Defaulted to the provider inferred from the API key that is set; if none is available, `deepteam` uses its built-in native scanner (OpenAI API).
 - [Optional] `-m`, `--model`: model for the chosen provider, e.g. `gpt-4o`. Overrides the config.
 - [Optional] `-o`, `--output`: write the report to a file instead of stdout.
 - [Optional] `--fail-on-findings` / `--no-fail-on-findings`: exit with code `1` if any findings remain. Defaulted to `True`.
@@ -127,11 +127,11 @@ There are **EIGHT** optional parameters when creating a code scan configuration:
 - [Optional] `include`: glob patterns a file must match to be scanned. Defaulted to `None`.
 - [Optional] `exclude`: glob patterns to skip. Defaulted to `None`.
 - [Optional] `vulnerabilities`: restrict the scan to a subset of vulnerability names. Defaulted to a curated set of code-visible categories.
-- [Optional] `provider`: scan engine, one of `codex`, `claude`, `cursor`, or `deepeval`. Defaulted to the provider inferred from the API key that is set, else `deepeval`.
+- [Optional] `provider`: scan engine, one of `codex`, `claude-code`, or `cursor`. Defaulted to the provider inferred from the API key that is set; if none is available, `deepteam` uses its built-in native scanner (OpenAI API).
 - [Optional] `model`: default model for the chosen provider. Defaulted to `None`.
 - [Optional] `diffs_only`: only scan changed files. Defaulted to `False`.
 
-To run the scan through an agentic harness instead of the built-in judge, set `provider` to `codex`, `claude`, or `cursor` and install the matching extra (for example `pip install deepteam[codex]`). If you only set the API key (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `CURSOR_API_KEY`), the provider is auto-detected, so no config change is needed.
+To run the scan through an agentic harness instead of the built-in native scanner, set `provider` to `codex`, `claude-code`, or `cursor` and install the matching extra (for example `pip install deepteam[codex]`). If you only set the API key (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `CURSOR_API_KEY`), the provider is auto-detected, so no config change is needed.
 
 ## Python API
 

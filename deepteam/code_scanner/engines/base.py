@@ -4,22 +4,22 @@ from typing import Optional, Protocol
 
 from ..schema import CodeFindingsList
 
-HARNESS_PROVIDERS = ("codex", "claude", "cursor")
+HARNESS_PROVIDERS = ("codex", "claude-code", "cursor")
 PROVIDERS = ("deepeval",) + HARNESS_PROVIDERS
 
 IMPORT_NAME = {
     "codex": "openai_codex",
-    "claude": "claude_agent_sdk",
+    "claude-code": "claude_agent_sdk",
     "cursor": "cursor_sdk",
 }
 PIP_NAME = {
     "codex": "openai-codex",
-    "claude": "claude-agent-sdk",
+    "claude-code": "claude-agent-sdk",
     "cursor": "cursor-sdk",
 }
 ENV_KEY = {
     "codex": "OPENAI_API_KEY",
-    "claude": "ANTHROPIC_API_KEY",
+    "claude-code": "ANTHROPIC_API_KEY",
     "cursor": "CURSOR_API_KEY",
 }
 
@@ -66,8 +66,8 @@ def missing_sdk(provider: str) -> ImportError:
     pkg = PIP_NAME[provider]
     return ImportError(
         f"The '{provider}' provider requires the {pkg} SDK. Install it with "
-        f"`poetry add {pkg}` (or `pip install {pkg}`), or use "
-        f"`--provider deepeval`."
+        f"`poetry add {pkg}` (or `pip install {pkg}`), or omit --provider to "
+        f"use deepteam's built-in scanner."
     )
 
 

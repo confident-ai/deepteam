@@ -3,7 +3,7 @@ title: Code Scanning GitHub Bot
 sidebar_label: GitHub Bot
 ---
 
-`deepteam` can review every pull request and comment its findings as **`deepteam[bot]`**. By default the scan runs through **Claude** (the Claude Agent SDK) using your `ANTHROPIC_API_KEY`, and the comment is posted by the bot through GitHub Actions [OIDC](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect), so there are no bot tokens to store.
+`deepteam` can review every pull request and comment its findings as **`deepteam[bot]`**. By default the scan runs through **Claude Code** (the Claude Agent SDK) using your `ANTHROPIC_API_KEY`, and the comment is posted by the bot through GitHub Actions [OIDC](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect), so there are no bot tokens to store.
 
 :::info
 The workflow only needs `contents: read` and `id-token: write`, not `pull-requests: write`. The comment is posted server-side by the bot, and the OIDC token is bound to the exact repository and pull request the workflow ran for.
@@ -16,7 +16,7 @@ There are **TWO** ways to set up the bot:
 - [Hosted GitHub App](/docs/code-scanning-github-bot#hosted-github-app) - install the app and it configures everything for you.
 - [Manual Setup](/docs/code-scanning-github-bot#manual-setup) - add the scan workflow to your repository yourself.
 
-Both run the scan through **Claude** by default, which is the recommended provider. To use Codex, Cursor, or the built-in judge instead, see [Choosing a Provider](/docs/code-scanning-github-bot#choosing-a-provider).
+Both run the scan through **Claude Code** by default, which is the recommended provider. To use Codex, Cursor, or the built-in native scanner instead, see [Choosing a Provider](/docs/code-scanning-github-bot#choosing-a-provider).
 
 ## How It Works
 
@@ -44,7 +44,7 @@ sequenceDiagram
 The quickest path is the hosted DeepTeam GitHub App, which sets everything up for you:
 
 1. Install the app at [github.com/apps/deepteam](https://github.com/apps/deepteam), selecting the repositories you want scanned.
-2. Enter your email when redirected. The bot automatically opens a pull request that adds the scan workflow to each repository, configured for the **Claude** provider.
+2. Enter your email when redirected. The bot automatically opens a pull request that adds the scan workflow to each repository, configured for the **Claude Code** provider.
 3. Merge that pull request and add an `ANTHROPIC_API_KEY` [repository secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions).
 
 From then on, every pull request is scanned and commented on automatically.
@@ -74,11 +74,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install "deepteam[claude]"
+      - run: pip install "deepteam[claude-code]"
       - name: Scan & comment as deepteam[bot]
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: deepteam scan . --provider claude --diff "origin/${{ github.base_ref }}..HEAD" --comment
+        run: deepteam scan . --provider claude-code --diff "origin/${{ github.base_ref }}..HEAD" --comment
 ```
 
 Then add an `ANTHROPIC_API_KEY` repository secret and install the [DeepTeam GitHub App](https://github.com/apps/deepteam) on the repository so the bot is authorized to comment.
@@ -89,14 +89,15 @@ If your Confident AI account is in the EU region, set `CONFIDENT_BASE_URL: "http
 
 ## Choosing a Provider
 
-Claude is the default and recommended provider, but you can delegate the scan to another agentic harness (Codex or Cursor) or to `deepteam`'s built-in judge. Each provider uses its own SDK extra and API key:
+Claude Code is the default and recommended provider, but you can delegate the scan to another agentic harness (Codex or Cursor). Each provider uses its own SDK extra and API key:
 
 | Provider | Install | API key |
 | --- | --- | --- |
-| `claude` (default) | `pip install "deepteam[claude]"` | `ANTHROPIC_API_KEY` |
+| `claude-code` (default) | `pip install "deepteam[claude-code]"` | `ANTHROPIC_API_KEY` |
 | `codex` | `pip install "deepteam[codex]"` | `OPENAI_API_KEY` |
 | `cursor` | `pip install "deepteam[cursor]"` | `CURSOR_API_KEY` |
-| `deepeval` | `pip install deepteam` | `OPENAI_API_KEY` |
+
+If you don't select a provider, `deepteam` falls back to its built-in native scanner, which runs on the OpenAI API (`pip install deepteam` with an `OPENAI_API_KEY`).
 
 To switch, change the workflow's install line, the API key, and the `--provider` flag. For example, to use Codex:
 
@@ -111,8 +112,8 @@ To switch, change the workflow's install line, the API key, and the `--provider`
 You can also pin the provider and model in `.deepteam-code-scan.yaml` instead of passing flags:
 
 ```yaml title=".deepteam-code-scan.yaml"
-provider: claude
+provider: claude-code
 model: claude-sonnet-4-5
 ```
 
-The `model` is provider-specific (e.g. `claude-sonnet-4-5` for Claude, `gpt-5.4` for Codex, `composer-2.5` for Cursor). See [provider and model configuration](/docs/code-scanning-introduction#configuration-file) for all options, and the [runnable example](https://github.com/confident-ai/deepteam/blob/main/examples/code_scan_harness_example.py) for trying each provider locally.
+The `model` is provider-specific (e.g. `claude-sonnet-4-5` for Claude Code, `gpt-5.4` for Codex, `composer-2.5` for Cursor). See [provider and model configuration](/docs/code-scanning-introduction#configuration-file) for all options, and the [runnable example](https://github.com/confident-ai/deepteam/blob/main/examples/code_scan_harness_example.py) for trying each provider locally.

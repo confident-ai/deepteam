@@ -48,7 +48,7 @@ def build_engine(
         return None
     if provider == "codex":
         return CodexEngine(model)
-    if provider == "claude":
+    if provider == "claude-code":
         return ClaudeAgentEngine(model)
     if provider == "cursor":
         return CursorEngine(model)
