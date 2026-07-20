@@ -454,6 +454,11 @@ def scan(
         "--comment",
         help="Post findings to Confident AI so deepteam[bot] comments on the PR (GitHub Actions only).",
     ),
+    pr: Optional[int] = typer.Option(
+        None,
+        "--pr",
+        help="Pull request number to comment on (manual/workflow_dispatch runs). Defaults to the PR from the GitHub Actions event.",
+    ),
 ):
     """Scan source code for AI-security vulnerabilities."""
     from deepteam.code_scanner import (
@@ -534,7 +539,7 @@ def scan(
         typer.echo(rendered)
 
     if comment:
-        post_pr_comments(findings)
+        post_pr_comments(findings, pr_number=pr)
 
     if fail_on_findings and findings:
         raise typer.Exit(code=1)
