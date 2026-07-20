@@ -46,7 +46,7 @@ DeepTeam simulates attacks — jailbreaking, prompt injection, multi-turn exploi
 DeepTeam runs **locally on your machine** and is built on [DeepEval](https://github.com/confident-ai/deepeval), the open-source LLM evaluation framework.
 
 > [!IMPORTANT]
-> Need a place for your red teaming results to live? Sign up to the [Confident AI](https://app.confident-ai.com?utm_source=GitHub) platform to manage risk assessments, monitor vulnerabilities in production, and share reports with your team.
+> Need a place for your red teaming results to live? Sign up to the [Confident AI](https://app.confident-ai.com?utm_source=deepteam&utm_medium=github&utm_content=results_callout) platform to manage risk assessments, monitor vulnerabilities in production, and share reports with your team.
 
 <p align="center">
     <img src="https://github.com/confident-ai/deepteam/blob/main/assets/confident-demo.gif" alt="Confident AI + DeepTeam" width="100%">
@@ -288,7 +288,7 @@ print(output_result.breached)  # True
 
 # DeepTeam with Confident AI
 
-[Confident AI](https://app.confident-ai.com?utm_source=GitHub) is the all-in-one platform that integrates natively with DeepTeam and [DeepEval](https://github.com/confident-ai/deepeval).
+[Confident AI](https://app.confident-ai.com?utm_source=deepteam&utm_medium=github&utm_content=platform_section) is the all-in-one platform that integrates natively with DeepTeam and [DeepEval](https://github.com/confident-ai/deepeval).
 
 - **Manage risk assessments** — view, compare, and track red teaming results across iterations
 - **Monitor in production** — detect and alert on vulnerabilities hitting your live LLM system
