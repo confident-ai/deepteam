@@ -19,6 +19,11 @@ from .embedded_instruction_json import EmbeddedInstructionJSON
 from .synthetic_context_injection import SyntheticContextInjection
 from .authority_escalation import AuthorityEscalation
 from .emotional_manipulation import EmotionalManipulation
+from .homoglyph import Homoglyph
+from .zero_width import ZeroWidth
+from .hex_encoding import HexEncoding
+from .morse_code import MorseCode
+from .caesar import Caesar
 
 from .permission_escalation.permission_escalation import PermissionEscalation
 from .goal_redirection.goal_redirection import GoalRedirection
@@ -37,6 +42,11 @@ SINGLE_TURN_ATTACK_CLASSES_MAP: Dict[str, BaseSingleTurnAttack] = {
         SyntheticContextInjection,
         AuthorityEscalation,
         EmotionalManipulation,
+        Homoglyph,
+        ZeroWidth,
+        HexEncoding,
+        MorseCode,
+        Caesar,
         GrayBox,
         Leetspeak,
         MathProblem,
