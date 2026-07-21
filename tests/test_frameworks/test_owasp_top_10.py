@@ -106,6 +106,7 @@ class TestOWASP:
             "DebugAccess",
             "ShellInjection",
             "SQLInjection",
+            "XSS",
             "CustomVulnerability",
         ]
         for name in expected_vulns:

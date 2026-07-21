@@ -41,10 +41,12 @@ from deepteam.vulnerabilities.ssrf.types import SSRFType
 from deepteam.vulnerabilities.debug_access.types import DebugAccessType
 from deepteam.vulnerabilities.shell_injection.types import ShellInjectionType
 from deepteam.vulnerabilities.sql_injection.types import SQLInjectionType
+from deepteam.vulnerabilities.xss.types import XSSType
 from deepteam.vulnerabilities.rbac.template import RBACTemplate
 from deepteam.vulnerabilities.bola.template import BOLATemplate
 from deepteam.vulnerabilities.bfla.template import BFLATemplate
 from deepteam.vulnerabilities.ssrf.template import SSRFTemplate
+from deepteam.vulnerabilities.xss.template import XSSTemplate
 from deepteam.vulnerabilities.debug_access.template import DebugAccessTemplate
 from deepteam.vulnerabilities.shell_injection.template import (
     ShellInjectionTemplate,
@@ -118,6 +120,7 @@ VulnerabilityType = Union[
     DebugAccessType,
     ShellInjectionType,
     SQLInjectionType,
+    XSSType,
     ExploitToolAgentType,
     ExternalSystemAbuseType,
     CrossContextRetrievalType,
@@ -148,6 +151,7 @@ TemplateType = Union[
     DebugAccessTemplate,
     ShellInjectionTemplate,
     SQLInjectionTemplate,
+    XSSTemplate,
     RobustnessTemplate,
     ExcessiveAgencyTemplate,
     GoalTheftTemplate,
