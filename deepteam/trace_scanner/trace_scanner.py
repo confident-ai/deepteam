@@ -118,8 +118,7 @@ class TraceScanner:
         return ctx
 
     def _add_to_batch_and_check(self, ctx: BatchContext, node: SpanNode):
-        # Dump to dict strictly excluding None to save tokens
-        node_dict = node.model_dump(exclude_none=True)
+        node_dict = node.model_dump(mode="json", exclude_none=True)
         node_str = json.dumps(node_dict)
         node_size = len(node_str)
 
@@ -169,7 +168,7 @@ class TraceScanner:
         return ctx
 
     async def _a_add_to_batch_and_check(self, ctx: BatchContext, node: SpanNode):
-        node_dict = node.model_dump(exclude_none=True)
+        node_dict = node.model_dump(mode="json", exclude_none=True)
         node_str = json.dumps(node_dict)
         node_size = len(node_str)
 
@@ -200,7 +199,9 @@ class TraceScanner:
         ctx.size = 0
 
     def _serialize_batch(self, batch: List[SpanNode]) -> str:
-        batch_list = [node.model_dump(exclude_none=True) for node in batch]
+        batch_list = [
+            node.model_dump(mode="json", exclude_none=True) for node in batch
+        ]
         return json.dumps(batch_list, indent=2)
 
     def _build_prompt(self, batch_string: str) -> str:
@@ -331,7 +332,7 @@ class TraceScanner:
             context=getattr(trace, "context", None),
             retrieval_context=getattr(trace, "retrieval_context", None),
             expected_output=getattr(trace, "expected_output", None),
-            tools_called=[tc.model_dump(exclude_none=True) for tc in trace.tools_called] if getattr(trace, "tools_called", None) else None,
+            tools_called=[tc.model_dump(mode="json", exclude_none=True) for tc in trace.tools_called] if getattr(trace, "tools_called", None) else None,
             child_findings=root_findings if root_findings else None,
             previous_findings=self._prior_by_span.get(trace.uuid) or None,
         )
