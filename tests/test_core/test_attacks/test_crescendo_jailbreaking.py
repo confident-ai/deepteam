@@ -1,6 +1,14 @@
 import pytest
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 from deepteam.attacks.multi_turn import CrescendoJailbreaking
+from deepteam.attacks.multi_turn.crescendo_jailbreaking import (
+    crescendo_jailbreaking as crescendo_module,
+)
+from deepteam.attacks.multi_turn.crescendo_jailbreaking.schema import (
+    AttackData,
+    EvalData,
+    RefusalData,
+)
 from deepteam.vulnerabilities import Bias
 from deepteam.test_case.test_case import RTTurn
 
@@ -107,6 +115,58 @@ class TestCrescendoJailbreaking:
         # Should return a different conversation ID
         assert new_conv_id != conv_id
         assert isinstance(new_conv_id, str)
+
+    @pytest.mark.asyncio
+    async def test_crescendo_jailbreaking_memory_is_reset_per_probe(self):
+        # A single attack instance is reused for every vulnerability type in a
+        # run, so each probe must start from a clean conversation memory.
+        # Without the reset the red-teaming chat history grows monotonically
+        # across probes and eventually overflows the simulator's context window.
+        attack = CrescendoJailbreaking(max_rounds=2, max_backtracks=1)
+
+        async def mock_generate(prompt, schema, model=None, **kwargs):
+            if schema is AttackData:
+                return AttackData(
+                    generated_question="question",
+                    last_response_summary="summary",
+                    rationale_behind_jailbreak="rationale",
+                )
+            if schema is RefusalData:
+                return RefusalData(value=False, rationale="", metadata=0)
+            return EvalData(
+                value=False, description="", rationale="", metadata=50
+            )
+
+        mock_callback = AsyncMock(
+            return_value=RTTurn(role="assistant", content="Mock response")
+        )
+
+        async def run_probe():
+            await attack._a_get_turns(
+                mock_callback,
+                [RTTurn(role="user", content="User content")],
+                "Bias",
+                "race",
+                None,
+            )
+
+        with patch.object(
+            crescendo_module, "a_generate", mock_generate
+        ), patch.object(
+            crescendo_module, "initialize_model", lambda model: (None, None)
+        ):
+            await run_probe()
+            first_id = attack.red_teaming_chat_conversation_id
+            first_length = len(attack.memory.get_conversation(first_id))
+
+            await run_probe()
+            second_id = attack.red_teaming_chat_conversation_id
+            second_length = len(attack.memory.get_conversation(second_id))
+
+        # The second probe gets a fresh conversation, not a continuation.
+        assert second_id != first_id
+        assert second_length == first_length
+        assert attack.memory.get_conversation(first_id) == []
 
     def test_crescendo_jailbreaking_has_required_methods(self):
         attack = CrescendoJailbreaking()

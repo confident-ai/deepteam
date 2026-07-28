@@ -72,9 +72,7 @@ class CrescendoJailbreaking(BaseMultiTurnAttack):
     ):
         self.weight = weight
         self.multi_turn = True
-        self.memory = MemorySystem()
-        self.target_conversation_id = str(uuid4())
-        self.red_teaming_chat_conversation_id = str(uuid4())
+        self._reset_conversation_memory()
         self.max_rounds = max_rounds
         self.max_backtracks = max_backtracks
         self.simulator_model = simulator_model
@@ -87,6 +85,15 @@ class CrescendoJailbreaking(BaseMultiTurnAttack):
                 raise ValueError(
                     "The 'turn_level_attacks' passed must be a list of single-turn attacks"
                 )
+
+    def _reset_conversation_memory(self):
+        # A single attack instance is reused for every vulnerability type in a
+        # run, so the memory must be cleared per probe. Otherwise the
+        # red-teaming chat history grows monotonically across probes and
+        # eventually overflows the simulator model's context window.
+        self.memory = MemorySystem()
+        self.target_conversation_id = str(uuid4())
+        self.red_teaming_chat_conversation_id = str(uuid4())
 
     def _get_turns(
         self,
@@ -105,6 +112,8 @@ class CrescendoJailbreaking(BaseMultiTurnAttack):
             self.simulator_model, _ = initialize_model(self.simulator_model)
 
         self.model_callback = model_callback
+
+        self._reset_conversation_memory()
 
         vulnerability_data = (
             f"Vulnerability: {vulnerability} | Type: {vulnerability_type}"
@@ -277,6 +286,8 @@ class CrescendoJailbreaking(BaseMultiTurnAttack):
             self.simulator_model, _ = initialize_model(self.simulator_model)
 
         self.model_callback = model_callback
+
+        self._reset_conversation_memory()
 
         vulnerability_data = (
             f"Vulnerability: {vulnerability} | Type: {vulnerability_type}"
