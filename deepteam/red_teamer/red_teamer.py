@@ -130,6 +130,23 @@ class RedTeamer:
                 model_callback=model_callback,
                 async_mode=self.async_mode,
             )
+            # Check if there's already a running event loop (e.g., in FastAPI/Jupyter)
+            # Calling run_until_complete() on a running loop raises RuntimeError
+            try:
+                running_loop = asyncio.get_running_loop()
+                if running_loop.is_running():
+                    raise RuntimeError(
+                        "Cannot call synchronous `red_team()` from within a running event loop. "
+                        "This commonly occurs in async web frameworks like FastAPI or Jupyter notebooks. "
+                        "Please use the async version instead: `await red_teamer.a_red_team(...)` "
+                        "or `await red_team(...)` from deepteam.red_team."
+                    )
+            except RuntimeError as e:
+                # Re-raise if it's our custom error about running event loop
+                if "running event loop" in str(e):
+                    raise
+                # Otherwise, no running event loop - this is the expected case for sync usage
+                pass
             loop = get_or_create_event_loop()
             return loop.run_until_complete(
                 self.a_red_team(
