@@ -158,3 +158,30 @@ class TestGuardrailsIntroduction:
         )
         result = guardrails.guard_input("test input")
         assert result.verdicts == []
+
+    def test_sample_rate_above_half_processes_requested_fraction(self):
+        guardrails = Guardrails(
+            input_guards=[PromptInjectionGuard()],
+            output_guards=[ToxicityGuard()],
+            sample_rate=0.6,
+        )
+        processed = sum(1 for _ in range(50) if guardrails._should_process())
+        assert processed == 30  # 0.6 * 50
+
+    def test_sample_rate_three_quarters_processes_requested_fraction(self):
+        guardrails = Guardrails(
+            input_guards=[PromptInjectionGuard()],
+            output_guards=[ToxicityGuard()],
+            sample_rate=0.75,
+        )
+        processed = sum(1 for _ in range(20) if guardrails._should_process())
+        assert processed == 15  # 0.75 * 20
+
+    def test_sample_rate_half_processes_every_other_request(self):
+        guardrails = Guardrails(
+            input_guards=[PromptInjectionGuard()],
+            output_guards=[ToxicityGuard()],
+            sample_rate=0.5,
+        )
+        processed = sum(1 for _ in range(10) if guardrails._should_process())
+        assert processed == 5

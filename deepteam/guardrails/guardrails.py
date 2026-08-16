@@ -102,8 +102,14 @@ class Guardrails:
         if self.sample_rate == 1.0:
             return True
 
-        interval = int(1 / self.sample_rate)
-        return self._request_count % interval == 0
+        # Process the request when floor(count * rate) crosses an integer
+        # boundary. This yields exactly the requested fraction of requests
+        # for any rate in (0, 1] — including rates above 0.5, where the old
+        # int(1 / sample_rate) modulo approach collapsed the interval to 1
+        # and guarded every request.
+        return int(self._request_count * self.sample_rate) > int(
+            (self._request_count - 1) * self.sample_rate
+        )
 
     def guard_input(self, input: str) -> GuardResult:
         """
