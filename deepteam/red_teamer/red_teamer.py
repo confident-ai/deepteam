@@ -311,6 +311,9 @@ class RedTeamer:
                                 vulnerability_type,
                                 test_cases,
                                 ignore_errors=ignore_errors,
+                                reuse_simulated_test_cases=(
+                                    reuse_simulated_test_cases
+                                ),
                             )
                             red_teaming_test_cases.extend(rt_test_cases)
 
@@ -522,6 +525,9 @@ class RedTeamer:
                                     vulnerability_type,
                                     attacks,
                                     ignore_errors=ignore_errors,
+                                    reuse_simulated_test_cases=(
+                                        reuse_simulated_test_cases
+                                    ),
                                 )
                             )
                             red_teaming_test_cases.extend(test_cases)
@@ -564,6 +570,7 @@ class RedTeamer:
         vulnerability_type: VulnerabilityType,
         vulnerabilities: List[BaseVulnerability],
         ignore_errors: bool,
+        reuse_simulated_test_cases: bool = False,
     ) -> RTTestCase:
         multi_turn = (
             simulated_test_case.turns is not None
@@ -586,6 +593,38 @@ class RedTeamer:
 
             if _has_detected_shift(red_teaming_test_case):
                 return red_teaming_test_case
+
+            if reuse_simulated_test_cases:
+                # Replay the saved user turns against the target model and
+                # replace the placeholder assistant responses recorded during
+                # the generation phase, so the metric evaluates fresh outputs.
+                try:
+                    replayed_turns: List[RTTurn] = []
+                    sig = inspect.signature(model_callback)
+                    has_turns_param = "turns" in sig.parameters
+                    for turn in simulated_test_case.turns or []:
+                        if turn.role == "user":
+                            if has_turns_param:
+                                fresh_response: RTTurn = model_callback(
+                                    turn.content, replayed_turns
+                                )
+                            else:
+                                fresh_response: RTTurn = model_callback(
+                                    turn.content
+                                )
+                            replayed_turns.append(turn)
+                            replayed_turns.append(fresh_response)
+                        # Assistant turns are dropped: they are the placeholder
+                        # responses being replaced by fresh ones above.
+                    red_teaming_test_case.turns = replayed_turns
+                except Exception:
+                    if ignore_errors:
+                        red_teaming_test_case.error = (
+                            "Error generating output from target LLM"
+                        )
+                        return red_teaming_test_case
+                    else:
+                        raise
 
             try:
                 metric.measure(red_teaming_test_case)
@@ -653,6 +692,7 @@ class RedTeamer:
         vulnerability_type: VulnerabilityType,
         vulnerabilities: List[BaseVulnerability],
         ignore_errors: bool,
+        reuse_simulated_test_cases: bool = False,
     ) -> RTTestCase:
         multi_turn = (
             simulated_test_case.turns is not None
@@ -675,6 +715,38 @@ class RedTeamer:
 
             if _has_detected_shift(red_teaming_test_case):
                 return red_teaming_test_case
+
+            if reuse_simulated_test_cases:
+                # Replay the saved user turns against the target model and
+                # replace the placeholder assistant responses recorded during
+                # the generation phase, so the metric evaluates fresh outputs.
+                try:
+                    replayed_turns: List[RTTurn] = []
+                    sig = inspect.signature(model_callback)
+                    has_turns_param = "turns" in sig.parameters
+                    for turn in simulated_test_case.turns or []:
+                        if turn.role == "user":
+                            if has_turns_param:
+                                fresh_response: RTTurn = await model_callback(
+                                    turn.content, replayed_turns
+                                )
+                            else:
+                                fresh_response: RTTurn = await model_callback(
+                                    turn.content
+                                )
+                            replayed_turns.append(turn)
+                            replayed_turns.append(fresh_response)
+                        # Assistant turns are dropped: they are the placeholder
+                        # responses being replaced by fresh ones above.
+                    red_teaming_test_case.turns = replayed_turns
+                except Exception:
+                    if ignore_errors:
+                        red_teaming_test_case.error = (
+                            "Error generating output from target LLM"
+                        )
+                        return red_teaming_test_case
+                    else:
+                        raise
 
             try:
                 await metric.a_measure(red_teaming_test_case)
@@ -741,6 +813,7 @@ class RedTeamer:
         vulnerability_type: VulnerabilityType,
         simulated_test_cases: List[RTTestCase],
         ignore_errors: bool,
+        reuse_simulated_test_cases: bool = False,
     ) -> List[RTTestCase]:
         red_teaming_test_cases = []
 
@@ -753,6 +826,7 @@ class RedTeamer:
                     vulnerability=simulated_test_case.vulnerability,
                     vulnerability_type=vulnerability_type,
                     ignore_errors=ignore_errors,
+                    reuse_simulated_test_cases=reuse_simulated_test_cases,
                 )
             )
 
@@ -765,6 +839,7 @@ class RedTeamer:
         vulnerability_type: VulnerabilityType,
         simulated_test_cases: List[RTTestCase],
         ignore_errors: bool,
+        reuse_simulated_test_cases: bool = False,
     ) -> List[RTTestCase]:
         red_teaming_test_cases = await asyncio.gather(
             *[
@@ -775,6 +850,7 @@ class RedTeamer:
                     vulnerability=simulated_test_case.vulnerability,
                     vulnerability_type=vulnerability_type,
                     ignore_errors=ignore_errors,
+                    reuse_simulated_test_cases=reuse_simulated_test_cases,
                 )
                 for simulated_test_case in simulated_test_cases
             ]
