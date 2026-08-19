@@ -1,5 +1,6 @@
 from typing import List, Dict, Union, Optional
 import inspect
+import os
 from functools import wraps
 from deepteam.test_case import RTTestCase, RTTurn
 from deepteam.vulnerabilities.types import VulnerabilityType
@@ -15,6 +16,20 @@ from deepeval.models import (
 )
 from deepeval.metrics.utils import initialize_model
 
+
+class OrcaRouterModel(GPTModel):
+    """OpenAI-compatible model routed through the OrcaRouter gateway.
+
+    Uses the ``ORCAROUTER_API_KEY`` environment variable (or an explicit
+    ``api_key``) and points at ``https://api.orcarouter.ai/v1``.
+    """
+
+    def __init__(self, model: str, **kwargs):
+        kwargs.setdefault("api_key", os.environ.get("ORCAROUTER_API_KEY"))
+        kwargs.setdefault("base_url", "https://api.orcarouter.ai/v1")
+        super().__init__(model=model, **kwargs)
+
+
 MODEL_PROVIDER_MAPPING = {
     "openai": GPTModel,
     "anthropic": AnthropicModel,
@@ -23,6 +38,7 @@ MODEL_PROVIDER_MAPPING = {
     "moonshotai": KimiModel,
     "deepseek": DeepSeekModel,
     "ollama": OllamaModel,
+    "orcarouter": OrcaRouterModel,
 }
 
 
