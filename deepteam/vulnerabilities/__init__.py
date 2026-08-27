@@ -15,6 +15,7 @@ from .debug_access.debug_access import DebugAccess
 from .shell_injection.shell_injection import ShellInjection
 from .sql_injection.sql_injection import SQLInjection
 from .ssrf.ssrf import SSRF
+from .xss.xss import XSS
 from .intellectual_property.intellectual_property import IntellectualProperty
 from .indirect_instruction.indirect_instruction import IndirectInstruction
 from .tool_orchestration_abuse.tool_orchestration_abuse import (
@@ -67,6 +68,7 @@ __all__ = [
     "ShellInjection",
     "SQLInjection",
     "SSRF",
+    "XSS",
     "IntellectualProperty",
     "IndirectInstruction",
     "ToolOrchestrationAbuse",
