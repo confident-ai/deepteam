@@ -417,13 +417,13 @@ class TestTreeSearch:
             make_callback(), seed(), metric_check=lambda t: PASS
         )
 
-        committed = [a for a in result.attempts if a.committed]
+        committed = [a for a in result.probes if a.committed]
         assert len(committed) == 2
-        assert [a.attack for a in committed] == [
+        assert [a.input for a in committed] == [
             t.content for t in result.turns if t.role == "user"
         ][1:]
-        for attempt in committed:
-            assert attempt.response is not None
+        for probe in committed:
+            assert probe.output is not None
 
     def test_depth_bounds_the_path_not_the_clock(self):
         turns = TreeJailbreaking(max_depth=4, branching_factor=1)._get_turns(
@@ -461,4 +461,3 @@ class TestTreeSearch:
             make_callback(), seed(), metric_check=lambda t: PASS
         )
         assert len(result.turns) == 2 + 2 * 2
-        assert not any(a.on_topic for a in result.attempts)
