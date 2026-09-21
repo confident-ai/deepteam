@@ -45,21 +45,16 @@ class BaseMultiTurnAttack(BaseAttack):
         *,
         metric_check: Optional[Union[MetricCheck, AsyncMetricCheck]] = None,
     ) -> ProgressionResult:
-        progression = self._build_progression(
-            model_callback,
-            turns,
-            vulnerability,
-            vulnerability_type,
-            simulator_model,
-            metric_check,
+        return self.run_progression(
+            self._build_progression(
+                model_callback,
+                turns,
+                vulnerability,
+                vulnerability_type,
+                simulator_model,
+                metric_check,
+            )
         )
-        try:
-            progression.ensure_target_responded()
-            if not progression.shift_detected():
-                self._attack(progression)
-        except Exception as exc:
-            self._record_failure(progression, exc)
-        return progression.finalize()
 
     async def a_run(
         self,
@@ -71,14 +66,29 @@ class BaseMultiTurnAttack(BaseAttack):
         *,
         metric_check: Optional[Union[MetricCheck, AsyncMetricCheck]] = None,
     ) -> ProgressionResult:
-        progression = self._build_progression(
-            model_callback,
-            turns,
-            vulnerability,
-            vulnerability_type,
-            simulator_model,
-            metric_check,
+        return await self.a_run_progression(
+            self._build_progression(
+                model_callback,
+                turns,
+                vulnerability,
+                vulnerability_type,
+                simulator_model,
+                metric_check,
+            )
         )
+
+    def run_progression(self, progression: Progression) -> ProgressionResult:
+        try:
+            progression.ensure_target_responded()
+            if not progression.shift_detected():
+                self._attack(progression)
+        except Exception as exc:
+            self._record_failure(progression, exc)
+        return progression.finalize()
+
+    async def a_run_progression(
+        self, progression: Progression
+    ) -> ProgressionResult:
         try:
             await progression.a_ensure_target_responded()
             if not await progression.a_shift_detected():
