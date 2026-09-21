@@ -1,54 +1,97 @@
-from pydantic import BaseModel
-from typing import Optional, Union, List, Dict
-import random
-from deepeval.models import DeepEvalBaseLLM
-from deepeval.metrics.utils import initialize_model
+from typing import Callable, Dict, List, Optional, Union
 
-from deepteam.attacks.multi_turn.base_multi_turn_attack import (
-    BaseMultiTurnAttack,
-)
+from deepeval.models import DeepEvalBaseLLM
+from pydantic import BaseModel
+
+from deepteam.attacks.attack_simulator.utils import a_generate, generate
 from deepteam.attacks.base_attack import Exploitability
-from deepteam.utils import create_progress, update_pbar, add_pbar
 from deepteam.attacks.multi_turn.sequential_break.schema import (
-    RewrittenDialogue,
+    AdaptiveDialogueTemplate,
+    AdaptiveGameEnvironmentTemplate,
+    AdaptiveQuestionBankTemplate,
     DialogueJudge,
-    QuestionBankJudge,
+    DialogueTypeLiteral,
     GameEnvironmentJudge,
     ImprovedAttack,
-    AdaptiveDialogueTemplate,
-    AdaptiveQuestionBankTemplate,
-    AdaptiveGameEnvironmentTemplate,
+    QuestionBankJudge,
+    RewrittenDialogue,
     SequentialJailbreakTypeLiteral,
-    DialogueTypeLiteral,
 )
 from deepteam.attacks.multi_turn.sequential_break.template import (
     SequentialBreakTemplate,
 )
-from deepteam.attacks.attack_simulator.utils import (
-    generate,
-    a_generate,
+from deepteam.attacks.multi_turn.base_multi_turn_attack import (
+    BaseMultiTurnAttack,
 )
-from deepteam.attacks.multi_turn.utils import (
-    enhance_attack,
-    a_enhance_attack,
-    append_target_turn,
-)
-from deepteam.attacks.multi_turn.types import CallbackType
-from deepteam.attacks.multi_turn.progression import (
-    BehaviorShiftDetector,
-    StopReason,
-    mark_stop,
-)
-from deepteam.test_case.test_case import RTTurn
-from deepteam.vulnerabilities.types import VulnerabilityType
-from deepteam.vulnerabilities import BaseVulnerability
+from deepteam.attacks.multi_turn.progression import Progression
 from deepteam.attacks.single_turn import BaseSingleTurnAttack
+from deepteam.attacks.single_turn.base_single_turn_attack import (
+    AttackParameter,
+)
+from deepteam.utils import add_pbar, create_progress, update_pbar
+
+
+class _AttackTypeSpec(BaseModel):
+    """Everything that varies between the three attack types."""
+
+    rewrite_prompt: Callable
+    static_template: Callable
+    adaptive_prompt: Callable
+    adaptive_schema: type
+    judge_prompt: Callable
+    judge_schema: type
+
+
+SPECS: Dict[str, _AttackTypeSpec] = {
+    "question_bank": _AttackTypeSpec(
+        rewrite_prompt=SequentialBreakTemplate.rewrite_question_bank_prompt,
+        static_template=SequentialBreakTemplate.get_question_bank_template,
+        adaptive_prompt=SequentialBreakTemplate.generate_adaptive_question_bank_template,
+        adaptive_schema=AdaptiveQuestionBankTemplate,
+        judge_prompt=SequentialBreakTemplate.question_bank_judge,
+        judge_schema=QuestionBankJudge,
+    ),
+    "game_environment": _AttackTypeSpec(
+        rewrite_prompt=SequentialBreakTemplate.rewrite_game_environment_prompt,
+        static_template=SequentialBreakTemplate.get_game_environment_template,
+        adaptive_prompt=SequentialBreakTemplate.generate_adaptive_game_environment_template,
+        adaptive_schema=AdaptiveGameEnvironmentTemplate,
+        judge_prompt=SequentialBreakTemplate.game_environment_judge,
+        judge_schema=GameEnvironmentJudge,
+    ),
+    "dialogue": _AttackTypeSpec(
+        rewrite_prompt=SequentialBreakTemplate.rewrite_dialogue_prompt,
+        static_template=SequentialBreakTemplate.get_dialogue_template,
+        adaptive_prompt=SequentialBreakTemplate.generate_adaptive_dialogue_template,
+        adaptive_schema=AdaptiveDialogueTemplate,
+        judge_prompt=SequentialBreakTemplate.dialogue_judge,
+        judge_schema=DialogueJudge,
+    ),
+}
 
 
 class SequentialJailbreak(BaseMultiTurnAttack):
     name = "Sequential Jailbreak"
     exploitability = Exploitability.LOW
     description = "A scenario-based multi-turn attack that disguises harmful requests within dialogue, question banks, or game environments to incrementally build toward policy violations."
+    parameters = {
+        "type": AttackParameter(
+            type="enum",
+            default="dialogue",
+            options=list(SPECS),
+            description="Which scenario the harmful request is disguised inside.",
+        ),
+        "persona": AttackParameter(
+            type="enum",
+            options=["prisoner", "student", "researcher", "generic"],
+            description="Who the dialogue is with. Dialogue type only.",
+        ),
+        "num_turns": AttackParameter(
+            type="integer",
+            default=5,
+            description="How many turns to spend before giving up.",
+        ),
+    }
 
     def __init__(
         self,
@@ -60,7 +103,6 @@ class SequentialJailbreak(BaseMultiTurnAttack):
         simulator_model: Optional[Union[DeepEvalBaseLLM, str]] = "gpt-4o-mini",
     ):
         self.weight = weight
-        self.multi_turn = True
         self.attack_type = type if type is not None else "dialogue"
         self.persona = persona
         self.num_turns = num_turns
@@ -75,7 +117,6 @@ class SequentialJailbreak(BaseMultiTurnAttack):
                     "The 'turn_level_attacks' passed must be a list of single-turn attacks"
                 )
 
-        # Validate parameters
         if (
             self.attack_type in ["question_bank", "game_environment"]
             and persona is not None
@@ -84,699 +125,215 @@ class SequentialJailbreak(BaseMultiTurnAttack):
                 f"{self.attack_type} attack type does not use persona parameter"
             )
         if self.attack_type == "dialogue" and persona is None:
-            self.persona = "student"  # Default to student for dialogue
+            self.persona = "student"
 
-    def _get_turns(
-        self,
-        model_callback: CallbackType,
-        turns: Optional[List[RTTurn]] = None,
-        vulnerability: str = None,
-        vulnerability_type: str = None,
-        simulator_model: Optional[Union[str, DeepEvalBaseLLM]] = None,
-        *,
-        metric_check=None,
-    ) -> List[RTTurn]:
-        if turns is None:
-            turns = []
+    @property
+    def _spec(self) -> _AttackTypeSpec:
+        return SPECS[self.attack_type]
 
-        if simulator_model:
-            self.simulator_model, _ = initialize_model(simulator_model)
-        else:
-            self.simulator_model, _ = initialize_model(self.simulator_model)
-        self.model_callback = model_callback
-
-        stop_reason = StopReason.BUDGET_EXHAUSTED
-        stop_detail = None
-
+    def _attack(self, progression: Progression) -> None:
+        spec = self._spec
+        base_attack = progression.goal
+        previous_template: Optional[str] = None
+        previous_response: Optional[str] = None
         progress = create_progress()
+
         with progress:
-            task_id = add_pbar(
+            pbar = add_pbar(
                 progress,
                 description=f"🎯 Sequential Jailbreak ({self.attack_type})",
                 total=self.num_turns,
             )
 
-            vulnerability_data = (
-                f"Vulnerability: {vulnerability} | Type: {vulnerability_type}"
-            )
-            detector = BehaviorShiftDetector(
-                simulator_model=self.simulator_model,
-                vulnerability_data=vulnerability_data,
-                metric_check=metric_check,
-            )
-
-            # Get base attack from last user turn (simple reverse search)
-            base_attack = None
-            original_attack = None
-            for turn in reversed(turns):
-                if turn.role == "user":
-                    base_attack = turn.content
-                    original_attack = turn.content
-                    break
-
-            if base_attack is None:
-                raise ValueError("No user turns found in conversation history")
-
-            # If the last turn is from user, we need a model response before simulation
-            if len(turns) <= 1 or turns[-1].role == "user":
-                append_target_turn(turns, model_callback(base_attack, turns))
-
-            previous_template = None
-            previous_assistant_response = None
-
-            for turn_num in range(self.num_turns):
-                # Transform base attack into scenario template
-                if self.attack_type == "question_bank":
-                    rewrite_prompt = (
-                        SequentialBreakTemplate.rewrite_question_bank_prompt(
-                            base_attack, vulnerability_data
-                        )
-                    )
-                elif self.attack_type == "game_environment":
-                    rewrite_prompt = (
-                        SequentialBreakTemplate.rewrite_game_environment_prompt(
-                            base_attack, vulnerability_data
-                        )
-                    )
-                else:
-                    rewrite_prompt = (
-                        SequentialBreakTemplate.rewrite_dialogue_prompt(
-                            base_attack, vulnerability_data
-                        )
-                    )
-
-                rewritten_res: RewrittenDialogue = generate(
-                    rewrite_prompt, RewrittenDialogue, self.simulator_model
+            for _ in range(self.num_turns):
+                rewritten: RewrittenDialogue = generate(
+                    spec.rewrite_prompt(
+                        base_attack, progression.vulnerability_data
+                    ),
+                    RewrittenDialogue,
+                    progression.simulator_model,
                 )
-                rewritten_content = rewritten_res.paraphrased_version
+                content = self._clean(rewritten.paraphrased_version)
 
-                rewritten_content = rewritten_content.replace(
-                    "Paraphrased version:", ""
-                ).strip()
-                rewritten_content = rewritten_content.replace(
-                    "<end>", ""
-                ).strip()
-
-                # Generate adaptive scenario template based on feedback
-                if turn_num == 0 or previous_template is None:
-                    # First iteration: use default template
-                    if self.attack_type == "question_bank":
-                        rewritten_attack = (
-                            SequentialBreakTemplate.get_question_bank_template(
-                                rewritten_content
-                            )
-                        )
-                    elif self.attack_type == "game_environment":
-                        rewritten_attack = SequentialBreakTemplate.get_game_environment_template(
-                            rewritten_content
-                        )
-                    else:
-                        rewritten_attack = (
-                            SequentialBreakTemplate.get_dialogue_template(
-                                rewritten_content, self.persona
-                            )
-                        )
+                if previous_template is None:
+                    attack = self._static_template(spec, content)
                 else:
-                    # Subsequent iterations: generate adaptive template
-                    # Use actual judge feedback from previous turn if available
-                    adaptive_judge_feedback = (
-                        f"Previous attempt was not successful"
-                    )
-                    if previous_assistant_response:
-                        adaptive_judge_feedback += f"\nPrevious response: {previous_assistant_response[:500]}"
-
-                    if self.attack_type == "question_bank":
-                        adaptive_prompt = SequentialBreakTemplate.generate_adaptive_question_bank_template(
-                            rewritten_content,
+                    adaptive = generate(
+                        self._adaptive_prompt(
+                            spec,
+                            progression,
+                            content,
                             previous_template,
-                            previous_assistant_response or "",
-                            adaptive_judge_feedback,
-                            vulnerability_data,
-                        )
-                        adaptive_res: AdaptiveQuestionBankTemplate = generate(
-                            adaptive_prompt,
-                            AdaptiveQuestionBankTemplate,
-                            self.simulator_model,
-                        )
-                        rewritten_attack = adaptive_res.template
-                    elif self.attack_type == "game_environment":
-                        adaptive_prompt = SequentialBreakTemplate.generate_adaptive_game_environment_template(
-                            rewritten_content,
-                            previous_template,
-                            previous_assistant_response or "",
-                            adaptive_judge_feedback,
-                            vulnerability_data,
-                        )
-                        adaptive_res: AdaptiveGameEnvironmentTemplate = (
-                            generate(
-                                adaptive_prompt,
-                                AdaptiveGameEnvironmentTemplate,
-                                self.simulator_model,
-                            )
-                        )
-                        rewritten_attack = adaptive_res.template
-                    else:
-                        adaptive_prompt = SequentialBreakTemplate.generate_adaptive_dialogue_template(
-                            rewritten_content,
-                            self.persona or "student",
-                            previous_template,
-                            previous_assistant_response or "",
-                            adaptive_judge_feedback,
-                            vulnerability_data,
-                        )
-                        adaptive_res: AdaptiveDialogueTemplate = generate(
-                            adaptive_prompt,
-                            AdaptiveDialogueTemplate,
-                            self.simulator_model,
-                        )
-                        rewritten_attack = adaptive_res.template
-
-                # Randomly enhancing a turn attack
-                turn_level_attack = None
-                if self.turn_level_attacks and random.random() < 0.5:
-                    attack = random.choice(self.turn_level_attacks)
-                    turn_level_attack = attack
-                    rewritten_attack = enhance_attack(
-                        attack, rewritten_attack, self.simulator_model
+                            previous_response,
+                        ),
+                        spec.adaptive_schema,
+                        progression.simulator_model,
                     )
+                    attack = adaptive.template
 
-                turns.append(RTTurn(role="user", content=rewritten_attack))
+                response = progression.commit(attack)
+                update_pbar(progress, pbar)
 
-                assistant_response = model_callback(rewritten_attack, turns)
+                if progression.shift_detected():
+                    update_pbar(progress, pbar, advance_to_end=True)
+                    return
 
-                if turn_level_attack is not None:
-                    append_target_turn(
-                        turns, assistant_response, turn_level_attack.get_name()
-                    )
-                else:
-                    append_target_turn(turns, assistant_response)
-
-                update_pbar(progress, task_id)
-
-                verdict = detector.check(turns)
-                if verdict is not None:
-                    stop_reason = StopReason.SHIFT_DETECTED
-                    stop_detail = verdict.detail
-                    update_pbar(progress, task_id, advance_to_end=True)
-                    break
-
-                # Monitor and evaluate model outputs
-                if self.attack_type == "question_bank":
-                    judge_prompt = SequentialBreakTemplate.question_bank_judge(
-                        original_attack,
-                        rewritten_attack,
-                        assistant_response.content,
-                        vulnerability_data,
-                    )
-                    judge_res: QuestionBankJudge = generate(
-                        judge_prompt, QuestionBankJudge, self.simulator_model
-                    )
-                elif self.attack_type == "game_environment":
-                    judge_prompt = (
-                        SequentialBreakTemplate.game_environment_judge(
-                            original_attack,
-                            rewritten_attack,
-                            assistant_response.content,
-                            vulnerability_data,
-                        )
-                    )
-                    judge_res: GameEnvironmentJudge = generate(
-                        judge_prompt, GameEnvironmentJudge, self.simulator_model
-                    )
-                else:
-                    judge_prompt = SequentialBreakTemplate.dialogue_judge(
-                        original_attack,
-                        rewritten_attack,
-                        assistant_response.content,
-                        vulnerability_data,
-                    )
-                    judge_res: DialogueJudge = generate(
-                        judge_prompt, DialogueJudge, self.simulator_model
-                    )
-
-                # Escalate: Improve the base attack for next iteration (gradually introduce more specificity)
-                judge_feedback = f"Harmful: {judge_res.harmful}"
-                if hasattr(judge_res, "reasoning"):
-                    judge_feedback += f"\nReasoning: {judge_res.reasoning}"
-
-                improvement_prompt = (
-                    SequentialBreakTemplate.improve_attack_prompt(
-                        original_attack,
-                        rewritten_attack,
-                        assistant_response.content,
-                        judge_feedback,
-                        self.attack_type,
-                        vulnerability_data,
-                    )
+                judge = generate(
+                    spec.judge_prompt(
+                        progression.goal,
+                        attack,
+                        response.content,
+                        progression.vulnerability_data,
+                    ),
+                    spec.judge_schema,
+                    progression.simulator_model,
                 )
 
                 try:
-                    improved_res: ImprovedAttack = generate(
-                        improvement_prompt, ImprovedAttack, self.simulator_model
+                    improved: ImprovedAttack = generate(
+                        SequentialBreakTemplate.improve_attack_prompt(
+                            progression.goal,
+                            attack,
+                            response.content,
+                            self._judge_feedback(judge),
+                            self.attack_type,
+                            progression.vulnerability_data,
+                        ),
+                        ImprovedAttack,
+                        progression.simulator_model,
                     )
-                    # Use improved base attack for next iteration
-                    base_attack = improved_res.improved_attack
+                    base_attack = improved.improved_attack
                 except Exception:
-                    # If improvement fails, keep using current base attack
+                    # Keep escalating from the current base attack.
                     pass
 
-                # Store template and response for adaptive template generation next iteration
-                previous_template = rewritten_attack
-                previous_assistant_response = assistant_response.content
+                previous_template = attack
+                previous_response = response.content
 
-        return mark_stop(
-            turns,
-            stop_reason,
-            detail=stop_detail,
-            turns_spent=(len(turns) - 2) // 2,
-        )
-
-    async def _a_get_turns(
-        self,
-        model_callback: CallbackType,
-        turns: Optional[List[RTTurn]] = None,
-        vulnerability: str = None,
-        vulnerability_type: str = None,
-        simulator_model: Optional[Union[str, DeepEvalBaseLLM]] = None,
-        *,
-        metric_check=None,
-    ) -> List[RTTurn]:
-        if turns is None:
-            turns = []
-
-        if simulator_model:
-            self.simulator_model, _ = initialize_model(simulator_model)
-        else:
-            self.simulator_model, _ = initialize_model(self.simulator_model)
-        self.model_callback = model_callback
-
-        stop_reason = StopReason.BUDGET_EXHAUSTED
-        stop_detail = None
-
-        # Progress bar setup
+    async def _a_attack(self, progression: Progression) -> None:
+        spec = self._spec
+        base_attack = progression.goal
+        previous_template: Optional[str] = None
+        previous_response: Optional[str] = None
         progress = create_progress()
+
         with progress:
-            task_id = add_pbar(
+            pbar = add_pbar(
                 progress,
                 description=f"🎯 Sequential Jailbreak ({self.attack_type})",
                 total=self.num_turns,
             )
 
-            vulnerability_data = (
-                f"Vulnerability: {vulnerability} | Type: {vulnerability_type}"
-            )
-            detector = BehaviorShiftDetector(
-                simulator_model=self.simulator_model,
-                vulnerability_data=vulnerability_data,
-                metric_check=metric_check,
-            )
-
-            # Get base attack from last user turn (simple reverse search)
-            base_attack = None
-            original_attack = None
-            for turn in reversed(turns):
-                if turn.role == "user":
-                    base_attack = turn.content
-                    original_attack = turn.content
-                    break
-
-            if base_attack is None:
-                raise ValueError("No user turns found in conversation history")
-
-            # If last turn is user, generate a model response before the loop
-            if len(turns) <= 1 or turns[-1].role == "user":
-                append_target_turn(
-                    turns, await model_callback(base_attack, turns)
+            for _ in range(self.num_turns):
+                rewritten: RewrittenDialogue = await a_generate(
+                    spec.rewrite_prompt(
+                        base_attack, progression.vulnerability_data
+                    ),
+                    RewrittenDialogue,
+                    progression.simulator_model,
                 )
+                content = self._clean(rewritten.paraphrased_version)
 
-            previous_template = None
-            previous_assistant_response = None
-
-            for turn_num in range(self.num_turns):
-                # Transform base attack into scenario template
-                if self.attack_type == "question_bank":
-                    rewrite_prompt = (
-                        SequentialBreakTemplate.rewrite_question_bank_prompt(
-                            base_attack, vulnerability_data
-                        )
-                    )
-                elif self.attack_type == "game_environment":
-                    rewrite_prompt = (
-                        SequentialBreakTemplate.rewrite_game_environment_prompt(
-                            base_attack, vulnerability_data
-                        )
-                    )
+                if previous_template is None:
+                    attack = self._static_template(spec, content)
                 else:
-                    rewrite_prompt = (
-                        SequentialBreakTemplate.rewrite_dialogue_prompt(
-                            base_attack, vulnerability_data
-                        )
-                    )
-
-                rewritten_res: RewrittenDialogue = await a_generate(
-                    rewrite_prompt, RewrittenDialogue, self.simulator_model
-                )
-                rewritten_content = rewritten_res.paraphrased_version
-
-                rewritten_content = rewritten_content.replace(
-                    "Paraphrased version:", ""
-                ).strip()
-                rewritten_content = rewritten_content.replace(
-                    "<end>", ""
-                ).strip()
-
-                # Generate adaptive scenario template based on feedback
-                if turn_num == 0 or previous_template is None:
-                    # First iteration: use default template
-                    if self.attack_type == "question_bank":
-                        rewritten_attack = (
-                            SequentialBreakTemplate.get_question_bank_template(
-                                rewritten_content
-                            )
-                        )
-                    elif self.attack_type == "game_environment":
-                        rewritten_attack = SequentialBreakTemplate.get_game_environment_template(
-                            rewritten_content
-                        )
-                    else:
-                        rewritten_attack = (
-                            SequentialBreakTemplate.get_dialogue_template(
-                                rewritten_content, self.persona
-                            )
-                        )
-                else:
-                    # Subsequent iterations: generate adaptive template
-                    # Use actual judge feedback from previous turn if available
-                    adaptive_judge_feedback = (
-                        f"Previous attempt was not successful"
-                    )
-                    if previous_assistant_response:
-                        adaptive_judge_feedback += f"\nPrevious response: {previous_assistant_response[:500]}"
-
-                    if self.attack_type == "question_bank":
-                        adaptive_prompt = SequentialBreakTemplate.generate_adaptive_question_bank_template(
-                            rewritten_content,
+                    adaptive = await a_generate(
+                        self._adaptive_prompt(
+                            spec,
+                            progression,
+                            content,
                             previous_template,
-                            previous_assistant_response or "",
-                            adaptive_judge_feedback,
-                            vulnerability_data,
-                        )
-                        adaptive_res: AdaptiveQuestionBankTemplate = (
-                            await a_generate(
-                                adaptive_prompt,
-                                AdaptiveQuestionBankTemplate,
-                                self.simulator_model,
-                            )
-                        )
-                        rewritten_attack = adaptive_res.template
-                    elif self.attack_type == "game_environment":
-                        adaptive_prompt = SequentialBreakTemplate.generate_adaptive_game_environment_template(
-                            rewritten_content,
-                            previous_template,
-                            previous_assistant_response or "",
-                            adaptive_judge_feedback,
-                            vulnerability_data,
-                        )
-                        adaptive_res: AdaptiveGameEnvironmentTemplate = (
-                            await a_generate(
-                                adaptive_prompt,
-                                AdaptiveGameEnvironmentTemplate,
-                                self.simulator_model,
-                            )
-                        )
-                        rewritten_attack = adaptive_res.template
-                    else:
-                        adaptive_prompt = SequentialBreakTemplate.generate_adaptive_dialogue_template(
-                            rewritten_content,
-                            self.persona or "student",
-                            previous_template,
-                            previous_assistant_response or "",
-                            adaptive_judge_feedback,
-                            vulnerability_data,
-                        )
-                        adaptive_res: AdaptiveDialogueTemplate = (
-                            await a_generate(
-                                adaptive_prompt,
-                                AdaptiveDialogueTemplate,
-                                self.simulator_model,
-                            )
-                        )
-                        rewritten_attack = adaptive_res.template
-
-                # Randomly enhancing a turn attack
-                turn_level_attack = None
-                if self.turn_level_attacks and random.random() < 0.5:
-                    attack = random.choice(self.turn_level_attacks)
-                    turn_level_attack = attack
-                    rewritten_attack = await a_enhance_attack(
-                        attack, rewritten_attack, self.simulator_model
+                            previous_response,
+                        ),
+                        spec.adaptive_schema,
+                        progression.simulator_model,
                     )
+                    attack = adaptive.template
 
-                turns.append(RTTurn(role="user", content=rewritten_attack))
+                response = await progression.a_commit(attack)
+                update_pbar(progress, pbar)
 
-                assistant_response = await model_callback(
-                    rewritten_attack, turns
-                )
+                if await progression.a_shift_detected():
+                    update_pbar(progress, pbar, advance_to_end=True)
+                    return
 
-                if turn_level_attack is not None:
-                    append_target_turn(
-                        turns, assistant_response, turn_level_attack.get_name()
-                    )
-                else:
-                    append_target_turn(turns, assistant_response)
-
-                update_pbar(progress, task_id)
-
-                verdict = await detector.a_check(turns)
-                if verdict is not None:
-                    stop_reason = StopReason.SHIFT_DETECTED
-                    stop_detail = verdict.detail
-                    update_pbar(progress, task_id, advance_to_end=True)
-                    break
-
-                # Monitor and evaluate model outputs
-                if self.attack_type == "question_bank":
-                    judge_prompt = SequentialBreakTemplate.question_bank_judge(
-                        original_attack,
-                        rewritten_attack,
-                        assistant_response.content,
-                        vulnerability_data,
-                    )
-                    judge_res: QuestionBankJudge = await a_generate(
-                        judge_prompt, QuestionBankJudge, self.simulator_model
-                    )
-                elif self.attack_type == "game_environment":
-                    judge_prompt = (
-                        SequentialBreakTemplate.game_environment_judge(
-                            original_attack,
-                            rewritten_attack,
-                            assistant_response.content,
-                            vulnerability_data,
-                        )
-                    )
-                    judge_res: GameEnvironmentJudge = await a_generate(
-                        judge_prompt, GameEnvironmentJudge, self.simulator_model
-                    )
-                else:
-                    judge_prompt = SequentialBreakTemplate.dialogue_judge(
-                        original_attack,
-                        rewritten_attack,
-                        assistant_response.content,
-                        vulnerability_data,
-                    )
-                    judge_res: DialogueJudge = await a_generate(
-                        judge_prompt, DialogueJudge, self.simulator_model
-                    )
-
-                # Escalate: Improve the base attack for next iteration (gradually introduce more specificity)
-                judge_feedback = f"Harmful: {judge_res.harmful}"
-                if hasattr(judge_res, "reasoning"):
-                    judge_feedback += f"\nReasoning: {judge_res.reasoning}"
-
-                improvement_prompt = (
-                    SequentialBreakTemplate.improve_attack_prompt(
-                        original_attack,
-                        rewritten_attack,
-                        assistant_response.content,
-                        judge_feedback,
-                        self.attack_type,
-                        vulnerability_data,
-                    )
+                judge = await a_generate(
+                    spec.judge_prompt(
+                        progression.goal,
+                        attack,
+                        response.content,
+                        progression.vulnerability_data,
+                    ),
+                    spec.judge_schema,
+                    progression.simulator_model,
                 )
 
                 try:
-                    improved_res: ImprovedAttack = await a_generate(
-                        improvement_prompt, ImprovedAttack, self.simulator_model
+                    improved: ImprovedAttack = await a_generate(
+                        SequentialBreakTemplate.improve_attack_prompt(
+                            progression.goal,
+                            attack,
+                            response.content,
+                            self._judge_feedback(judge),
+                            self.attack_type,
+                            progression.vulnerability_data,
+                        ),
+                        ImprovedAttack,
+                        progression.simulator_model,
                     )
-                    # Use improved base attack for next iteration
-                    base_attack = improved_res.improved_attack
+                    base_attack = improved.improved_attack
                 except Exception:
-                    # If improvement fails, keep using current base attack
                     pass
 
-                # Store template and response for adaptive template generation next iteration
-                previous_template = rewritten_attack
-                previous_assistant_response = assistant_response.content
+                previous_template = attack
+                previous_response = response.content
 
-        return mark_stop(
-            turns,
-            stop_reason,
-            detail=stop_detail,
-            turns_spent=(len(turns) - 2) // 2,
+    @staticmethod
+    def _clean(content: str) -> str:
+        return (
+            content.replace("Paraphrased version:", "")
+            .strip()
+            .replace("<end>", "")
+            .strip()
         )
 
-    def progress(
+    def _static_template(self, spec: _AttackTypeSpec, content: str) -> str:
+        if self.attack_type == "dialogue":
+            return spec.static_template(content, self.persona)
+        return spec.static_template(content)
+
+    def _adaptive_prompt(
         self,
-        vulnerability: "BaseVulnerability",
-        model_callback: CallbackType,
-        turns: Optional[List[RTTurn]] = None,
-    ) -> Dict[VulnerabilityType, List[RTTurn]]:
-        from deepteam.red_teamer.utils import (
-            group_attacks_by_vulnerability_type,
+        spec: _AttackTypeSpec,
+        progression: Progression,
+        content: str,
+        previous_template: str,
+        previous_response: Optional[str],
+    ) -> str:
+        feedback = "Previous attempt was not successful"
+        if previous_response:
+            feedback += f"\nPrevious response: {previous_response[:500]}"
+
+        if self.attack_type == "dialogue":
+            return spec.adaptive_prompt(
+                content,
+                self.persona or "student",
+                previous_template,
+                previous_response or "",
+                feedback,
+                progression.vulnerability_data,
+            )
+        return spec.adaptive_prompt(
+            content,
+            previous_template,
+            previous_response or "",
+            feedback,
+            progression.vulnerability_data,
         )
 
-        # Simulate and group attacks
-        simulated_attacks = group_attacks_by_vulnerability_type(
-            vulnerability.simulate_attacks()
-        )
-
-        result = {}
-
-        for vuln_type, attacks in simulated_attacks.items():
-            for attack in attacks:
-                # Defensive copy to avoid mutating external turns
-                inner_turns = list(turns) if turns else []
-
-                # Case 1: No turns, or last is user -> create assistant response
-                if len(inner_turns) == 0 or inner_turns[-1].role == "user":
-                    inner_turns = [RTTurn(role="user", content=attack.input)]
-                    assistant_response = model_callback(
-                        attack.input, inner_turns
-                    )
-                    append_target_turn(inner_turns, assistant_response)
-
-                # Case 2: Last is assistant -> find preceding user
-                elif inner_turns[-1].role == "assistant":
-                    user_turn_content = None
-                    for turn in reversed(inner_turns[:-1]):
-                        if turn.role == "user":
-                            user_turn_content = turn.content
-                            break
-
-                    if user_turn_content:
-                        inner_turns = [
-                            RTTurn(role="user", content=user_turn_content),
-                            RTTurn(
-                                role="assistant",
-                                content=inner_turns[-1].content,
-                            ),
-                        ]
-                    else:
-                        # Fallback if no user found
-                        inner_turns = [
-                            RTTurn(role="user", content=attack.input)
-                        ]
-                        assistant_response = model_callback(
-                            attack.input, inner_turns
-                        )
-                        append_target_turn(inner_turns, assistant_response)
-
-                else:
-                    # Unrecognized state — fallback to default
-                    inner_turns = [RTTurn(role="user", content=attack.input)]
-                    assistant_response = model_callback(
-                        attack.input, inner_turns
-                    )
-                    append_target_turn(inner_turns, assistant_response)
-
-                # Run enhancement loop and assign full turn history
-                vulnerability_name = vulnerability.get_name()
-                enhanced_turns = self._get_turns(
-                    model_callback=model_callback,
-                    turns=inner_turns,
-                    vulnerability=vulnerability_name,
-                    vulnerability_type=vuln_type.value,
-                )
-
-            result[vuln_type] = enhanced_turns
-
-        return result
-
-    async def a_progress(
-        self,
-        vulnerability: "BaseVulnerability",
-        model_callback: CallbackType,
-        turns: Optional[List[RTTurn]] = None,
-    ) -> Dict[VulnerabilityType, List[RTTurn]]:
-        from deepteam.red_teamer.utils import (
-            group_attacks_by_vulnerability_type,
-        )
-
-        # Simulate and group attacks asynchronously
-        simulated_attacks = await vulnerability.a_simulate_attacks()
-        grouped_attacks = group_attacks_by_vulnerability_type(simulated_attacks)
-
-        result = {}
-
-        for vuln_type, attacks in grouped_attacks.items():
-            for attack in attacks:
-                # Defensive copy to avoid mutating external turns
-                inner_turns = list(turns) if turns else []
-
-                # Case 1: No turns, or last is user -> create assistant response
-                if len(inner_turns) == 0 or inner_turns[-1].role == "user":
-                    inner_turns = [RTTurn(role="user", content=attack.input)]
-                    assistant_response = await model_callback(
-                        attack.input, inner_turns
-                    )
-                    append_target_turn(inner_turns, assistant_response)
-
-                # Case 2: Last is assistant -> find preceding user
-                elif inner_turns[-1].role == "assistant":
-                    user_turn_content = None
-                    for turn in reversed(inner_turns[:-1]):
-                        if turn.role == "user":
-                            user_turn_content = turn.content
-                            break
-
-                    if user_turn_content:
-                        inner_turns = [
-                            RTTurn(role="user", content=user_turn_content),
-                            RTTurn(
-                                role="assistant",
-                                content=inner_turns[-1].content,
-                            ),
-                        ]
-                    else:
-                        # Fallback if no user found
-                        inner_turns = [
-                            RTTurn(role="user", content=attack.input)
-                        ]
-                        assistant_response = await model_callback(
-                            attack.input, inner_turns
-                        )
-                        append_target_turn(inner_turns, assistant_response)
-
-                else:
-                    # Unrecognized state — fallback to default
-                    inner_turns = [RTTurn(role="user", content=attack.input)]
-                    assistant_response = await model_callback(
-                        attack.input, inner_turns
-                    )
-                    append_target_turn(inner_turns, assistant_response)
-
-                # Run enhancement loop and assign full turn history
-                vulnerability_name = vulnerability.get_name()
-                enhanced_turns = await self._a_get_turns(
-                    model_callback=model_callback,
-                    turns=inner_turns,
-                    vulnerability=vulnerability_name,
-                    vulnerability_type=vuln_type.value,
-                )
-
-            result[vuln_type] = enhanced_turns
-
-        return result
-
-    def get_name(self) -> str:
-        return self.name
+    @staticmethod
+    def _judge_feedback(judge) -> str:
+        feedback = f"Harmful: {judge.harmful}"
+        if hasattr(judge, "reasoning"):
+            feedback += f"\nReasoning: {judge.reasoning}"
+        return feedback
