@@ -1,5 +1,5 @@
 from .progression import Progression, TURN_LEVEL_ATTACK_RATE
-from .types import Attempt, ProgressionResult
+from .types import Probe, ProgressionResult
 from .stopping import (
     StopReason,
     default_stop_detail,
@@ -22,7 +22,7 @@ from .shift_detection import (
 __all__ = [
     "Progression",
     "TURN_LEVEL_ATTACK_RATE",
-    "Attempt",
+    "Probe",
     "ProgressionResult",
     "StopReason",
     "default_stop_detail",

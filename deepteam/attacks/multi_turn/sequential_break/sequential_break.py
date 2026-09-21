@@ -310,7 +310,7 @@ class SequentialJailbreak(BaseMultiTurnAttack):
         previous_template: str,
         previous_response: Optional[str],
     ) -> str:
-        feedback = "Previous attempt was not successful"
+        feedback = "Previous probe was not successful"
         if previous_response:
             feedback += f"\nPrevious response: {previous_response[:500]}"
 

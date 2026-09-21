@@ -125,17 +125,18 @@ class CrescendoJailbreaking(BaseMultiTurnAttack):
                 refusal_note = None
                 update_pbar(progress, rounds_pbar)
 
-                attempt = progression.probe(attack)
-                self._remember_target_exchange(attempt)
-                progression.commit(attempt)
+                probe = progression.probe(attack)
+                self._remember_target_exchange(probe)
+                progression.commit(probe)
                 update_pbar(progress, rounds_pbar)
 
                 is_refusal, rationale = self._refusal_score(
-                    progression, attempt.response.content
+                    progression, probe.output.content
                 )
                 update_pbar(progress, rounds_pbar)
 
                 if is_refusal:
+                    progression.score_probe(probe, 0.0, rationale)
                     backtracks += 1
                     eval_flag = False
                     refusal_note = REFUSAL_NOTE.format(rationale=rationale)
@@ -154,8 +155,9 @@ class CrescendoJailbreaking(BaseMultiTurnAttack):
                     break
 
                 eval_flag, _ = self._eval_score(
-                    progression, attempt.response.content
+                    progression, probe.output.content
                 )
+                progression.score_probe(probe, 1.0 if eval_flag else 0.0)
                 update_pbar(progress, rounds_pbar)
 
             update_pbar(progress, rounds_pbar, advance_to_end=True)
@@ -193,17 +195,18 @@ class CrescendoJailbreaking(BaseMultiTurnAttack):
 
                 # Probe first so the refused turns can be walked back without
                 # having cost a metric call.
-                attempt = await progression.a_probe(attack)
-                self._remember_target_exchange(attempt)
-                await progression.a_commit(attempt)
+                probe = await progression.a_probe(attack)
+                self._remember_target_exchange(probe)
+                await progression.a_commit(probe)
                 update_pbar(progress, rounds_pbar)
 
                 is_refusal, rationale = await self._a_refusal_score(
-                    progression, attempt.response.content
+                    progression, probe.output.content
                 )
                 update_pbar(progress, rounds_pbar)
 
                 if is_refusal:
+                    progression.score_probe(probe, 0.0, rationale)
                     backtracks += 1
                     eval_flag = False
                     refusal_note = REFUSAL_NOTE.format(rationale=rationale)
@@ -222,8 +225,9 @@ class CrescendoJailbreaking(BaseMultiTurnAttack):
                     break
 
                 eval_flag, _ = await self._a_eval_score(
-                    progression, attempt.response.content
+                    progression, probe.output.content
                 )
+                progression.score_probe(probe, 1.0 if eval_flag else 0.0)
                 update_pbar(progress, rounds_pbar)
 
             update_pbar(progress, rounds_pbar, advance_to_end=True)
@@ -249,14 +253,14 @@ class CrescendoJailbreaking(BaseMultiTurnAttack):
             },
         )
 
-    def _remember_target_exchange(self, attempt) -> None:
+    def _remember_target_exchange(self, probe) -> None:
         self.memory.add_message(
             self.target_conversation_id,
-            {"role": "user", "content": attempt.attack},
+            {"role": "user", "content": probe.input},
         )
         self.memory.add_message(
             self.target_conversation_id,
-            {"role": "assistant", "content": attempt.response.content},
+            {"role": "assistant", "content": probe.output.content},
         )
 
     def _attack_prompt(

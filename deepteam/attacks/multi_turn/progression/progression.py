@@ -1,9 +1,14 @@
 import random
+import time
 from typing import List, Optional, Union
 
 from deepeval.metrics.utils import initialize_model
 from deepeval.models import DeepEvalBaseLLM
 
+from deepteam.attacks.attack_simulator.utils import (
+    add_cost,
+    current_simulation_cost,
+)
 from deepteam.attacks.multi_turn.types import CallbackType
 from deepteam.attacks.multi_turn.utils import (
     a_enhance_attack,
@@ -21,7 +26,7 @@ from deepteam.attacks.multi_turn.progression.stopping import (
     mark_stop,
 )
 from deepteam.attacks.multi_turn.progression.types import (
-    Attempt,
+    Probe,
     ProgressionResult,
 )
 from deepteam.attacks.single_turn import BaseSingleTurnAttack
@@ -73,12 +78,15 @@ class Progression:
         )
 
         self.turns_spent = 0
-        self.attempts: List[Attempt] = []
-        # Attempt-tree bookkeeping. `_parent` is the attempt new probes
+        self.probes: List[Probe] = []
+        # Probe-tree bookkeeping. `_parent` is the probe new probes
         # descend from -- it follows commits and rolls back on a backtrack.
-        self._next_attempt_id = 0
-        self._parent: Optional[Attempt] = None
-        self._committed: List[Attempt] = []
+        self._next_probe_id = 0
+        self._parent: Optional[Probe] = None
+        self._committed: List[Probe] = []
+        # Running total of the active cost scope at the last probe, so each
+        # probe gets the simulator spend accrued since the previous one.
+        self._cost_snapshot = current_simulation_cost()
         self.stop_reason = StopReason.BUDGET_EXHAUSTED
         self.stop_detail: Optional[str] = None
         self.shift_verdict: Optional[MetricVerdict] = None
@@ -106,54 +114,56 @@ class Progression:
             stop_reason=self.stop_reason,
             stop_detail=stop_detail,
             turns_spent=self.turns_spent,
-            attempts=self.attempts,
+            probes=self.probes,
             shift_verdict=self.shift_verdict,
             error=self.error,
         )
 
-    def probe(self, attack: str, *, enhance: bool = True) -> Attempt:
+    def probe(self, attack: str, *, enhance: bool = True) -> Probe:
         """Put an attack to the target without keeping it in the conversation.
 
         For attacks that try several things per step and keep one: tree search
         branches, retry-until-accepted loops, and knowledge-gathering questions
-        asked before the conversation proper begins. The Attempt is recorded
+        asked before the conversation proper begins. The Probe is recorded
         either way, so what was discarded survives in the result.
         """
         attack, turn_level_attack = self._apply_turn_level_attack(
             attack, enhance
         )
-        return self._record_attempt(
-            attack,
-            self.model_callback(attack, self.turns),
-            turn_level_attack,
+        start = time.perf_counter()
+        response = self.model_callback(attack, self.turns)
+        latency = time.perf_counter() - start
+        return self._record_probe(
+            attack, response, turn_level_attack, latency
         )
 
-    async def a_probe(self, attack: str, *, enhance: bool = True) -> Attempt:
+    async def a_probe(self, attack: str, *, enhance: bool = True) -> Probe:
         attack, turn_level_attack = await self._a_apply_turn_level_attack(
             attack, enhance
         )
-        return self._record_attempt(
-            attack,
-            await self.model_callback(attack, self.turns),
-            turn_level_attack,
+        start = time.perf_counter()
+        response = await self.model_callback(attack, self.turns)
+        latency = time.perf_counter() - start
+        return self._record_probe(
+            attack, response, turn_level_attack, latency
         )
 
-    def commit(self, attack: Union[str, Attempt]) -> RTTurn:
+    def commit(self, attack: Union[str, Probe]) -> RTTurn:
         """Put an attack to the target and keep both turns.
 
-        Passing an Attempt from `probe` reuses the response already collected
+        Passing a Probe from `probe` reuses the response already collected
         rather than calling the target a second time.
         """
-        attempt = attack if isinstance(attack, Attempt) else self.probe(attack)
-        return self._commit_attempt(attempt)
+        probe = attack if isinstance(attack, Probe) else self.probe(attack)
+        return self._commit_probe(probe)
 
-    async def a_commit(self, attack: Union[str, Attempt]) -> RTTurn:
-        attempt = (
+    async def a_commit(self, attack: Union[str, Probe]) -> RTTurn:
+        probe = (
             attack
-            if isinstance(attack, Attempt)
+            if isinstance(attack, Probe)
             else await self.a_probe(attack)
         )
-        return self._commit_attempt(attempt)
+        return self._commit_probe(probe)
 
     def shift_detected(self) -> bool:
         """Has the target's behavior shifted? Records the stop reason when it
@@ -170,8 +180,8 @@ class Progression:
             return
         del self.turns[-2 * count :]
         self.turns_spent = max(0, self.turns_spent - count)
-        # Walked-back turns are simply un-committed; the attempts stay in
-        # `attempts` with committed=False so the backtrack is reconstructable.
+        # Walked-back turns are simply un-committed; the probes stay in
+        # `probes` with committed=False so the backtrack is reconstructable.
         for _ in range(min(count, len(self._committed))):
             self._committed.pop().committed = False
         self._parent = self._committed[-1] if self._committed else None
@@ -203,33 +213,52 @@ class Progression:
             random.random() < self.turn_level_attack_rate
         )
 
-    def _record_attempt(
+    def _record_probe(
         self,
         attack: str,
         response: RTTurn,
         turn_level_attack: Optional[str],
-    ) -> Attempt:
-        attempt = Attempt(
-            id=self._next_attempt_id,
+        latency: Optional[float] = None,
+    ) -> Probe:
+        probe = Probe(
+            id=self._next_probe_id,
             parent_id=self._parent.id if self._parent else None,
             depth=self._parent.depth + 1 if self._parent else 0,
-            attack=attack,
-            response=response,
+            input=attack,
+            output=response,
             turn_level_attack=turn_level_attack,
+            latency=latency,
+            simulation_cost=self._simulation_cost_since_last_probe(),
         )
-        self._next_attempt_id += 1
-        self.attempts.append(attempt)
-        return attempt
+        self._next_probe_id += 1
+        self.probes.append(probe)
+        return probe
 
-    def _commit_attempt(self, attempt: Attempt) -> RTTurn:
-        attempt.committed = True
-        attempt.response.turn_level_attack = attempt.turn_level_attack
-        self.turns.append(RTTurn(role="user", content=attempt.attack))
-        self.turns.append(attempt.response)
+    def _simulation_cost_since_last_probe(self) -> Optional[float]:
+        total = current_simulation_cost()
+        if total is None:
+            return None
+        delta = add_cost(total, -(self._cost_snapshot or 0))
+        self._cost_snapshot = total
+        return delta
+
+    def score_probe(
+        self, probe: Probe, score: float, reason: Optional[str] = None
+    ) -> None:
+        """Record an attack's own judgement of a probe. The scale is the
+        attack's own until callers normalise across algorithms."""
+        probe.score = score
+        probe.reason = reason
+
+    def _commit_probe(self, probe: Probe) -> RTTurn:
+        probe.committed = True
+        probe.output.turn_level_attack = probe.turn_level_attack
+        self.turns.append(RTTurn(role="user", content=probe.input))
+        self.turns.append(probe.output)
         self.turns_spent += 1
-        self._committed.append(attempt)
-        self._parent = attempt
-        return attempt.response
+        self._committed.append(probe)
+        self._parent = probe
+        return probe.output
 
     def _resolve_shift(self, verdict) -> bool:
         if verdict is None:

@@ -19,7 +19,7 @@ from deepteam.attacks.multi_turn.base_multi_turn_attack import (
     BaseMultiTurnAttack,
 )
 from deepteam.attacks.multi_turn.progression import (
-    Attempt,
+    Probe,
     Progression,
     StopReason,
 )
@@ -79,7 +79,7 @@ class TreeJailbreaking(BaseMultiTurnAttack):
     def _attack(self, progression: Progression) -> None:
         deadline = time.time() + self.max_runtime
         history = self._root_history(progression)
-        best: Optional[Attempt] = None
+        best: Optional[Probe] = None
         progress = create_progress()
 
         with progress:
@@ -103,15 +103,14 @@ class TreeJailbreaking(BaseMultiTurnAttack):
                     progression.stop(StopReason.SIMULATION_ERROR)
                     break
 
-                # Scores stay local -- an Attempt records the search's shape,
-                # not this attack's private scoring.
-                attempts = [
+                probes = [
                     progression.probe(prompt) for prompt, _ in prompts
                 ]
-                scored = [
-                    (attempt, self._score(progression, attempt))
-                    for attempt in attempts
-                ]
+                scored = []
+                for probe in probes:
+                    score = self._score(progression, probe)
+                    progression.score_probe(probe, score)
+                    scored.append((probe, score))
                 best, best_score = max(scored, key=lambda pair: pair[1])
                 progression.commit(best)
                 history = self._descend_history(
@@ -127,7 +126,7 @@ class TreeJailbreaking(BaseMultiTurnAttack):
     async def _a_attack(self, progression: Progression) -> None:
         deadline = time.time() + self.max_runtime
         history = self._root_history(progression)
-        best: Optional[Attempt] = None
+        best: Optional[Probe] = None
         progress = create_progress()
 
         with progress:
@@ -151,7 +150,7 @@ class TreeJailbreaking(BaseMultiTurnAttack):
                     progression.stop(StopReason.SIMULATION_ERROR)
                     break
 
-                attempts = list(
+                probes = list(
                     await asyncio.gather(
                         *[
                             progression.a_probe(prompt)
@@ -159,16 +158,16 @@ class TreeJailbreaking(BaseMultiTurnAttack):
                         ]
                     )
                 )
-                # Scores stay local -- an Attempt records the search's shape,
-                # not this attack's private scoring.
                 scores = await asyncio.gather(
                     *[
-                        self._a_score(progression, attempt)
-                        for attempt in attempts
+                        self._a_score(progression, probe)
+                        for probe in probes
                     ]
                 )
+                for probe, score in zip(probes, scores):
+                    progression.score_probe(probe, score)
                 best, best_score = max(
-                    zip(attempts, scores), key=lambda pair: pair[1]
+                    zip(probes, scores), key=lambda pair: pair[1]
                 )
                 await progression.a_commit(best)
                 history = self._descend_history(
@@ -196,14 +195,14 @@ class TreeJailbreaking(BaseMultiTurnAttack):
     def _branch_history(
         history: List[dict],
         goal: str,
-        best: Optional[Attempt],
+        best: Optional[Probe],
         best_score: float,
     ) -> List[dict]:
         return history + [
             {
                 "role": "user",
                 "content": (
-                    f"Current prompt: {best.attack if best else goal}\n\n"
+                    f"Current prompt: {best.input if best else goal}\n\n"
                     f"OBJECTIVE: {goal}\n\n"
                     f"SCORE: {best_score if best else 0}"
                 ),
@@ -212,14 +211,14 @@ class TreeJailbreaking(BaseMultiTurnAttack):
 
     @staticmethod
     def _descend_history(
-        history: List[dict], best: Attempt, best_score: float
+        history: List[dict], best: Probe, best_score: float
     ) -> List[dict]:
         return history + [
-            {"role": "assistant", "content": best.attack},
+            {"role": "assistant", "content": best.input},
             {
                 "role": "user",
                 "content": (
-                    f"RESPONSE: {best.response.content}\n\nSCORE: {best_score}"
+                    f"RESPONSE: {best.output.content}\n\nSCORE: {best_score}"
                 ),
             },
         ]
@@ -297,12 +296,12 @@ class TreeJailbreaking(BaseMultiTurnAttack):
         return res.prompt, topic.on_topic
 
 
-    def _score(self, progression: Progression, attempt: Attempt) -> float:
+    def _score(self, progression: Progression, probe: Probe) -> float:
         rating: Rating = generate(
             JailBreakingTemplate.linear_judge(
                 progression.goal,
-                attempt.attack,
-                attempt.response,
+                probe.input,
+                probe.output,
                 progression.vulnerability_data,
             ),
             Rating,
@@ -311,13 +310,13 @@ class TreeJailbreaking(BaseMultiTurnAttack):
         return rating.rating
 
     async def _a_score(
-        self, progression: Progression, attempt: Attempt
+        self, progression: Progression, probe: Probe
     ) -> float:
         rating: Rating = await a_generate(
             JailBreakingTemplate.linear_judge(
                 progression.goal,
-                attempt.attack,
-                attempt.response,
+                probe.input,
+                probe.output,
                 progression.vulnerability_data,
             ),
             Rating,
