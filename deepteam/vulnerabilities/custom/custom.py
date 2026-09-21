@@ -7,6 +7,9 @@ from deepeval.metrics.utils import initialize_model, trimAndLoadJson
 from deepeval.utils import get_or_create_event_loop
 
 from deepteam.utils import validate_model_callback_signature
+from deepteam.confident.api import Api, Endpoints
+from deepeval.confident.api import HttpMethods
+from rich.console import Console
 
 from deepteam.vulnerabilities import BaseVulnerability
 from deepteam.metrics import BaseRedTeamingMetric, HarmMetric
@@ -17,9 +20,24 @@ from deepteam.attacks.attack_simulator.schema import SyntheticDataList
 from deepteam.risks import getRiskCategory
 from deepteam.test_case import RTTestCase
 from .template import CustomVulnerabilityTemplate
+from .api import (
+    APIEvaluationExample,
+    CustomVulnerabilityHttpResponse,
+    CustomVulnerabilityUploadRequest,
+)
 from deepeval.tracing.types import Trace
 from deepteam.trace_scanner.schema import BatchFinding
 from deepteam.trace_scanner import TraceScanner
+
+
+def _build_types(name: str, types: Optional[List[str]]) -> List[Enum]:
+    if types:
+        vulnerability_types = Enum("CustomVulnerabilityType", {t.upper(): t for t in types})
+    else:
+        vulnerability_types = Enum(
+            "CustomVulnerabilityType", {name.upper().replace(" ", "_"): name}
+        )
+    return list(vulnerability_types)
 
 
 class CustomVulnerability(BaseVulnerability):
@@ -30,7 +48,7 @@ class CustomVulnerability(BaseVulnerability):
     def __init__(
         self,
         name: str,
-        criteria: str,
+        criteria: Optional[str] = None,
         types: Optional[List[str]] = None,
         custom_prompt: Optional[str] = None,
         async_mode: bool = True,
@@ -45,20 +63,10 @@ class CustomVulnerability(BaseVulnerability):
     ):
         self.name = name
 
-        if types:
-            self.types = Enum(
-                f"CustomVulnerabilityType", {t.upper(): t for t in types}
-            )
-        else:
-            # Default to a single type derived from the vulnerability name
-            # so iteration over self.types always works
-            self.types = Enum(
-                f"CustomVulnerabilityType",
-                {name.upper().replace(" ", "_"): name},
-            )
+        self.types = _build_types(name, types)
 
         self.custom_prompt = custom_prompt
-        self.criteria = criteria.strip()
+        self.criteria = criteria.strip() if criteria else None
         self.simulator_model = simulator_model
         self.evaluation_model = evaluation_model
         self.evaluation_examples = evaluation_examples
@@ -74,6 +82,14 @@ class CustomVulnerability(BaseVulnerability):
 
     def get_custom_prompt(self) -> Optional[str]:
         return self.custom_prompt
+
+    def _ensure_criteria(self) -> str:
+        if not self.criteria:
+            raise ValueError(
+                f"Custom vulnerability '{self.name}' has no criteria. Pass criteria= when "
+                "constructing it, or call pull() to load it from Confident AI."
+            )
+        return self.criteria
 
     def assess(
         self,
@@ -194,6 +210,7 @@ class CustomVulnerability(BaseVulnerability):
         purpose: str = None,
         attacks_per_vulnerability_type: int = 1,
     ) -> List[RTTestCase]:
+        self._ensure_criteria()
 
         self.purpose = purpose
 
@@ -259,6 +276,7 @@ class CustomVulnerability(BaseVulnerability):
         purpose: str = None,
         attacks_per_vulnerability_type: int = 1,
     ) -> List[RTTestCase]:
+        self._ensure_criteria()
 
         self.purpose = purpose
 
@@ -329,7 +347,7 @@ class CustomVulnerability(BaseVulnerability):
         return (
             CustomVulnerabilityTemplate.custom_vulnerability_template_wrapper(
                 name=self.name,
-                criteria=self.criteria,
+                criteria=self._ensure_criteria(),
                 type_values=self.get_values(),
             )
         )
@@ -390,7 +408,7 @@ class CustomVulnerability(BaseVulnerability):
     def _get_metric(self, type: Enum) -> BaseRedTeamingMetric:
         if self.metric is None:
             self.metric = HarmMetric(
-                harm_category=self.criteria,
+                harm_category=self._ensure_criteria(),
                 model=self.evaluation_model,
                 async_mode=self.async_mode,
                 verbose_mode=self.verbose_mode,
@@ -409,5 +427,89 @@ class CustomVulnerability(BaseVulnerability):
             self.vulnerable = False
         return self.vulnerable
 
-    def get_criteria(self) -> str:
+    def get_criteria(self) -> Optional[str]:
         return self.criteria
+
+    def upload(self) -> str:
+        request = CustomVulnerabilityUploadRequest(
+            name=self.name,
+            criteria=self._ensure_criteria(),
+            vulnerabilityTypes=self.get_values(),
+            evaluationGuidelines=self.evaluation_guidelines,
+            evaluationExamples=(
+                [
+                    APIEvaluationExample(
+                        input=example.input,
+                        actualOutput=example.actual_output,
+                        score=example.score,
+                        reason=example.reason,
+                    )
+                    for example in self.evaluation_examples
+                ]
+                if self.evaluation_examples is not None
+                else None
+            ),
+        )
+
+        try:
+            body = request.model_dump(by_alias=True, exclude_none=True)
+        except AttributeError:
+            body = request.dict(by_alias=True, exclude_none=True)
+
+        api = Api()
+        data, _ = api.send_request(
+            method=HttpMethods.POST,
+            endpoint=Endpoints.VULNERABILITIES_ENDPOINT,
+            body=body,
+        )
+
+        self.vulnerability_id = data["id"]
+        Console().print(
+            "[rgb(5,245,141)]✓[/rgb(5,245,141)] Vulnerability "
+            f"'{self.name}' uploaded successfully "
+            f"(id: [bold]{self.vulnerability_id}[/bold])"
+        )
+        return self.vulnerability_id
+
+    def pull(self) -> None:
+        api = Api()
+        data, _ = api.send_request(
+            method=HttpMethods.GET,
+            endpoint=Endpoints.VULNERABILITY_ENDPOINT,
+            url_params={"vulnerabilityId": self.name},
+        )
+
+        response = CustomVulnerabilityHttpResponse(**data["vulnerability"])
+
+        if response.built_in:
+            raise ValueError(
+                f"'{response.name}' is a built-in vulnerability, not a custom one. "
+                "Import it from deepteam.vulnerabilities instead of pulling it."
+            )
+        if not response.criteria:
+            raise ValueError(
+                f"Custom vulnerability '{response.name}' has no criteria on Confident AI, "
+                "so there is nothing to red team it against. Set its criteria and pull again."
+            )
+
+        self.name = response.name
+        self.criteria = response.criteria.strip()
+        self.types = _build_types(
+            response.name, [t.name for t in response.vulnerability_types]
+        )
+        self.evaluation_guidelines = response.evaluation_guidelines or None
+        self.evaluation_examples = [
+            EvaluationExample(
+                input=example.input,
+                actual_output=example.actual_output,
+                score=example.score,
+                reason=example.reason,
+            )
+            for example in response.evaluation_examples
+        ] or None
+        self.metric = None
+        self.vulnerability_id = response.id
+
+        Console().print(
+            "[rgb(5,245,141)]✓[/rgb(5,245,141)] Vulnerability '{self.name}' pulled successfully"
+        )

@@ -49,7 +49,7 @@ class RedTeamingFramework:
             )
             update_pbar(progress, task_id, advance_to_end=True)
 
-        response = RedTeamingFrameworkHttpResponse(**data["framework"])
+        response = RedTeamingFrameworkHttpResponse(**data["rtFramework"])
         risk_categories = build_risk_categories(
             response.risk_categories, response.name
         )
