@@ -179,14 +179,14 @@ DeepTeam runs **locally on your machine** and is built on [DeepEval](https://git
 
     </details>
 
-- 🏛️ Red team against established [AI safety frameworks](https://www.trydeepteam.com/docs/guidelines-and-frameworks) out-of-the-box. Each framework automatically maps its categories to the right vulnerabilities and attacks:
+- 🏛️ Red team against established [AI safety frameworks](https://www.trydeepteam.com/docs/frameworks-introduction) out-of-the-box. Each framework automatically maps its categories to the right vulnerabilities and attacks:
   - OWASP Top 10 for LLMs 2025
   - OWASP Top 10 for Agents 2026
   - NIST AI RMF
   - MITRE ATLAS
   - BeaverTails
   - Aegis
-- 🛡️ 7 production-ready [guardrails](https://www.trydeepteam.com/docs/guardrails) for fast binary classification to guard LLM inputs and outputs in real time.
+- 🛡️ 7 production-ready [guardrails](https://www.trydeepteam.com/docs/guardrails-introduction) for fast binary classification to guard LLM inputs and outputs in real time.
 - 🧩 Build your own **custom vulnerabilities** and attacks that integrate seamlessly with DeepTeam's ecosystem.
 - 🔗 Run red teaming from the **CLI** with YAML configs, or programmatically in Python.
 - 📊 Access risk assessments, display in dataframes, and save locally in JSON.
