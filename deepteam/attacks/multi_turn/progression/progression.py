@@ -17,6 +17,7 @@ from deepteam.attacks.multi_turn.progression.shift_detection import (
 )
 from deepteam.attacks.multi_turn.progression.stopping import (
     StopReason,
+    get_stopping_reason,
     mark_stop,
 )
 from deepteam.attacks.multi_turn.progression.types import (
@@ -99,10 +100,11 @@ class Progression:
         mark_stop(
             self.turns, self.stop_reason, self.stop_detail, self.turns_spent
         )
+        stop_detail = get_stopping_reason(self.turns) or self.stop_detail
         return ProgressionResult(
             turns=self.turns,
             stop_reason=self.stop_reason,
-            stop_detail=self.stop_detail,
+            stop_detail=stop_detail,
             turns_spent=self.turns_spent,
             attempts=self.attempts,
             shift_verdict=self.shift_verdict,
