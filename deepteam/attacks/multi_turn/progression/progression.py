@@ -130,23 +130,21 @@ class Progression:
         attack, turn_level_attack = self._apply_turn_level_attack(
             attack, enhance
         )
+        probe = self._open_probe(attack, turn_level_attack)
         start = time.perf_counter()
         response = self.model_callback(attack, self.turns)
-        latency = time.perf_counter() - start
-        return self._record_probe(
-            attack, response, turn_level_attack, latency
-        )
+        self._resolve_probe(probe, response, time.perf_counter() - start)
+        return probe
 
     async def a_probe(self, attack: str, *, enhance: bool = True) -> Probe:
         attack, turn_level_attack = await self._a_apply_turn_level_attack(
             attack, enhance
         )
+        probe = self._open_probe(attack, turn_level_attack)
         start = time.perf_counter()
         response = await self.model_callback(attack, self.turns)
-        latency = time.perf_counter() - start
-        return self._record_probe(
-            attack, response, turn_level_attack, latency
-        )
+        self._resolve_probe(probe, response, time.perf_counter() - start)
+        return probe
 
     def commit(self, attack: Union[str, Probe]) -> RTTurn:
         """Put an attack to the target and keep both turns.
@@ -213,26 +211,27 @@ class Progression:
             random.random() < self.turn_level_attack_rate
         )
 
-    def _record_probe(
-        self,
-        attack: str,
-        response: RTTurn,
-        turn_level_attack: Optional[str],
-        latency: Optional[float] = None,
+    def _open_probe(
+        self, attack: str, turn_level_attack: Optional[str]
     ) -> Probe:
         probe = Probe(
             id=self._next_probe_id,
             parent_id=self._parent.id if self._parent else None,
             depth=self._parent.depth + 1 if self._parent else 0,
             input=attack,
-            output=response,
+            output=None,
             turn_level_attack=turn_level_attack,
-            latency=latency,
-            simulation_cost=self._simulation_cost_since_last_probe(),
         )
         self._next_probe_id += 1
         self.probes.append(probe)
         return probe
+
+    def _resolve_probe(
+        self, probe: Probe, response: RTTurn, latency: float
+    ) -> None:
+        probe.output = response
+        probe.latency = latency
+        probe.simulation_cost = self._simulation_cost_since_last_probe()
 
     def _simulation_cost_since_last_probe(self) -> Optional[float]:
         total = current_simulation_cost()

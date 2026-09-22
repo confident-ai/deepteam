@@ -13,7 +13,7 @@ class Probe(BaseModel):
     id: int
     parent_id: Optional[int] = None
     input: str
-    output: RTTurn
+    output: Optional[RTTurn] = None
     turn_level_attack: Optional[str] = None
     committed: bool = False
     depth: int = 0
