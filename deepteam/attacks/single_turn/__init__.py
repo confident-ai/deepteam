@@ -23,6 +23,8 @@ from .goal_redirection.goal_redirection import GoalRedirection
 from .semantic_manipulation.semantic_manipulation import LinguisticConfusion
 from .input_bypass.input_bypass import InputBypass
 from .context_poisoning.context_poisoning import ContextPoisoning
+from .chain_of_thought_hijacking import ChainOfThoughtHijacking
+from .bijection_learning import BijectionLearning
 
 __all__ = [
     "AdversarialPoetry",
@@ -49,4 +51,6 @@ __all__ = [
     "SyntheticContextInjection",
     "AuthorityEscalation",
     "EmotionalManipulation",
+    "ChainOfThoughtHijacking",
+    "BijectionLearning",
 ]

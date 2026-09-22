@@ -25,6 +25,8 @@ from .goal_redirection.goal_redirection import GoalRedirection
 from .semantic_manipulation.semantic_manipulation import LinguisticConfusion
 from .input_bypass.input_bypass import InputBypass
 from .context_poisoning.context_poisoning import ContextPoisoning
+from .chain_of_thought_hijacking import ChainOfThoughtHijacking
+from .bijection_learning import BijectionLearning
 
 SINGLE_TURN_ATTACK_CLASSES_MAP: Dict[str, BaseSingleTurnAttack] = {
     v.name: v
@@ -37,6 +39,8 @@ SINGLE_TURN_ATTACK_CLASSES_MAP: Dict[str, BaseSingleTurnAttack] = {
         SyntheticContextInjection,
         AuthorityEscalation,
         EmotionalManipulation,
+        ChainOfThoughtHijacking,
+        BijectionLearning,
         GrayBox,
         Leetspeak,
         MathProblem,
