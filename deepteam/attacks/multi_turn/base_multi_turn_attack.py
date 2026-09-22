@@ -98,10 +98,16 @@ class BaseMultiTurnAttack(BaseAttack):
         return progression.finalize()
 
     def _get_turns(self, *args, **kwargs) -> List[RTTurn]:
-        return self.run(*args, **kwargs).turns
+        return self._unwrap_turns(self.run(*args, **kwargs))
 
     async def _a_get_turns(self, *args, **kwargs) -> List[RTTurn]:
-        return (await self.a_run(*args, **kwargs)).turns
+        return self._unwrap_turns(await self.a_run(*args, **kwargs))
+
+    @staticmethod
+    def _unwrap_turns(result: ProgressionResult) -> List[RTTurn]:
+        if result.error is not None:
+            raise result.error
+        return result.turns
 
     def progress(
         self,
