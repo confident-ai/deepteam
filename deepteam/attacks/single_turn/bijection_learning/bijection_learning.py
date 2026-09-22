@@ -1,5 +1,4 @@
-import random
-from typing import List, Optional, Tuple, Union
+from typing import Optional, Union
 
 from deepeval.metrics.utils import initialize_model
 from deepeval.models import DeepEvalBaseLLM
