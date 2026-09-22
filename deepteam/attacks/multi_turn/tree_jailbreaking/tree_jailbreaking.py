@@ -109,7 +109,7 @@ class TreeJailbreaking(BaseMultiTurnAttack):
                 scored = []
                 for probe in probes:
                     score = self._score(progression, probe)
-                    progression.score_probe(probe, score)
+                    progression.score_probe(probe, self._unit_score(score))
                     scored.append((probe, score))
                 best, best_score = max(scored, key=lambda pair: pair[1])
                 progression.commit(best)
@@ -165,7 +165,7 @@ class TreeJailbreaking(BaseMultiTurnAttack):
                     ]
                 )
                 for probe, score in zip(probes, scores):
-                    progression.score_probe(probe, score)
+                    progression.score_probe(probe, self._unit_score(score))
                 best, best_score = max(
                     zip(probes, scores), key=lambda pair: pair[1]
                 )
@@ -295,6 +295,10 @@ class TreeJailbreaking(BaseMultiTurnAttack):
         )
         return res.prompt, topic.on_topic
 
+
+    @staticmethod
+    def _unit_score(rating: float) -> float:
+        return max(0.0, min(1.0, (rating - 1) / 9))
 
     def _score(self, progression: Progression, probe: Probe) -> float:
         rating: Rating = generate(
