@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 from deepteam.attacks.multi_turn import BadLikertJudge
+from deepteam.attacks.multi_turn.progression import ProgressionResult
 from deepteam.vulnerabilities import Bias
 from deepteam.test_case.test_case import RTTurn
 from deepteam.red_teamer.utils import wrap_model_callback
@@ -53,11 +54,14 @@ class TestBadLikertJudge:
         )
 
         assert len(type_to_turns.keys()) == 1
-        assert isinstance(
-            type_to_turns.get(TestBadLikertJudge.BIAS.types[0]), list
-        ) and all(
+        results = type_to_turns.get(TestBadLikertJudge.BIAS.types[0])
+        assert isinstance(results, list) and all(
+            isinstance(result, ProgressionResult) for result in results
+        )
+        assert all(
             isinstance(turn, RTTurn)
-            for turn in type_to_turns.get(TestBadLikertJudge.BIAS.types[0])
+            for result in results
+            for turn in result.turns
         )
         assert user_only_turns_result[1].role == "assistant"
         with pytest.raises(ValueError):
@@ -98,11 +102,14 @@ class TestBadLikertJudge:
         )
 
         assert len(type_to_turns.keys()) == 1
-        assert isinstance(
-            type_to_turns.get(TestBadLikertJudge.BIAS.types[0]), list
-        ) and all(
+        results = type_to_turns.get(TestBadLikertJudge.BIAS.types[0])
+        assert isinstance(results, list) and all(
+            isinstance(result, ProgressionResult) for result in results
+        )
+        assert all(
             isinstance(turn, RTTurn)
-            for turn in type_to_turns.get(TestBadLikertJudge.BIAS.types[0])
+            for result in results
+            for turn in result.turns
         )
         assert user_only_turns_result[1].role == "assistant"
         with pytest.raises(ValueError):

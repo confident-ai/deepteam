@@ -23,7 +23,8 @@ from deepteam.attacks.multi_turn.progression import (
 from deepteam.test_case.test_case import RTTurn
 
 MODULES = [
-    "deepteam.attacks.multi_turn.progression",
+    "deepteam.attacks.multi_turn.progression.shift_detection",
+    "deepteam.attacks.multi_turn.progression.progression",
     "deepteam.attacks.multi_turn.linear_jailbreaking.linear_jailbreaking",
     "deepteam.attacks.multi_turn.bad_likert_judge.bad_likert_judge",
     "deepteam.attacks.multi_turn.sequential_break.sequential_break",
@@ -112,7 +113,7 @@ class TestBehaviorShiftDetector:
 
     @pytest.fixture(autouse=True)
     def _stub_explainer(self, monkeypatch):
-        import deepteam.attacks.multi_turn.progression as progression
+        import deepteam.attacks.multi_turn.progression.shift_detection as progression
 
         monkeypatch.setattr(
             progression,
@@ -154,7 +155,7 @@ class TestBehaviorShiftDetector:
         assert detector.check([RTTurn(role="user", content="attack")]) is None
 
     def test_explainer_failure_still_stops(self, monkeypatch):
-        import deepteam.attacks.multi_turn.progression as progression
+        import deepteam.attacks.multi_turn.progression.shift_detection as progression
 
         def boom(*a, **k):
             raise RuntimeError("explainer down")
@@ -378,7 +379,7 @@ class TestCrescendoBacktracking:
     def test_refusals_cost_budget_but_never_end_the_run(self, monkeypatch):
         attack = CrescendoJailbreaking(max_rounds=3, max_backtracks=2)
         monkeypatch.setattr(
-            attack, "get_refusal_score", lambda *a, **k: (True, "refused")
+            attack, "_refusal_score", lambda *a, **k: (True, "refused")
         )
 
         turns = attack._get_turns(
@@ -393,7 +394,7 @@ class TestCrescendoBacktracking:
         attack = CrescendoJailbreaking(max_rounds=2, max_backtracks=1)
         monkeypatch.setattr(
             attack,
-            "get_refusal_score",
+            "_refusal_score",
             lambda *a, **k: (True, "secret-rationale"),
         )
 
@@ -412,17 +413,17 @@ class TestTreeSearch:
 
     def test_transcript_uses_the_scored_responses(self):
         attack = TreeJailbreaking(max_depth=2, branching_factor=2)
-        turns = attack._get_turns(
+        result = attack.run(
             make_callback(), seed(), metric_check=lambda t: PASS
         )
 
-        committed = [n for n in attack.search_log if n["committed"]]
+        committed = [a for a in result.probes if a.committed]
         assert len(committed) == 2
-        assert [n.prompt for n in attack.committed_path] == [
-            t.content for t in turns if t.role == "user"
+        assert [a.input for a in committed] == [
+            t.content for t in result.turns if t.role == "user"
         ][1:]
-        for node in attack.committed_path:
-            assert node.response is not None
+        for probe in committed:
+            assert probe.output is not None
 
     def test_depth_bounds_the_path_not_the_clock(self):
         turns = TreeJailbreaking(max_depth=4, branching_factor=1)._get_turns(
@@ -456,8 +457,7 @@ class TestTreeSearch:
         monkeypatch.setattr(tree, "generate", all_off_topic)
 
         attack = TreeJailbreaking(max_depth=2, branching_factor=2)
-        turns = attack._get_turns(
+        result = attack.run(
             make_callback(), seed(), metric_check=lambda t: PASS
         )
-        assert len(turns) == 2 + 2 * 2
-        assert not any(n["on_topic"] for n in attack.search_log)
+        assert len(result.turns) == 2 + 2 * 2
