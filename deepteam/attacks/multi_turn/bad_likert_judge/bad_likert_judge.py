@@ -86,8 +86,6 @@ class BadLikertJudge(BaseMultiTurnAttack):
     def _attack(self, progression: Progression) -> None:
         attack = progression.goal
         backtracks = 0
-        # A turn can fail to land -- the simulator errors, or balks at writing
-        # the attack -- so the probe budget is larger than the turn budget.
         attempts_remaining = self.num_turns + self.max_backtracks
         progress = create_progress()
 

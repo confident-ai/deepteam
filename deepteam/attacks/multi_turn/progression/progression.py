@@ -79,13 +79,9 @@ class Progression:
 
         self.turns_spent = 0
         self.probes: List[Probe] = []
-        # Probe-tree bookkeeping. `_parent` is the probe new probes
-        # descend from -- it follows commits and rolls back on a backtrack.
         self._next_probe_id = 0
         self._parent: Optional[Probe] = None
         self._committed: List[Probe] = []
-        # Running total of the active cost scope at the last probe, so each
-        # probe gets the simulator spend accrued since the previous one.
         self._cost_snapshot = current_simulation_cost()
         self.stop_reason = StopReason.BUDGET_EXHAUSTED
         self.stop_detail: Optional[str] = None
@@ -120,13 +116,6 @@ class Progression:
         )
 
     def probe(self, attack: str, *, enhance: bool = True) -> Probe:
-        """Put an attack to the target without keeping it in the conversation.
-
-        For attacks that try several things per step and keep one: tree search
-        branches, retry-until-accepted loops, and knowledge-gathering questions
-        asked before the conversation proper begins. The Probe is recorded
-        either way, so what was discarded survives in the result.
-        """
         attack, turn_level_attack = self._apply_turn_level_attack(
             attack, enhance
         )
@@ -147,11 +136,6 @@ class Progression:
         return probe
 
     def commit(self, attack: Union[str, Probe]) -> RTTurn:
-        """Put an attack to the target and keep both turns.
-
-        Passing a Probe from `probe` reuses the response already collected
-        rather than calling the target a second time.
-        """
         probe = attack if isinstance(attack, Probe) else self.probe(attack)
         return self._commit_probe(probe)
 
@@ -164,22 +148,16 @@ class Progression:
         return self._commit_probe(probe)
 
     def shift_detected(self) -> bool:
-        """Has the target's behavior shifted? Records the stop reason when it
-        has, so the caller only has to return."""
         return self._resolve_shift(self.detector.check(self.turns))
 
     async def a_shift_detected(self) -> bool:
         return self._resolve_shift(await self.detector.a_check(self.turns))
 
     def remove_last_turns(self, count: int = 1) -> None:
-        """Drop the last `count` user/assistant pairs, for attacks that walk a
-        refused turn back and try a different approach."""
         if count <= 0:
             return
         del self.turns[-2 * count :]
         self.turns_spent = max(0, self.turns_spent - count)
-        # Walked-back turns are simply un-committed; the probes stay in
-        # `probes` with committed=False so the backtrack is reconstructable.
         for _ in range(min(count, len(self._committed))):
             self._committed.pop().committed = False
         self._parent = self._committed[-1] if self._committed else None
@@ -244,8 +222,6 @@ class Progression:
     def score_probe(
         self, probe: Probe, score: float, reason: Optional[str] = None
     ) -> None:
-        """Record an attack's own judgement of a probe. The scale is the
-        attack's own until callers normalise across algorithms."""
         probe.score = score
         probe.reason = reason
 
