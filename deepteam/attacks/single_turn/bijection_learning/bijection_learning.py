@@ -47,7 +47,7 @@ class BijectionLearning(BaseSingleTurnAttack):
         return self._build_prompt(attack)
 
     async def a_enhance(self, attack, simulator_model=None):
-        return await self.enhance(attack, simulator_model)
+        return self.enhance(attack, simulator_model)
 
 
     def _build_prompt(self, attack: str) -> str:
