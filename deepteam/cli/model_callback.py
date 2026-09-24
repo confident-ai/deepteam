@@ -18,6 +18,10 @@ from deepeval.models import (
 )
 from deepeval.metrics.utils import initialize_model
 
+ATLASCLOUD_PROVIDER_ALIASES = {"atlas", "atlas-cloud", "atlascloud"}
+ATLASCLOUD_BASE_URL = "https://api.atlascloud.ai/v1"
+ATLASCLOUD_DEFAULT_MODEL = "qwen/qwen3.5-flash"
+
 
 def _load_custom_model_from_file(
     file_path: str, class_name: str
@@ -48,6 +52,26 @@ def _load_custom_model_from_file(
     return model_class()
 
 
+def _get_atlascloud_api_key(spec: Dict[str, Any]) -> Optional[str]:
+    return (
+        spec.get("api_key")
+        or os.getenv("ATLASCLOUD_API_KEY")
+        or os.getenv("ATLAS_CLOUD_API_KEY")
+    )
+
+
+def _get_atlascloud_base_url(spec: Dict[str, Any]) -> str:
+    return (
+        spec.get("base_url")
+        or spec.get("baseURL")
+        or os.getenv("ATLASCLOUD_API_BASE")
+        or os.getenv("ATLASCLOUD_BASE_URL")
+        or os.getenv("ATLAS_CLOUD_API_BASE")
+        or os.getenv("ATLAS_CLOUD_BASE_URL")
+        or ATLASCLOUD_BASE_URL
+    )
+
+
 def load_model(spec: Union[str, Dict[str, Any], None]) -> DeepEvalBaseLLM:
     """Construct a DeepEval model instance from a YAML spec or string."""
     if spec is None or isinstance(spec, str):
@@ -61,6 +85,19 @@ def load_model(spec: Union[str, Dict[str, Any], None]) -> DeepEvalBaseLLM:
 
     if provider == "openai":
         return GPTModel(model=model_name, temperature=temperature)
+
+    if provider in ATLASCLOUD_PROVIDER_ALIASES:
+        return LocalModel(
+            model_name=(
+                model_name
+                or os.getenv("ATLASCLOUD_MODEL")
+                or os.getenv("ATLAS_CLOUD_MODEL")
+                or ATLASCLOUD_DEFAULT_MODEL
+            ),
+            base_url=_get_atlascloud_base_url(spec),
+            api_key=_get_atlascloud_api_key(spec),
+            temperature=temperature,
+        )
 
     if provider == "azure":
         return AzureOpenAIModel(
