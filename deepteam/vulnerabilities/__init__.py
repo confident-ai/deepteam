@@ -14,6 +14,8 @@ from .rbac.rbac import RBAC
 from .debug_access.debug_access import DebugAccess
 from .shell_injection.shell_injection import ShellInjection
 from .sql_injection.sql_injection import SQLInjection
+from .shell_command_payload_emission.shell_command_payload_emission import ShellCommandPayloadEmission
+from .sql_injection_payload_emission.sql_injection_payload_emission import SQLInjectionPayloadEmission
 from .ssrf.ssrf import SSRF
 from .intellectual_property.intellectual_property import IntellectualProperty
 from .indirect_instruction.indirect_instruction import IndirectInstruction
@@ -66,6 +68,8 @@ __all__ = [
     "DebugAccess",
     "ShellInjection",
     "SQLInjection",
+    "ShellCommandPayloadEmission",
+    "SQLInjectionPayloadEmission",
     "SSRF",
     "IntellectualProperty",
     "IndirectInstruction",
