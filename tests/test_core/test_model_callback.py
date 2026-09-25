@@ -5,7 +5,9 @@ from deepteam.test_case import RTTurn
 from deepteam.red_teamer.utils import (
     resolve_model_callback,
     wrap_model_callback,
+    OrcaRouterModel,
 )
+from deepteam.cli.model_callback import load_model
 from deepeval.models import GPTModel
 from deepteam.vulnerabilities import Bias
 from deepteam import red_team
@@ -102,3 +104,24 @@ class TestModelCallbackVariations:
             ignore_errors=False,
         )
         assert risk_assessment is not None
+
+
+class TestOrcaRouterProvider:
+
+    def test_load_model_orcarouter_provider(self):
+        model = load_model(
+            {
+                "provider": "orcarouter",
+                "model": "orcarouter/auto",
+                "api_key": "test-key",
+            }
+        )
+        assert isinstance(model, GPTModel)
+        assert model.base_url == "https://api.orcarouter.ai/v1"
+
+    def test_orcarouter_model_class(self):
+        model = OrcaRouterModel(
+            "deepseek/deepseek-v4-flash", api_key="test-key"
+        )
+        assert isinstance(model, GPTModel)
+        assert model.base_url == "https://api.orcarouter.ai/v1"
