@@ -2,7 +2,7 @@ import time
 import inspect
 import os
 from contextlib import contextmanager
-from typing import Optional, List, Callable
+from typing import Optional, List, Callable, Dict, Any
 from rich.progress import (
     Progress,
     SpinnerColumn,
@@ -20,6 +20,66 @@ PROGRESS_ENABLED = os.getenv("DEEPTEAM_SHOW_PROGRESS", "true").lower() in (
 )
 
 SPANS_CONTEXT_LIMIT = int(os.getenv("SPANS_CONTEXT_LIMIT", "40000"))
+
+
+# Progress callback (issue #173): surface the progress deepteam shows on the
+# console to a UI such as Streamlit. A single module-level observer fires from
+# the `add_pbar` / `update_pbar` choke points, so every progress bar reports
+# through it, with no callback threaded through the attack modules.
+ProgressCallback = Callable[[Dict[str, Any]], None]
+_progress_callback: Optional[ProgressCallback] = None
+
+
+def set_progress_callback(callback: Optional[ProgressCallback]) -> None:
+    """Register (or clear) a callback that receives assessment progress events.
+
+    The callback is invoked with a dict, for example::
+
+        {"event": "start", "description": "Simulating attacks",
+         "completed": 0, "total": 12}
+        {"event": "advance", "description": "Simulating attacks",
+         "completed": 1, "total": 12}
+
+    This mirrors the progress deepteam renders to the console so it can be shown
+    in a custom UI such as Streamlit. Pass ``None`` to clear the callback.
+    """
+    global _progress_callback
+    _progress_callback = callback
+
+
+@contextmanager
+def progress_callback_context(callback: Optional[ProgressCallback]):
+    """Temporarily register a progress callback, restoring the previous one."""
+    global _progress_callback
+    previous = _progress_callback
+    _progress_callback = callback
+    try:
+        yield
+    finally:
+        _progress_callback = previous
+
+
+def _emit_progress(
+    event: str,
+    description: str,
+    completed: Optional[int],
+    total: Optional[int],
+) -> None:
+    callback = _progress_callback
+    if callback is None:
+        return
+    try:
+        callback(
+            {
+                "event": event,
+                "description": description,
+                "completed": completed,
+                "total": total,
+            }
+        )
+    except Exception:
+        # A user-supplied callback must never break an assessment run.
+        pass
 
 
 def validate_model_callback_signature(
@@ -113,6 +173,7 @@ def add_pbar(
     total: Optional[int] = None,
     enabled: Optional[bool] = None,
 ) -> Optional[int]:
+    _emit_progress("start", description, 0, total)
     if progress is None or not hasattr(progress, "add_task"):
         return None
     return progress.add_task(description, total=total)
@@ -135,8 +196,10 @@ def update_pbar(
         advance = task.remaining
     progress.update(pbar_id, advance=advance, total=total)
     task = next((t for t in progress.tasks if t.id == pbar_id), None)
-    if task is not None and task.finished and remove:
-        progress.remove_task(pbar_id)
+    if task is not None:
+        _emit_progress("advance", task.description, task.completed, task.total)
+        if task.finished and remove:
+            progress.remove_task(pbar_id)
 
 
 def remove_pbars(
