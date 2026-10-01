@@ -88,6 +88,8 @@ DeepTeam runs **locally on your machine** and is built on [DeepEval](https://git
     - [Debug Access](https://www.trydeepteam.com/docs/red-teaming-vulnerabilities-debug-access) — unauthorized access to debug modes and dev endpoints
     - [Shell Injection](https://www.trydeepteam.com/docs/red-teaming-vulnerabilities-shell-injection) — unauthorized system command execution
     - [SQL Injection](https://www.trydeepteam.com/docs/red-teaming-vulnerabilities-sql-injection) — database query manipulation
+    - [Shell Command Payload Emission](https://www.trydeepteam.com/docs/red-teaming-vulnerabilities-shell-command-payload-emission) — model emits dangerous shell payloads (pipe-to-shell, destructive, reverse shells, env exfiltration) in output
+    - [SQL Injection Payload Emission](https://www.trydeepteam.com/docs/red-teaming-vulnerabilities-sql-injection-payload-emission) — model emits destructive, UNION-based, or comment-bypass SQL payloads in output
     - [SSRF](https://www.trydeepteam.com/docs/red-teaming-vulnerabilities-ssrf) — server-side request forgery to internal services
     - [Tool Metadata Poisoning](https://www.trydeepteam.com/docs/red-teaming-vulnerabilities-tool-metadata-poisoning) — corrupted tool schemas and descriptions
     - [Cross-Context Retrieval](https://www.trydeepteam.com/docs/red-teaming-vulnerabilities-cross-context-retrieval) — data access across isolation boundaries
