@@ -89,6 +89,7 @@ DeepTeam runs **locally on your machine** and is built on [DeepEval](https://git
     - [Shell Injection](https://www.trydeepteam.com/docs/red-teaming-vulnerabilities-shell-injection) — unauthorized system command execution
     - [SQL Injection](https://www.trydeepteam.com/docs/red-teaming-vulnerabilities-sql-injection) — database query manipulation
     - [SSRF](https://www.trydeepteam.com/docs/red-teaming-vulnerabilities-ssrf) — server-side request forgery to internal services
+    - [Path Traversal](https://www.trydeepteam.com/docs/red-teaming-vulnerabilities-path-traversal) — reading files outside the intended directory
     - [Tool Metadata Poisoning](https://www.trydeepteam.com/docs/red-teaming-vulnerabilities-tool-metadata-poisoning) — corrupted tool schemas and descriptions
     - [Cross-Context Retrieval](https://www.trydeepteam.com/docs/red-teaming-vulnerabilities-cross-context-retrieval) — data access across isolation boundaries
     - [System Reconnaissance](https://www.trydeepteam.com/docs/red-teaming-vulnerabilities-system-reconnaissance) — probing internal architecture and configurations
