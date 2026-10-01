@@ -15,5 +15,8 @@ class Base64(BaseSingleTurnAttack):
         """Enhance the attack using Base64 encoding."""
         return base64.b64encode(attack.encode()).decode()
 
+    async def a_enhance(self, attack: str) -> str:
+        return self.enhance(attack)
+
     def get_name(self) -> str:
         return self.name

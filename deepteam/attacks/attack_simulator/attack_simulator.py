@@ -498,7 +498,7 @@ class AttackSimulator:
 
             with cost_accumulator() as acc:
                 try:
-                    res: List[RTTurn] = attack._get_turns(
+                    result = attack.run(
                         model_callback=self.model_callback,
                         turns=turns,
                         vulnerability=test_case.vulnerability,
@@ -507,8 +507,10 @@ class AttackSimulator:
                         metric_check=metric_check,
                     )
 
-                    test_case.turns = res
-                    test_case.actual_output = res[-1].content
+                    test_case.turns = result.turns
+                    test_case.actual_output = result.turns[-1].content
+                    if result.error is not None:
+                        raise result.error
                     self._flag_incomplete_progression(test_case)
 
                 except ModelRefusalError as e:
@@ -616,7 +618,7 @@ class AttackSimulator:
 
             with cost_accumulator() as acc:
                 try:
-                    res: List[RTTurn] = await attack._a_get_turns(
+                    result = await attack.a_run(
                         model_callback=self.model_callback,
                         turns=turns,
                         vulnerability=test_case.vulnerability,
@@ -625,8 +627,10 @@ class AttackSimulator:
                         metric_check=metric_check,
                     )
 
-                    test_case.turns = res
-                    test_case.actual_output = res[-1].content
+                    test_case.turns = result.turns
+                    test_case.actual_output = result.turns[-1].content
+                    if result.error is not None:
+                        raise result.error
                     self._flag_incomplete_progression(test_case)
 
                 except ModelRefusalError as e:
@@ -635,9 +639,11 @@ class AttackSimulator:
                         return test_case
                     else:
                         raise
-                except:
+                except Exception as e:
                     if ignore_errors:
-                        test_case.error = "Error enhancing attack"
+                        test_case.error = (
+                            f"Error enhancing multi-turn attack: {str(e)}"
+                        )
                         return test_case
                     else:
                         raise
@@ -689,9 +695,9 @@ class AttackSimulator:
                     return test_case
                 else:
                     raise
-            except:
+            except Exception as e:
                 if ignore_errors:
-                    test_case.error = "Error enhancing attack"
+                    test_case.error = f"Error enhancing regular attack: {str(e)}"
                     return test_case
                 else:
                     raise

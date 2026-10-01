@@ -8,10 +8,6 @@ from contextvars import ContextVar
 from contextlib import contextmanager
 from deepeval.metrics.utils import trimAndLoadJson, initialize_model
 from deepeval.models import DeepEvalBaseLLM
-from deepteam.attacks.single_turn.escalation_constants import (
-    append_critic_feedback,
-    random_escalation_suffix,
-)
 
 def _max_retries() -> int:
     max_retries = os.getenv("DEEPTEAM_MAX_RETRIES")
@@ -63,6 +59,11 @@ def cost_accumulator():
         yield acc
     finally:
         _cost_acc.reset(token)
+
+
+def current_simulation_cost():
+    acc = _cost_acc.get()
+    return acc[0] if acc is not None else None
 
 
 def generate_with_cost(
@@ -129,6 +130,11 @@ def generate_with_cost(
         except Exception as e:
             last_error = e
             if attempt < max_retries - 1:
+                from deepteam.attacks.single_turn.escalation_constants import (
+                    append_critic_feedback,
+                    random_escalation_suffix,
+                )
+
                 escalated_prompt = (
                     f"{random_escalation_suffix(attempt)} \n\n {prompt}"
                 )
@@ -226,6 +232,11 @@ async def a_generate_with_cost(
         except Exception as e:
             last_error = e
             if attempt < max_retries - 1:
+                from deepteam.attacks.single_turn.escalation_constants import (
+                    append_critic_feedback,
+                    random_escalation_suffix,
+                )
+
                 escalated_prompt = (
                     f"{random_escalation_suffix(attempt)} \n\n {prompt}"
                 )
