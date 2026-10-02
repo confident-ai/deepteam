@@ -148,6 +148,11 @@ DeepTeam runs **locally on your machine** and is built on [DeepEval](https://git
     - [Leetspeak](https://www.trydeepteam.com/docs/red-teaming-adversarial-attacks-leetspeak) — symbolic character substitution to avoid keyword detection
     - [ROT13](https://www.trydeepteam.com/docs/red-teaming-adversarial-attacks-rot13-encoding) — alphabetic rotation to evade content filters
     - [Base64](https://www.trydeepteam.com/docs/red-teaming-adversarial-attacks-base64-encoding) — encoding attacks as random-looking data
+    - [Caesar](https://www.trydeepteam.com/docs/red-teaming-adversarial-attacks-caesar-cipher) — configurable letter-shift cipher to evade keyword filters
+    - [Morse Code](https://www.trydeepteam.com/docs/red-teaming-adversarial-attacks-morse-code) — dot/dash encoding to obscure harmful keywords
+    - [Hex Encoding](https://www.trydeepteam.com/docs/red-teaming-adversarial-attacks-hex-encoding) — hexadecimal byte encoding to bypass string matching
+    - [Zero Width](https://www.trydeepteam.com/docs/red-teaming-adversarial-attacks-zero-width) — zero-width Unicode insertion to break keyword substrings
+    - [Homoglyph](https://www.trydeepteam.com/docs/red-teaming-adversarial-attacks-homoglyph) — visually-identical Unicode confusables to evade denylists
     - [Gray Box](https://www.trydeepteam.com/docs/red-teaming-adversarial-attacks-gray-box-attack) — leveraging partial system knowledge for targeted attacks
     - [Math Problem](https://www.trydeepteam.com/docs/red-teaming-adversarial-attacks-math-problem) — disguising attacks within mathematical inputs
     - [Multilingual](https://www.trydeepteam.com/docs/red-teaming-adversarial-attacks-multilingual) — translating attacks to less-spoken languages
