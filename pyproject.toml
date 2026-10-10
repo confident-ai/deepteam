@@ -20,6 +20,11 @@ tqdm = ">=4.66.1"
 openai-codex = { version = "*", optional = true, python = ">=3.10", allow-prereleases = true }
 claude-agent-sdk = { version = "*", optional = true, python = ">=3.10" }
 cursor-sdk = { version = "*", optional = true, python = ">=3.10" }
+sentry-sdk = ">=2.0.0"
+posthog = ">=3.0.0"
+opentelemetry-api = ">=1.20.0"
+opentelemetry-sdk = ">=1.20.0"
+opentelemetry-exporter-otlp-proto-grpc = ">=1.20.0"
 
 [tool.poetry.extras]
 codex = ["openai-codex"]
