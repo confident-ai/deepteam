@@ -87,6 +87,14 @@ def load_model(spec: Union[str, Dict[str, Any], None]) -> DeepEvalBaseLLM:
             temperature=temperature,
         )
 
+    if provider == "orcarouter":
+        return GPTModel(
+            model=model_name,
+            api_key=spec.get("api_key") or os.environ.get("ORCAROUTER_API_KEY"),
+            base_url="https://api.orcarouter.ai/v1",
+            temperature=temperature,
+        )
+
     if provider == "gemini":
         if spec.get("project") and spec.get("location"):
             return GeminiModel(
