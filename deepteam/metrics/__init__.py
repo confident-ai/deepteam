@@ -50,6 +50,9 @@ from .exploit_tool_agent.exploit_tool_agent import ExploitToolAgentMetric
 from .external_system_abuse.external_system_abuse import (
     ExternalSystemAbuseMetric,
 )
+from .mcp_server_trust_exploitation.mcp_server_trust_exploitation import (
+    MCPServerTrustExploitationMetric,
+)
 
 # Agentic metrics
 from .agentic.unauthorized_execution.unauthorized_execution import (
