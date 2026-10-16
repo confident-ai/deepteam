@@ -10,11 +10,11 @@ import { ArrowUpRight } from "lucide-react";
 
 <br />
 
-<SectionLabel>Why teams outgrow DeepEval alone</SectionLabel>
+<SectionLabel>Why teams outgrow DeepTeam alone</SectionLabel>
 
-## DeepEval gets you started. Confident AI gets you scaled.
+## DeepTeam finds the risks. Confident AI governs them.
 
-DeepEval is the framework. Confident AI is the platform that makes it work for your whole company.
+DeepTeam is the framework. Confident AI is the platform that makes AI security and governance work for your whole company.
 
 <EnterpriseComparisonTable />
 
@@ -22,59 +22,42 @@ DeepEval is the framework. Confident AI is the platform that makes it work for y
 
 <br />
 
-<SectionLabel>For product and QA teams</SectionLabel>
+<SectionLabel>For security and governance teams</SectionLabel>
 
-## Run evals without writing a single line of code.
+## Red team your AI without writing a single line of code.
 
-Spin up evaluations from the dashboard. Annotate traces and turn feedback into reusable metrics. Build custom dashboards your team actually understands. Stop filing tickets to engineering every time you want to test a prompt change.
+Pick a framework, choose the risk categories that matter to you, and run a risk assessment from the dashboard. Put assessments on a schedule so every AI app is re-tested as it changes, and keep one risk profile your stakeholders can read.
 
-- No-code eval workflows for PMs, QA, and domain experts.
-- Annotation queues that turn human feedback into automated metrics.
-- Custom dashboards and reports for stakeholders who don't read code.
+- Framework-aligned assessments for OWASP Top 10 for LLMs and Agents, NIST AI RMF, MITRE ATLAS, and more.
+- Custom frameworks and risk categories built around your own policies.
+- Scheduled assessments that keep re-testing your AI apps.
 
-We connect directly to your AI app over HTTP so non-technical team members can collaborate equally on AI quality.
+Every result is stored in one place, so security, compliance, and product teams can review the same findings.
 
-<Tabs items={["Experiments", "Dataset management", "Centralized metrics", "Regression testing", "Annotation", "Prompt versioning"]}>
-<Tab value="Experiments">
+<Tabs items={["Frameworks", "Custom frameworks", "Risk categories", "Risk assessments", "Schedules"]}>
+<Tab value="Frameworks">
 
-<ImageDisplayer
-  id="platform/evaluation/experiment-comparison"
-/>
+<ImageDisplayer id="platform/red-teaming/choose-framework" />
 
 </Tab>
-<Tab value="Dataset management">
+<Tab value="Custom frameworks">
 
-<ImageDisplayer
-  id="platform/datasets/dataset-editor"
-/>
+<ImageDisplayer id="platform/red-teaming/create-framework" />
 
 </Tab>
-<Tab value="Centralized metrics">
+<Tab value="Risk categories">
 
-<ImageDisplayer
-  id="platform/evaluation/metrics-library"
-/>
+<ImageDisplayer id="platform/red-teaming/customize-risk-category" />
 
 </Tab>
-<Tab value="Regression testing">
+<Tab value="Risk assessments">
 
-<ImageDisplayer
-  id="platform/evaluation/regression-test-cases"
-/>
+<ImageDisplayer id="platform/red-teaming/create-risk-assessment" />
 
 </Tab>
-<Tab value="Annotation">
+<Tab value="Schedules">
 
-<ImageDisplayer
-  id="platform/annotation/queue-annotator"
-/>
-
-</Tab>
-<Tab value="Prompt versioning">
-
-<ImageDisplayer
-  id="platform/prompts/prompt-editor"
-/>
+<ImageDisplayer id="platform/red-teaming/schedule-assessment" />
 
 </Tab>
 </Tabs>
@@ -85,43 +68,30 @@ We connect directly to your AI app over HTTP so non-technical team members can c
 
 <SectionLabel>For engineering teams</SectionLabel>
 
-## Tracing and evals built for the way you actually ship.
+## Red team any AI app, wherever it runs.
 
-Drop in our SDK or use OpenTelemetry to capture every LLM call, tool call, and agent step. Run regression tests on every prompt change in CI/CD. Get alerted the moment quality drops in production. Framework-agnostic — works with LangChain, LangGraph, CrewAI, OpenAI Agents, Pydantic AI, or your own stack.
+Connect your AI app over HTTP and Confident AI simulates attacks against it directly, with no Python callback to maintain. Every assessment rolls up into a risk profile with CVSS scores and coverage, and every attack is kept as a test case you can triage.
 
-- Production tracing for every LLM call, span, and agent step.
-- Automatic detection of AI app failures, quality drift, user sentiment shifts, performance regressions, and cost anomalies in production.
-- Real-time alerts in Slack, PagerDuty, or Teams when quality degrades.
+- Connect any AI app, agent, or RAG pipeline through an HTTPS endpoint.
+- Risk profiles with CVSS scores, pass rates, and coverage per vulnerability.
+- Test cases for every attack, filterable by vulnerability, attack method, and status.
 
-Observability completes the AI iteration loop: Trace agents, run online evals, detect issues, feed these back to datasets for pre-deployment testing.
+Fix what failed, then re-run the same assessment to confirm the risk is gone.
 
-<Tabs items={["Online evals", "Signals", "Alerts", "Trace-to-dataset"]}>
-<Tab value="Online evals">
+<Tabs items={["AI connections", "Risk profile", "Test cases"]}>
+<Tab value="AI connections">
 
-<ImageDisplayer
-  id="platform/tracing/trace-execution-tree"
-/>
+<ImageDisplayer id="platform/settings/ai-connection" />
 
 </Tab>
-<Tab value="Signals">
+<Tab value="Risk profile">
 
-<ImageDisplayer
-  id="platform/monitoring/signals"
-/>
+<ImageDisplayer id="platform/red-teaming/risk-assessment" />
 
 </Tab>
-<Tab value="Alerts">
+<Tab value="Test cases">
 
-<ImageDisplayer
-  id="platform/monitoring/alert-rule-editor"
-/>
-
-</Tab>
-<Tab value="Trace-to-dataset">
-
-<ImageDisplayer
-  id="platform/datasets/trace-ingestion-task"
-/>
+<ImageDisplayer id="platform/red-teaming/risk-assessment-test-cases" />
 
 </Tab>
 </Tabs>
@@ -134,13 +104,13 @@ Observability completes the AI iteration loop: Trace agents, run online evals, d
 
 ## Deploy once. Scale to every team in your org.
 
-Self-host on your own infrastructure or run on our cloud. Multi-tenant by default — give every product team their own workspace with shared compliance and observability standards. Built for the AI platform team that's responsible for quality across the whole company.
+Self-host on your own infrastructure or run on our cloud. Multi-tenant by default — give every product team their own workspace with shared security and compliance standards. Built for the AI platform team that's responsible for AI risk across the whole company.
 
 - On-prem deployment in 3 days, automated updates in 30 minutes.
 - SSO, RBAC, granular permissions, and audit logs.
 - SOC2 Type II, GDPR-compliant, custom data retention available.
 
-One platform, one source of truth for AI quality across every team.
+One platform, one source of truth for AI security and governance across every team.
 
 <EnterprisePlatformMockup variant="deployment" />
 
