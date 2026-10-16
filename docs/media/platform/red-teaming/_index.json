@@ -23,6 +23,66 @@
           "https://confident-docs.s3.us-east-1.amazonaws.com/red-teaming:quick-start:risk-assessment.png"
         ]
       }
+    },
+    {
+      "file": "create-framework.webp",
+      "title": "Creating a custom framework in Confident AI",
+      "alt": "Confident AI Add Framework dialog with a name and description, starting from a custom framework builder or a template such as OWASP Top 10 for LLMs 2025, NIST AI RMF, MITRE ATLAS or OWASP Top 10 for Agents",
+      "width": 2400,
+      "height": 1353,
+      "source": {
+        "urls": [
+          "https://confident-docs.s3.us-east-1.amazonaws.com/red-teaming:frameworks:create-framework.png"
+        ]
+      }
+    },
+    {
+      "file": "customize-risk-category.webp",
+      "title": "Customizing a risk category in Confident AI",
+      "alt": "Confident AI custom framework editor for an Ethics risk category, with checkboxes to pick vulnerabilities and vulnerability types such as bias, competition, BOLA, BFLA and excessive agency",
+      "width": 2400,
+      "height": 1350,
+      "source": {
+        "urls": [
+          "https://confident-docs.s3.us-east-1.amazonaws.com/red-teaming:frameworks:customize-risk-category.png"
+        ]
+      }
+    },
+    {
+      "file": "create-risk-assessment.webp",
+      "title": "Creating a risk assessment in Confident AI",
+      "alt": "Confident AI Create a Risk Assessment dialog for the NIST AI RMF framework, choosing an AI connection, the risk categories to test and an exposure level",
+      "width": 2400,
+      "height": 1348,
+      "source": {
+        "urls": [
+          "https://confident-docs.s3.us-east-1.amazonaws.com/red-teaming:quick-start:run-risk-assessment.png"
+        ]
+      }
+    },
+    {
+      "file": "risk-assessment-test-cases.webp",
+      "title": "Risk assessment test cases in Confident AI",
+      "alt": "Confident AI risk assessment test case table listing each test case's vulnerability, vulnerability type, attack method such as linear jailbreaking or multilingual, and whether it passed or failed",
+      "width": 2400,
+      "height": 1355,
+      "source": {
+        "urls": [
+          "https://confident-docs.s3.us-east-1.amazonaws.com/red-teaming:risk-profile:risk-assessment-test-cases.png"
+        ]
+      }
+    },
+    {
+      "file": "schedule-assessment.webp",
+      "title": "Scheduling a recurring assessment in Confident AI",
+      "alt": "Confident AI Create Schedule dialog for the OWASP Top 10 for LLMs framework, choosing an AI connection, a schedule frequency and the risk categories to run",
+      "width": 2400,
+      "height": 1312,
+      "source": {
+        "urls": [
+          "https://confident-docs.s3.us-east-1.amazonaws.com/red-teaming:scheduled-red-team-framework.png"
+        ]
+      }
     }
   ]
 }

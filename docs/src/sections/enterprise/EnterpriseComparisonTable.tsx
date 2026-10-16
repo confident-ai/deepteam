@@ -3,36 +3,36 @@ import styles from "./EnterpriseComparisonTable.module.scss";
 
 const ROWS = [
   {
-    confident: "Shared evaluation workspace",
-    deepeval: "Testing results live in local files",
+    confident: "Shared risk assessments",
+    deepteam: "Results live in local files",
   },
   {
-    confident: "No-code eval workflows",
-    deepeval: "Local and CI/CD test runner",
+    confident: "No-code red teaming",
+    deepteam: "Python scripts and the CLI",
   },
   {
-    confident: "Production observability + tracing",
-    deepeval: "Limited to pre-production testing",
+    confident: "Scheduled, recurring assessments",
+    deepteam: "One-off runs you trigger yourself",
   },
   {
-    confident: "Online eval monitoring",
-    deepeval: "Bring your own eval infra",
+    confident: "Custom frameworks and risk categories",
+    deepteam: "Frameworks configured in code",
   },
   {
-    confident: "Managed regression workflows",
-    deepeval: "Engineer-owned test suites",
+    confident: "Org-wide risk profile with CVSS scores",
+    deepteam: "Per-run scores in the terminal",
   },
   {
-    confident: "Centralized metrics",
-    deepeval: "Metrics scattered in code",
+    confident: "Test cases to review and triage",
+    deepteam: "Raw output to sift through",
   },
   {
-    confident: "Annotation queues for SMEs",
-    deepeval: "Developer-mediated annotation",
+    confident: "Red team any AI app over HTTP",
+    deepteam: "Wrap your app in a Python callback",
   },
   {
     confident: "Enterprise controls",
-    deepeval: "Single-user by design",
+    deepteam: "Single-user by design",
   },
 ];
 
@@ -41,11 +41,11 @@ const EnterpriseComparisonTable: React.FC = () => {
     <div
       className={styles.table}
       role="table"
-      aria-label="DeepEval and Confident AI comparison"
+      aria-label="DeepTeam and Confident AI comparison"
     >
       <div className={styles.header} role="row">
         <div role="columnheader">Confident AI</div>
-        <div role="columnheader">DeepEval</div>
+        <div role="columnheader">DeepTeam</div>
       </div>
       <div className={styles.body}>
         {ROWS.map((row) => (
@@ -60,7 +60,7 @@ const EnterpriseComparisonTable: React.FC = () => {
               <span className={styles.icon} data-tone="negative" aria-hidden>
                 <X />
               </span>
-              <strong>{row.deepeval}</strong>
+              <strong>{row.deepteam}</strong>
             </div>
           </div>
         ))}

@@ -19,13 +19,8 @@ export const IMAGE_FOLDERS = [
   "diagrams/in-house/guardrails",
   "diagrams/in-house/red-teaming",
   "diagrams/external/reference",
-  "platform/annotation",
-  "platform/datasets",
-  "platform/evaluation",
-  "platform/monitoring",
-  "platform/prompts",
   "platform/red-teaming",
-  "platform/tracing",
+  "platform/settings",
   "screenshots/external",
 ];
 

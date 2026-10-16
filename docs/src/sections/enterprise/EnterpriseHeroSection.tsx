@@ -35,7 +35,7 @@ const DEFAULT_LOGO_ITEMS: EnterpriseLogoItem[] = [
 ];
 
 const DEFAULT_LOGO_GRID_LABEL =
-  "Trusted by teams that took evals to production.";
+  "Trusted by teams that secure AI in production.";
 
 const BOOK_DEMO_HREF = "https://www.confident-ai.com/book-a-demo";
 
@@ -47,12 +47,13 @@ const EnterpriseHeroSection: React.FC<EnterpriseHeroSectionProps> = ({
     <section className={styles.hero}>
       <div className={styles.main}>
         <h1 className={styles.title}>
-          Scale DeepEval with the platform built for the whole team.
+          Manage AI security and governance across your organization.
         </h1>
 
         <p className={styles.description}>
-          Production tracing, eval monitoring, and a workflow your engineers,
-          PMs, and QA can use together — not just developers in a terminal.
+          Scheduled red teaming, framework-aligned risk assessments, and a
+          workflow your security, engineering, and governance teams can use
+          together — not just developers in a terminal.
         </p>
 
         <div className={styles.actions}>

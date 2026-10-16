@@ -1,0 +1,16 @@
+{
+  "images": [
+    {
+      "file": "ai-connection.webp",
+      "title": "Connecting an AI app in Confident AI",
+      "alt": "Confident AI AI Connection settings with an HTTPS endpoint for the AI app and the JSON payload Confident AI sends to it",
+      "width": 2400,
+      "height": 1254,
+      "source": {
+        "urls": [
+          "https://confident-docs.s3.us-east-1.amazonaws.com/settings:project:ai-connection.png"
+        ]
+      }
+    }
+  ]
+}
