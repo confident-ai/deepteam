@@ -13,7 +13,7 @@ const CloudPlatformCallout: React.FC = () => {
         <Cloud aria-hidden="true" />
       </span>
       <span className={styles.content}>
-        <span className={styles.title}>Collaborate in Confident Cloud</span>
+        <span className={styles.title}>Safeguard AI on Confident AI</span>
         <span className={styles.body}>
           Manage AI security and governance across your organization, from
           scheduled red teaming to framework-aligned risk assessments.

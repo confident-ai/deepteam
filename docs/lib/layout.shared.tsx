@@ -1,5 +1,5 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
-import { BookOpen, Compass, Newspaper } from "lucide-react";
+import { BookOpen, Building2, Compass, Newspaper } from "lucide-react";
 import { gitConfig } from "./shared";
 import Wordmark from "@/src/components/Wordmark";
 
@@ -13,16 +13,14 @@ import Wordmark from "@/src/components/Wordmark";
 //
 // Icons chosen for semantic clarity + visual distinction at 16px:
 //   Docs   → BookOpen   (reading reference material)
-//   Guides → Compass    (directional walkthroughs)
-//   Blog   → Newspaper  (dated posts)
+//   Guides     → Compass    (directional walkthroughs)
+//   Enterprise → Building2  (organization / deployment)
+//   Blog       → Newspaper  (dated posts)
 //
 // Blog links to the first post by file order because the `/blog`
 // landing route was removed during the Docusaurus → Fumadocs
 // migration. `activeBase: "/blog"` still highlights the nav item on
 // every individual post page.
-//
-// The Enterprise route still exists at `/enterprise` but is
-// intentionally hidden from the nav for now.
 export const navLinks = [
   {
     text: "Docs",
@@ -35,6 +33,12 @@ export const navLinks = [
     url: "/guides/guide-agentic-ai-red-teaming",
     activeBase: "/guides",
     icon: <Compass />,
+  },
+  {
+    text: "Enterprise",
+    url: "/enterprise",
+    activeBase: "/enterprise",
+    icon: <Building2 />,
   },
   {
     text: "Blog",
