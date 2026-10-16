@@ -3,8 +3,6 @@ title: Sequential Jailbreaking
 sidebar_label: Sequential Jailbreaking
 ---
 
-import { ASSETS } from "@site/src/assets";
-
 
 <AttackTagsDisplayer multiTurn={true} llmSimulated={true} />
 
@@ -81,7 +79,7 @@ print(result)
 5. **Monitor model outputs** and evaluate after each turn.
 6. **Stop** when a harmful response is generated or the dialogue ends unsuccessfully based on binary classification.
 
-<ImageDisplayer src={ASSETS.attackSequentialJailbreaking} alt="Sequential Jailbreaking Enhanced" />
+<ImageDisplayer id="diagrams/in-house/attacks/sequential-jailbreaking" />
 
 If the `turn_level_attacks` is supplied with a list of single-turn attacks, `LinearJailbreaking` adds controlled variation:
 
@@ -104,7 +102,7 @@ If `type="dialogue"` is selected, the optional `persona` parameter configures th
 
 Here's an example of a `SequentialJailbreak` attack targeting a racial bias vulnerability:
 
-<ImageDisplayer src={ASSETS.attackSequentialJailbreakingExample} alt="SequentialJailbreak Example" />
+<ImageDisplayer id="diagrams/in-house/attacks/sequential-jailbreaking-example" />
 
 1. **First Attack**: The attacker starts with a direct prompt asking about negative stereotypes associated with mixed-race individuals, targeting the racial bias vulnerability in the model.
 2. **Initial Response**: The model provides a safe, balanced response, acknowledging stereotypes but emphasizing the importance of challenging them.

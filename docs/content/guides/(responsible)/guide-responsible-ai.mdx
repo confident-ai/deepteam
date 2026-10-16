@@ -3,8 +3,6 @@ title: Red Teaming AI for Bias, Fairness, and Harm
 sidebar_label: Bias, Fairness & Harm
 ---
 
-import { ASSETS } from "@site/src/assets";
-
 Security red teaming asks: _can an attacker make this system do something dangerous?_ Responsible AI red teaming asks a different question: _does this system treat people fairly and safely under normal use?_
 
 The distinction matters because a system can be perfectly secure — resistant to prompt injection, immune to data exfiltration, locked down against jailbreaks — and still produce biased hiring recommendations, toxic customer interactions, or hallucinated medical advice. These failures don't require an adversary. They happen during routine operation, to real users, with real consequences.
@@ -303,8 +301,7 @@ Responsible AI failures are often emergent — they surface with specific user p
 [Confident AI](https://www.confident-ai.com) supports scheduled red teaming assessments that run against your production system on a recurring basis. This catches regressions when models are updated, system prompts change, or retrieval indices shift.
 
 <ImageDisplayer
-  src={ASSETS.confidentRedTeamingRiskAssessment}
-  alt="Risk assessment dashboard in Confident AI"
+  id="platform/red-teaming/risk-assessment"
 />
 
 :::info

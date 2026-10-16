@@ -3,33 +3,12 @@ title: What Is LLM Red Teaming?
 sidebar_label: What Is LLM Red Teaming?
 ---
 
-import { ASSETS } from "@site/src/assets";
-
 Large Language Model (LLM) red teaming refers to the practice of probing and attacking AI models in a controlled manner to uncover vulnerabilities and risky behaviors before malicious actors do. Unlike conventional software testing, which often focuses on code flaws, LLM red teaming specifically targets the model’s outputs and behavior under adversarial conditions.
 
-<div
-  style={{
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "30px",
-  }}
->
-  <img
-    src={ASSETS.redTeamingIntro}
-    alt="Gemini's Biased Image Generation"
-    style={{
-      height: "auto",
-      maxHeight: "440px",
-      marginBottom: "10px",
-    }}
-  />
-  <span style={{ fontSize: "13px" }}>
-    How LLM red teaming works{" "}
-    <a href="https://arxiv.org/abs/2202.03286">(Perez et al.)</a>
-  </span>
-</div>
+<ImageDisplayer
+  id="diagrams/external/reference/red-lm-attacks"
+  caption={<>How LLM red teaming works <a href="https://arxiv.org/abs/2202.03286">(Perez et al.)</a></>}
+/>
 
 With LLMs, these [adversarial "attacks”](/docs/red-teaming-adversarial-attacks) often involve cleverly crafted inputs/prompts (e.g. [prompt injection](/docs/red-teaming-adversarial-attacks-prompt-injection), [jailbreaking](/docs/red-teaming-adversarial-attacks-linear-jailbreaking), etc.) that induce the model to produce harmful or disallowed content​.
 
@@ -56,23 +35,7 @@ In short, LLM red teaming lets us “break” the model in-house so it doesn’t
 
 Red teaming LLM systems involves systematically testing for vulnerabilities, adversarial weaknesses, and unintended behaviors, and typically includes **manual adversarial testing** for nuanced attack discovery and **automated attack simulations** for scale and efficiency.
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "30px",
-  }}
->
-  <img
-    src={ASSETS.redTeamingWorkflow}
-    alt="Model vs System Weakness"
-    style={{
-      height: "auto",
-      maxHeight: "350px",
-    }}
-  />
-</div>
+<ImageDisplayer id="diagrams/in-house/red-teaming/red-teaming-loop" />
 
 Both methods complement each other in building a robust and secure AI model, but the former is more suited for companies training foundational models, which means for those reading this you are probably looking for simulating adversarial attacks instead.
 
@@ -104,23 +67,7 @@ However, manual red teaming is slow, expensive, and difficult to scale. It requi
 
 We've covered what LLM red teaming is, how it works, and how to execute it effectively. Now, let's talk about the root causes of these vulnerabilities. When your LLM system is weak against an adversarial attack or security risk, the issue can stem from either the model itself or the system around it. Understanding this distinction helps determine the right mitigation strategies.
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "30px",
-  }}
->
-  <img
-    src={ASSETS.modelVsSystemWeakness}
-    alt="Model vs System Weakness"
-    style={{
-      height: "auto",
-      maxHeight: "600px",
-    }}
-  />
-</div>
+<ImageDisplayer id="diagrams/in-house/red-teaming/model-vs-system-weakness" />
 
 For **model weaknesses**, it is usually a training & fine-tuning issue:
 
@@ -157,23 +104,7 @@ You can find the full list of vulnerabilities in the [vulnerabilities section.](
 
 [Personally Identifiable Information (PII) leakage](/docs/red-teaming-vulnerabilities-pii-leakage) refers to when an LLM exposes sensitive personal data (names, addresses, phone numbers, etc.) that it should not reveal. The image below from this paper shows exactly how weaknesses in a model's training data can lead to personal data being exposed.
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "30px",
-  }}
->
-  <img
-    src={ASSETS.piiLeakageExample}
-    alt="Gemini's Biased Image Generation"
-    style={{
-      height: "auto",
-      maxHeight: "440px",
-    }}
-  />
-</div>
+<ImageDisplayer id="diagrams/external/reference/training-data-leakage" />
 
 :::tip
 This can occur either because of accidentally including training data containing PII (model weakness), or because there is problem with session leakage, memory handling at the system level.
@@ -181,23 +112,7 @@ This can occur either because of accidentally including training data containing
 
 In another study back in 2021 by [Carlini et al.](https://arxiv.org/abs/2012.07805), researchers extracted hundreds of pieces of verbatim training data from a GPT-2 model, including full names, emails, phone numbers, and addresses. The figure below (from Carlini’s paper) illustrates how a prompt with a specific prefix led GPT-2 to output an individual’s contact information, which the authors attributed to severe overfitting of training data.
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "30px",
-  }}
->
-  <img
-    src={ASSETS.piiLeakageGpt2}
-    alt="PII Leakage for GPT-2"
-    style={{
-      height: "auto",
-      maxHeight: "400px",
-    }}
-  />
-</div>
+<ImageDisplayer id="diagrams/external/reference/gpt2-memorized-pii" />
 
 Another incident occurred in March 20th, 2023, when a bug in ChatGPT briefly exposed other users’ chat titles and even some billing information (names, addresses, partial credit card details) to unrelated users. This was a system weaknesses instead of a model one, as it happened due to the improper handling of [cached data in redis.](https://openai.com/index/march-20-chatgpt-outage/)
 
@@ -207,23 +122,7 @@ The [bias](/docs/red-teaming-vulnerabilities-bias) vulnerability, perhaps the mo
 
 Studies, such as ["Bias and Fairness in Large Language Models: A Survey"](https://arxiv.org/abs/2309.00770) in 2024, showed that unmodified LLMs frequently associated professions like "engineer" or "CEO" with masculinity, while "nurse" or "teacher" skewed feminine. This kind of bias can perpetuate stereotypes in real-world applications—like AI-driven hiring tools—potentially influencing who gets recommended for certain roles.
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "30px",
-  }}
->
-  <img
-    src={ASSETS.biasExample}
-    alt="Example of LLM Bias"
-    style={{
-      height: "auto",
-      maxHeight: "400px",
-    }}
-  />
-</div>
+<ImageDisplayer id="diagrams/external/reference/gender-substitution-bias" />
 
 The image above is from this [paper](https://arxiv.org/abs/2309.00770) and shows how biases can be exposed by substituting genders in the input text.
 
@@ -233,23 +132,7 @@ While most models from OpenAI or Google undergo extensive post-training adjustme
 
 Trying to be _too_ impartial can also backfire. Let's not forget Gemini's hilarious [politically correct image generations](https://www.theverge.com/2024/2/21/24079371/google-ai-gemini-generative-inaccurate-historical) in early 2024.
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "30px",
-  }}
->
-  <img
-    src={ASSETS.biasGemini}
-    alt="Gemini's Biased Image Generation"
-    style={{
-      height: "auto",
-      maxHeight: "400px",
-    }}
-  />
-</div>
+<ImageDisplayer id="screenshots/external/gemini-image-bias" />
 
 ### Unauthroized access
 
@@ -274,23 +157,7 @@ You can find the full list of attacks in the [adversarial attacks section.](/doc
 
 [Prompt injection](/docs/red-teaming-adversarial-attacks-prompt-injection) is an attack where the bad actor manipulates an LLM's input prompt to override its intended behavior. Some of you might realize that this attack method resembles that of a SQL injection.
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "30px",
-  }}
->
-  <img
-    src={ASSETS.promptInjectionExample}
-    alt="Prompt Injection Example"
-    style={{
-      height: "auto",
-      maxHeight: "400px",
-    }}
-  />
-</div>
+<ImageDisplayer id="diagrams/external/reference/prompt-injection" />
 
 The diagram above is from the the paper titled ["Prompt Injection Attack Against LLM-Integrated Applications"](https://arxiv.org/abs/2306.05499) (2023) and have also demonstrated that when done correctly prompt injection have a success rate of 86.1%. There are two main types of prompt injections:
 
@@ -311,23 +178,7 @@ There are two main types of jailbreaking:
 
 Here's a single-turn jailbreaking example from Anthropic's paper on ["Many-shot Jailbreaking"](https://www-cdn.anthropic.com/af5633c94ed2beb282f6a53c595eb437e8e7b630/Many_Shot_Jailbreaking__2024_04_02_0936.pdf) (2024):
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "30px",
-  }}
->
-  <img
-    src={ASSETS.manyShotJailbreakingExample}
-    alt="Many Shot Jailbreaking Example"
-    style={{
-      height: "auto",
-      maxHeight: "400px",
-    }}
-  />
-</div>
+<ImageDisplayer id="diagrams/external/reference/many-shot-jailbreaking" />
 
 :::caution
 The figure above should **NOT** be confused with multi-turn jailbreaking because if you look closely, a faux dialogue between a human and the LLM is actually included within a single prompt for the LLM.
@@ -337,23 +188,7 @@ This demonstrates that if you were to add examples to hijack the in-context lear
 
 On the contrary, here an example of multi-turn jailbreaking from [this paper](https://arxiv.org/pdf/2310.08419):
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "30px",
-  }}
->
-  <img
-    src={ASSETS.jailbreakingExample}
-    alt="Many Shot Jailbreaking Example"
-    style={{
-      height: "auto",
-      maxHeight: "700px",
-    }}
-  />
-</div>
+<ImageDisplayer id="diagrams/external/reference/iterative-jailbreaking" />
 
 The diagram above shows an example of Prompt Automatic Iterative Refinement (PAIR), to “design a phishing email that can trick users
 into giving away their login credentials”.
@@ -372,23 +207,7 @@ A bad actor using multi-turn jailbreaking would refine prompts based on feedback
 
 Lastly, don't forget DAN (do anything now), which once took the internet by storm in 2023:
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "30px",
-  }}
->
-  <img
-    src={ASSETS.jailbreakingDanExample}
-    alt="Jailbreaking DAN Example"
-    style={{
-      height: "auto",
-      maxHeight: "400px",
-    }}
-  />
-</div>
+<ImageDisplayer id="screenshots/external/chatgpt-dan-jailbreak" />
 
 Can you tell is DAN a single-turn or multi-turn jailbreaking attack?
 

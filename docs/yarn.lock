@@ -50,6 +50,18 @@
   resolved "https://registry.npmjs.org/@chevrotain/utils/-/utils-12.0.0.tgz"
   integrity sha512-lB59uJoaGIfOOL9knQqQRfhl9g7x8/wqFkp13zTdkRu1huG9kg6IJs1O8hqj9rs6h7orGxHJUKb+mX3rPbWGhA==
 
+"@dagrejs/dagre@^3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@dagrejs/dagre/-/dagre-3.1.1.tgz#06de3070d584886b8820aaceeefc45a553cf2b97"
+  integrity sha512-zroZB1dFOFiGgv4Xcrn1DckB1o4aOikPqD2NDQPV0WM//CXGcS6xiD0rNkqHmw6FEg4tabt4nxPLwgCWT+Vb2A==
+  dependencies:
+    "@dagrejs/graphlib" "4.0.5"
+
+"@dagrejs/graphlib@4.0.5":
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/@dagrejs/graphlib/-/graphlib-4.0.5.tgz#1ae7a93a4640a9e50117439d23327e27d6b698d3"
+  integrity sha512-7xrBTqIts3o+PMUZX97wSc+7TUbW+/rULzGNCTP6yooNVDXbzw4Wutg/H/xOutTB/c/k0YqOAavgPh4/Zk9PFA==
+
 "@emnapi/core@^1.8.1":
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/@emnapi/core/-/core-1.10.0.tgz#380ccc8f2412ea22d1d972df7f8ee23a3b9c7467"
@@ -2180,11 +2192,6 @@ fumadocs-ui@16.8.1:
     tailwind-merge "^3.5.0"
     unist-util-visit "^5.1.0"
 
-geist@^1.7.2:
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/geist/-/geist-1.7.2.tgz#96f6e5d2b3305fd27eacbd5ae4dcfbc5a15e6939"
-  integrity sha512-Gu5lDFa3pLRyoBlBPf0QIFHVdWAnpco7fS1bJm41jyLPFoguBgiubseUN2oLXMgqZ7uxAxDoXcHMhCY/fOTTgg==
-
 get-nonce@^1.0.0:
   version "1.0.1"
   resolved "https://registry.npmjs.org/get-nonce/-/get-nonce-1.0.1.tgz"
@@ -3440,6 +3447,11 @@ react-dom@^19.2.5:
   dependencies:
     scheduler "^0.27.0"
 
+react-intersection-observer@^9.16.0:
+  version "9.16.0"
+  resolved "https://registry.yarnpkg.com/react-intersection-observer/-/react-intersection-observer-9.16.0.tgz#7376d54edc47293300961010844d53b273ee0fb9"
+  integrity sha512-w9nJSEp+DrW9KmQmeWHQyfaP6b03v+TdXynaoA964Wxt7mdR3An11z4NNCQgL4gKSK7y1ver2Fq+JKH6CWEzUA==
+
 react-remove-scroll-bar@^2.3.7:
   version "2.3.8"
   resolved "https://registry.npmjs.org/react-remove-scroll-bar/-/react-remove-scroll-bar-2.3.8.tgz"
@@ -3752,6 +3764,11 @@ shiki@^4.0.2:
     "@shikijs/types" "4.0.2"
     "@shikijs/vscode-textmate" "^10.0.2"
     "@types/hast" "^3.0.4"
+
+simple-icons@16.35.0:
+  version "16.35.0"
+  resolved "https://registry.yarnpkg.com/simple-icons/-/simple-icons-16.35.0.tgz#78db83dd7f5ae0212b68d05c2ae7797e5d864921"
+  integrity sha512-TCfl/2+GTrx0nCo4pEWGvxhOb8c6NsqOU1OpwjtF4lwJAthB8IYVD0fuIMjLMg6JFuG1YBO0t1iETQqJLqkoJA==
 
 "source-map-js@>=0.6.2 <2.0.0", source-map-js@^1.0.2, source-map-js@^1.2.1:
   version "1.2.1"

@@ -3,8 +3,6 @@ title: Linear Jailbreaking
 sidebar_label: Linear Jailbreaking
 ---
 
-import { ASSETS } from "@site/src/assets";
-
 
 <AttackTagsDisplayer multiTurn={true} llmSimulated={true} />
 
@@ -75,7 +73,7 @@ print(result)
 
 Each step builds on the last, making the attack progressively more effective and better aligned with the model's behavior.
 
-<ImageDisplayer src={ASSETS.attackLinearJailbreakingIntro} alt="Linear Jailbreaking" />
+<ImageDisplayer id="diagrams/in-house/attacks/linear-jailbreaking" />
 
 If the `turn_level_attacks` is supplied with a list of single-turn attacks, `LinearJailbreaking` adds controlled variation:
 
@@ -90,7 +88,7 @@ This hybrid approach blends **predictable linear refinement** with **randomized 
 
 Here's an example of a `LinearJailbreaking` attack targeting a racial bias vulnerability:
 
-<ImageDisplayer src={ASSETS.attackLinearJailbreakingExample} alt="Linear Jailbreaking Example" />
+<ImageDisplayer id="diagrams/in-house/attacks/linear-jailbreaking-example" />
 
 1. **First Attack**: The attacker starts with a direct prompt asking about negative stereotypes associated with mixed-race individuals, targeting the racial bias vulnerability in the model.
 2. **Initial Response**: The model provides a safe, balanced response, acknowledging stereotypes but emphasizing the importance of challenging them.

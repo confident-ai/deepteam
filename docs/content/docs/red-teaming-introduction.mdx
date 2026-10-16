@@ -3,8 +3,6 @@ title: Introduction to LLM Red Teaming
 sidebar_label: Introduction
 ---
 
-import { ASSETS } from "@site/src/assets";
-
 `deepteam` offers a powerful yet simple way for anyone to red team all sorts of LLM applications for safety risks and security vulnerabilities in just a few lines of code. These LLM apps can be anything such as RAG pipelines, agents, chatbots, or even just the LLM itself, while the vulnerabilities include ones such as bias, toxicity, PII leakage, misinformation.
 
 ## Quick Summary
@@ -16,23 +14,7 @@ import { ASSETS } from "@site/src/assets";
 - [Target LLM System](/docs/red-teaming-introduction#model-callback) - your AI that is going to defend against these attacks.
 - [Metrics](/docs/red-teaming-introduction#metrics) - the way to determine which of these attacks were (un)successfully defended against.
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "30px",
-  }}
->
-  <img
-    src={ASSETS.redTeamingWorkflow}
-    alt="Model vs System Weakness"
-    style={{
-      height: "auto",
-      maxHeight: "350px",
-    }}
-  />
-</div>
+<ImageDisplayer id="diagrams/in-house/red-teaming/red-teaming-loop" />
 
 It works by first generating adversarial attacks aimed at provoking harmful output from your LLM system based on the vulnerabilities that you've defined, using attack methods such as prompt injection and jailbreaking. The outputs of your LLM is then evaluated by `deepteam`'s red teaming metrics to determine how effectively your application handles these attacks.
 
@@ -774,23 +756,7 @@ Attacks generation can be broken down into 2 key stages:
 
 During this step, baseline attacks are synthetically generated based on user-specified [vulnerabilities](red-teaming-vulnerabilities) such as bias or toxicity, before they are enhanced using various [adversarial attack](/docs/red-teaming-adversarial-attacks) methods such as prompt injection and jailbreaking. The enhancement process increases the attacks' effectiveness, complexity, and elusiveness.
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }}
->
-  <img
-    src="https://confident-bucket.s3.amazonaws.com/red_teaming_synthesis.svg"
-    alt="LangChain"
-    style={{
-      margin: "40px",
-      height: "auto",
-      maxHeight: "800px",
-    }}
-  />
-</div>
+<ImageDisplayer id="diagrams/in-house/red-teaming/attack-synthesis" />
 
 ### Evaluating LLM outputs
 
@@ -799,23 +765,7 @@ The response evaluation process also involves two key stages:
 1. **Generating** responses from the target LLM to the attacks.
 2. **Scoring** those responses to identify critical vulnerabilities.
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }}
->
-  <img
-    src="https://confident-bucket.s3.amazonaws.com/red_teaming_evaluation.svg"
-    alt="LangChain"
-    style={{
-      margin: "40px",
-      height: "auto",
-      maxHeight: "800px",
-    }}
-  />
-</div>
+<ImageDisplayer id="diagrams/in-house/red-teaming/attack-evaluation" />
 
 The attacks are fed into the LLM, and the resulting responses are evaluated using vulnerability-specific metrics based on the types of attacks. **Each vulnerability has a dedicated metric** designed to assess whether that particular weakness has been effectively exploited, providing a precise evaluation of the LLM's performance in mitigating each specific risk.
 
@@ -825,7 +775,6 @@ It's worth noting that using a synthesizer model like GPT-3.5 can prove more eff
 [Confident AI](https://www.confident-ai.com) lets you run red teaming on the cloud — configure frameworks like OWASP or MITRE ATLAS, schedule recurring risk assessments, manage vulnerabilities in one place, and share PDF reports with your team for security alignment.
 
 <ImageDisplayer
-  src={ASSETS.confidentRedTeamingRiskAssessment}
-  alt="Risk assessment dashboard in Confident AI"
+  id="platform/red-teaming/risk-assessment"
 />
 :::

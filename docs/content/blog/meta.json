@@ -1,10 +1,10 @@
 {
   "title": "Blog",
   "pages": [
-    "breaking-gemini-pro-deepteam",
-    "shakespeare-claude-jailbreak-deepteam",
-    "claude-sonnet-4-defense-analysis-deepteam-v2",
-    "ai-safety-paradox-deepteam",
-    "multi-turn-jailbreaking-analysis-deepteam"
+    "2025_may/breaking-gemini-pro-deepteam/article",
+    "2025_may/shakespeare-claude-jailbreak-deepteam/article",
+    "2025_jun/claude-sonnet-4-defense-analysis-deepteam-v2/article",
+    "2025_jun/ai-safety-paradox-deepteam/article",
+    "2025_jun/multi-turn-jailbreaking-analysis-deepteam/article"
   ]
 }

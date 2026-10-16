@@ -3,8 +3,6 @@ title: Deploying Guardrails in Production
 sidebar_label: Guardrails in Production
 ---
 
-import { ASSETS } from "@site/src/assets";
-
 Red teaming finds vulnerabilities. Guardrails prevent them from reaching users. DeepTeam provides 7 production-ready guards that perform fast binary classification on LLM inputs and outputs, returning a `safe`, `borderline`, `unsafe`, or `uncertain` verdict with a reason. Unlike red teaming—which runs offline and produces reports—guardrails operate in the request path and block harmful content in real time.
 
 This guide explains how to deploy DeepTeam's guardrails in a production LLM application. It covers guard selection, configuration, async execution, sampling, and integration patterns for web frameworks. The examples use a **customer-facing AI assistant** as the target application, but the approach applies to any LLM system.

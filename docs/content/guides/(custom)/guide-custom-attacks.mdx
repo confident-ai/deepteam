@@ -3,8 +3,6 @@ title: Building Custom Attacks
 sidebar_label: Building Custom Attacks
 ---
 
-import { ASSETS } from "@site/src/assets";
-
 `deepteam`'s conventional use of the `red_team` method offers 2 kinds of adversarial attacks — single turn enhancements and multi-turn progressions. But, under the hood `deepteam` offers 4 types of attacks.
 
 - **Baseline attacks**
@@ -24,7 +22,7 @@ This guide will show you how to red team your LLM application using all 4 types 
 
 Single-turn enhancements can be combined with other single-turn enhancements to create evolutionary attacks, the recommended flow to customize single-turn enhancements is:
 
-<ImageDisplayer src={ASSETS.guideSingleTurnCustomization} alt="Single-turn customizations" />
+<ImageDisplayer id="diagrams/in-house/red-teaming/single-turn-customization" />
 
 Learn more about single-turn attack combos [here](#combo-attacks).
 
@@ -32,7 +30,7 @@ Learn more about single-turn attack combos [here](#combo-attacks).
 
 Multi-turn progression usually start with a baseline attack, but you can pass in an enhanced attack inside a user `content` to use the enhanced attack as the base attack:
 
-<ImageDisplayer src={ASSETS.guideMultiTurnCustomization} alt="Multi-turn customizations" />
+<ImageDisplayer id="diagrams/in-house/red-teaming/multi-turn-customization" />
 
 Learn more about multi-turn attack combos [here](#multi-turn-combos).
 

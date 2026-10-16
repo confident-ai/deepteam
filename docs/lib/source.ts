@@ -2,6 +2,7 @@ import { docs, guides, blog } from 'collections/server';
 import { loader, type PageTreeTransformer } from 'fumadocs-core/source';
 import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons';
 import { contentRouteFor, docsImageRoute } from './shared';
+import { postSlugs } from './post-folders.mjs';
 
 /**
  * Docusaurus-style `sidebar_label` → override the sidebar node's name
@@ -49,6 +50,7 @@ export const guidesSource = loader({
 export const blogSource = loader({
   baseUrl: '/blog',
   source: blog.toFumadocsSource(),
+  slugs: postSlugs,
   plugins: [lucideIconsPlugin()],
   pageTree,
 });

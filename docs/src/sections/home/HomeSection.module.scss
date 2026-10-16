@@ -20,13 +20,10 @@
 
   .title {
     margin: 0;
-    /* Geist Pixel Grid for a security-console feel. Pixel grid encodes
-     * its own spacing so we run letter-spacing flat. */
-    font-family: var(--font-geist-pixel-grid), ui-monospace, monospace;
-    font-size: clamp(42px, 5.5vw, 64px);
+    font-size: clamp(31px, 4.2vw, 46px);
     font-weight: 500;
-    line-height: 1.05;
-    letter-spacing: 0;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
     color: var(--color-fd-foreground);
     text-wrap: balance;
   }
@@ -55,6 +52,10 @@
   @media (min-width: 768px) {
     padding: 2rem var(--site-shell-pad-x);
   }
+}
+
+.bannerWalkway {
+  position: relative;
 }
 
 .banner {
@@ -178,7 +179,7 @@
 @media (max-width: 640px) {
   .main {
     .title {
-      font-size: clamp(32px, 7vw, 42px);
+      font-size: clamp(29px, 7vw, 37px);
     }
 
     .description {

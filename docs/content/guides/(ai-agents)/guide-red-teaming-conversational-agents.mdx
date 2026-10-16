@@ -3,8 +3,6 @@ title: Red Teaming Conversational AI Agents
 sidebar_label: Conversational Agents
 ---
 
-import { ASSETS } from "@site/src/assets";
-
 Conversational AI agents are uniquely exposed compared to single-shot systems. Attackers do not need to craft the perfect prompt upfront—they can probe gradually, reframe their intent across turns, and exploit the agent's own prior replies to escalate toward harmful outputs. Because each response shapes what follows, a conversational agent that holds firm on turn one can be manipulated into a failure by turn five.
 
 This guide explains how to red team a conversational AI agent using [DeepTeam](https://github.com/confident-ai/deepteam). To make the process concrete, this guide uses a customer support agent for a financial services product as the example application—an environment where sensitive user data, legal constraints, and safety obligations intersect. The approach applies to any stateful conversational agent.
@@ -411,8 +409,7 @@ Conversational agents are particularly sensitive to regressions — a system pro
 [Confident AI](https://www.confident-ai.com) lets you schedule automated red teaming against your production conversational agent. Connect it via an AI Connection (a one-time HTTP endpoint configuration), select a framework like OWASP Top 10, and schedule daily or weekly runs. The platform sends multi-turn adversarial inputs to your endpoint, evaluates responses against vulnerability criteria, and produces risk reports with per-test-case analysis and CVSS-style severity scores.
 
 <ImageDisplayer
-  src={ASSETS.confidentRedTeamingRiskAssessment}
-  alt="Risk assessment dashboard in Confident AI"
+  id="platform/red-teaming/risk-assessment"
 />
 
 The comparison view across runs is especially valuable for conversational agents — when you update a system prompt or switch models, you can see exactly which multi-turn attack patterns started succeeding that previously failed. PDF exports are available for compliance documentation and stakeholder reviews.

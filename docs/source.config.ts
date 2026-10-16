@@ -19,9 +19,19 @@ import { BLOG_CATEGORY_IDS } from './lib/blog-categories';
  * Note: fumadocs-mdx only allows collection/config exports from this
  * file, so this schema stays internal (non-exported).
  */
+/**
+ * `peek: true` hides a mascot behind the page title that peeks over it now
+ * and then. Omit it rather than writing `peek: false`.
+ */
+const peekField = z.literal(true).optional();
+
 const extendedPageSchema = pageSchema.extend({
   sidebar_label: z.string().optional(),
+  peek: peekField,
 });
+
+// Only meta.json is sidebar config; other JSON beside a page is frame data.
+const META_FILES: string[] = ["**/meta.json"];
 
 const commonOptions = {
   docs: {
@@ -32,6 +42,7 @@ const commonOptions = {
   },
   meta: {
     schema: metaSchema,
+    files: META_FILES,
   },
 } as const;
 
@@ -44,7 +55,6 @@ const commonOptions = {
 const blogPageSchema = extendedPageSchema.extend({
   authors: z.array(z.enum(AUTHOR_IDS)).min(1).optional(),
   date: z.coerce.date().optional(),
-  image: z.string().url().optional(),
   // Optional — pins a post to one of the known categories in
   // `lib/blog-categories.ts`. Kept as a single value (not an array)
   // because the sidebar groupings are also single-section.
@@ -60,6 +70,7 @@ const blogOptions = {
   },
   meta: {
     schema: metaSchema,
+    files: META_FILES,
   },
 } as const;
 

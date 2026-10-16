@@ -3,8 +3,6 @@ title: Bad Likert Judge
 sidebar_label: Bad Likert Judge
 ---
 
-import { ASSETS } from "@site/src/assets";
-
 
 <AttackTagsDisplayer multiTurn={true} llmSimulated={true} />
 
@@ -82,7 +80,7 @@ print(result)
 6. **Backtrack adaptively** — If the model refuses or redacts, rephrase the rubric or role and retry, repeating until success or limits are reached.
 7. **Stop conditions** — End the flow when a disallowed example is produced or when the configured turn/backtrack limits are exhausted.
 
-<ImageDisplayer src={ASSETS.attackBadLikertJudge} alt="Bad Likert Judge" />
+<ImageDisplayer id="diagrams/in-house/attacks/bad-likert-judge" />
 
 If the `turn_level_attacks` is supplied with a list of single-turn attacks, `BadLikertJudge` adds controlled variation:
 
@@ -101,7 +99,7 @@ If the `turn_level_attacks` is supplied with a list of single-turn attacks, `Bad
 
 Here's an example of a `BadLikertJudge` attack targeting a racial bias vulnerability:
 
-<ImageDisplayer src={ASSETS.attackBadLikertJudgeExample} alt="SequentialJailbreak Example" />
+<ImageDisplayer id="diagrams/in-house/attacks/bad-likert-judge-example" />
 
 1. **First Attack**: The attacker starts with a direct prompt asking about stealing data using malware which is unethical.
 2. **Initial Response**: The model might provide a safe response or might comply, this response is used to adjust the way the attacker adapts to the model.

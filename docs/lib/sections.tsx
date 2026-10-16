@@ -7,6 +7,7 @@ import {
 } from '@/lib/source';
 import { createSection } from '@/lib/section';
 import BlogPostMeta from '@/src/components/BlogPostMeta';
+import BlogCover from '@/src/components/BlogCover';
 import SchemaInjector from '@/src/components/SchemaInjector/SchemaInjector';
 import {
   buildArticleSchema,
@@ -14,6 +15,7 @@ import {
 } from '@/src/utils/schema-helpers';
 import { getAuthor, type AuthorId } from '@/lib/authors';
 import type { BlogCategoryId } from '@/lib/blog-categories';
+import { postCover } from '@/lib/post-folders.mjs';
 
 type BlogFrontmatter = {
   title: string;
@@ -22,11 +24,6 @@ type BlogFrontmatter = {
   date?: Date | string;
   category?: BlogCategoryId;
   lastModified?: number | string | Date | null;
-  // Optional per-post cover image (absolute URL). When present it
-  // overrides the site-wide `og:image` fallback set in `app/layout.tsx`
-  // so social previews show the post's hero art instead of the generic
-  // social card. Validated in `blogPageSchema` (source.config.ts).
-  image?: string;
 };
 
 /**
@@ -91,6 +88,7 @@ export const blogSection = createSection({
     // `date` is still required in frontmatter for the git-less publish
     // sort / OG metadata, but we don't display it in the byline row.
     const authorNames = authors.map((id) => getAuthor(id).name);
+    const cover = postCover(page.path);
     const articleSchema = buildArticleSchema({
       title,
       description,
@@ -104,13 +102,14 @@ export const blogSection = createSection({
       <>
         <SchemaInjector schema={articleSchema} />
         <BlogPostMeta authors={authors} category={category} />
+        {cover ? <BlogCover src={cover} alt={title} /> : null}
       </>
     );
   },
   // Individual posts get `openGraph.type = 'article'` + publish /
   // modified timestamps + author list, so social previews render as
   // proper article cards instead of a generic website card. If the
-  // post sets `image:` in frontmatter we also promote it to
+  // post has a `cover.*` beside it we also promote it to
   // `openGraph.images` / `twitter.images` so the share card shows the
   // post's hero art instead of the generic site-wide social_card.png.
   extendMetadata: (page) => {
@@ -120,7 +119,7 @@ export const blogSection = createSection({
     const publishedTime = toIso(data.date);
     const modifiedTime = toIso(data.lastModified ?? undefined);
     const authorNames = data.authors.map((id) => getAuthor(id).name);
-    const image = data.image;
+    const image = postCover(page.path);
 
     return {
       openGraph: {
