@@ -20,24 +20,7 @@ There are two types of guardrails:
 
 A input/output guardrail is composed of one or more **guards**, and an input/output should only be let in/out if all guards have passed the checks. Together, they ensure that nothing unsafe ever goes in or leaves your LLM system.
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }}
->
-  <img
-    src="https://confident-bucket.s3.amazonaws.com/guardrails.svg"
-    alt="Datasets 1"
-    style={{
-      height: "auto",
-      maxHeight: "800px",
-      marginTop: "20px",
-      marginBottom: "40px",
-    }}
-  />
-</div>
+<ImageDisplayer id="diagrams/in-house/guardrails/input-output-guards" />
 
 The number of guards you choose to set up and whether you decide to utilize both types of guards depends on your priorities regarding **latency, cost, and LLM safety**.
 

@@ -3,14 +3,12 @@ title: Tree Jailbreaking
 sidebar_label: Tree Jailbreaking
 ---
 
-import { ASSETS } from "@site/src/assets";
-
 
 <AttackTagsDisplayer multiTurn={true} llmSimulated={true} />
 
 The `TreeJailbreaking` attack enhances a _base attack_ — a harmful prompt targeting a specific vulnerability — in multiple parallel ways, it forms a tree by exploring different variations of the attack to bypass the **target model**'s safeguards. Instead of refining a single prompt, **it branches out** by evaluating and expanding only the most promising paths to increase the chances of a successful jailbreak.
 
-<ImageDisplayer src={ASSETS.attackTreeJailbreakingIntro} alt="Tree Jailbreaking Intro" />
+<ImageDisplayer id="diagrams/in-house/attacks/tree-jailbreaking-overview" />
 
 :::caution IMPORTANT
 **Pruning is critical in Tree Jailbreaking**, as it ensures the system focuses resources on the most effective branches.
@@ -79,7 +77,7 @@ print(result)
 
 Instead of refining a single prompt, TreeJailbreaking **diverges** into multiple candidates at each step — retaining only the most effective ones and pruning weaker paths — creating a dynamic, exploratory attack tree.
 
-<ImageDisplayer src={ASSETS.attackTreeJailbreaking} alt="Tree Jailbreaking" />
+<ImageDisplayer id="diagrams/in-house/attacks/tree-jailbreaking" />
 
 If the `turn_level_attacks` is supplied with a list of single-turn attacks, `TreeJailbreaking` adds controlled variation:
 
@@ -94,7 +92,7 @@ This hybrid approach combines **broad parallel exploration** with **targeted ref
 
 Here's an example of how `TreeJailbreaking` attack works from a vulnerability:
 
-<ImageDisplayer src={ASSETS.attackTreeJailbreakingExample} alt="Tree Jailbreaking" />
+<ImageDisplayer id="diagrams/in-house/attacks/tree-jailbreaking-example" />
 
 1. **Start**: Launch with one adversarial user prompt aimed at a known vulnerability.
 2. **Observe**: Get the model’s reply — it might refuse, give a neutral answer, or reveal something risky.

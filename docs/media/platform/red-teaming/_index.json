@@ -1,0 +1,28 @@
+{
+  "images": [
+    {
+      "file": "choose-framework.webp",
+      "title": "Choosing a framework in Confident AI",
+      "alt": "Confident AI Add Framework dialog listing built-in frameworks such as OWASP Top 10 for LLMs, OWASP Top 10 for Agents and MITRE ATLAS",
+      "width": 2400,
+      "height": 1350,
+      "source": {
+        "urls": [
+          "https://confident-docs.s3.us-east-1.amazonaws.com/red-teaming:fameworks:choose-framework.png"
+        ]
+      }
+    },
+    {
+      "file": "risk-assessment.webp",
+      "title": "Risk assessment in Confident AI",
+      "alt": "Confident AI risk assessment page showing the executive summary with pass rate, test case and vulnerability counts, a CVSS risk score gauge, and per-vulnerability results",
+      "width": 2400,
+      "height": 1352,
+      "source": {
+        "urls": [
+          "https://confident-docs.s3.us-east-1.amazonaws.com/red-teaming:quick-start:risk-assessment.png"
+        ]
+      }
+    }
+  ]
+}

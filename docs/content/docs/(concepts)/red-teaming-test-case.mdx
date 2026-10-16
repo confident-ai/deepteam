@@ -3,8 +3,6 @@ title: Test Case
 sidebar_label: Test Case
 ---
 
-import { ASSETS } from "@site/src/assets";
-
 
 An `RTTestCase` is the core unit of red teaming in `deepteam`. It represents a **single attempt at red teaming** a target LLM using an [adversarial attack](/docs/red-teaming-adversarial-attacks) — either a single prompt or a multi-turn conversation — against a [vulnerability](/docs/red-teaming-vulnerabilities). Each test case can be individually evaluated using a vulnerability to check for any harmful outputs.
 
@@ -70,7 +68,7 @@ Red teaming refers to the practice of probing and attacking AI models in a contr
 
 Let's take a closer look at the red teaming process and the role of `RTTestCase` in this:
 
-<ImageDisplayer src={ASSETS.redTeamingProcess} alt="Red Teaming Test Case" />
+<ImageDisplayer id="diagrams/in-house/red-teaming/test-case-creation" />
 
 1. First the chosen vulnerability generates a **base attack** that is tailored to the target LLM's purpose and creates a `RTTestCase` containing `input`, `vulnerability` and `vulnerability_type`.
 
@@ -81,7 +79,7 @@ Let's take a closer look at the red teaming process and the role of `RTTestCase`
 :::note
 For multi-turn attacks, the `turns` parameter is populated instead of `actual_output`. `turns` is a list of `RTTurn`s representing the entire conversation between the attacker and target LLM as exchanges between `user` and `assistant` respectively.
 
-<ImageDisplayer src={ASSETS.redTeamingTestCaseTurns} alt="Red Teaming Test Case Turns" />
+<ImageDisplayer id="diagrams/in-house/red-teaming/multi-turn-test-case" />
 
 :::
 
@@ -91,7 +89,7 @@ After these 3 steps, the `RTTestCase` can now be evaluated using the metric that
 
 An `RTTestCase` contains information like `vulnerability`, `input`, and `actual_output` or `turns`. Any test case filled with `input` and `actual_output` or `turns` can be used for evaluation to check if the target LLM has generated any harmful content. The `score`, `reason` and `error` are populated after evaluating a test case.
 
-<ImageDisplayer src={ASSETS.redTeamingTestCase} alt="Red Teaming Test Case" />
+<ImageDisplayer id="diagrams/in-house/red-teaming/test-case-anatomy" />
 
 This finalized test case can now be used to build a [risk assessment](/docs/red-teaming-risk-assessment) — a full report on how the target LLM has performed across all attacks and vulnerabilities
 

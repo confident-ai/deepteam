@@ -3,8 +3,6 @@ title: Red Teaming Against Safety Frameworks
 sidebar_label: Safety Frameworks
 ---
 
-import { ASSETS } from "@site/src/assets";
-
 Manually selecting vulnerabilities and attacks for every assessment requires domain expertise and risks missing critical threat categories. AI safety frameworks solve this by providing standardized, research-backed risk taxonomies that automatically map to the right vulnerabilities and attack techniques. DeepTeam supports 6 frameworks out of the box, covering everything from the OWASP Top 10 to dataset-driven benchmarks.
 
 This guide explains how to use safety frameworks in DeepTeam for structured, compliance-aligned red teaming. It covers framework selection, category scoping, result interpretation, and when to use frameworks versus manual vulnerability selection.
@@ -199,8 +197,7 @@ Framework-based red teaming is most valuable when run continuously — complianc
 Select a framework (OWASP, MITRE, NIST, or custom) from the UI, connect your application via an AI Connection, and schedule recurring runs. Each assessment produces per-category breakdowns with CVSS-style severity scores, so you can track compliance posture across risk categories over time. PDF exports are available for audits, security reviews, and regulatory documentation.
 
 <ImageDisplayer
-  src={ASSETS.confidentRedTeamingChooseFramework}
-  alt="Choosing a security framework in Confident AI"
+  id="platform/red-teaming/choose-framework"
 />
 
 ## What to Do Next

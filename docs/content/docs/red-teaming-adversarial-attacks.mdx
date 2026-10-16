@@ -112,47 +112,13 @@ Encoding-based attack enhancements apply simple encoding techniques, such as cha
 
 `deepteam` supports multiple encoding-based attack enhancements that work by transforming the baseline attack using different encoding or encryption techniques. These enhancements are designed to obscure the content of the attack, making it more difficult for content filters to detect harmful intent. Encoding-based attacks leverage techniques like text rotation, character substitution, or encoding schemes to alter the visible content while retaining its malicious meaning.
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }}
->
-  <img
-    src="https://confident-bucket.s3.amazonaws.com/attack_enhancements_encoding.svg"
-    alt="LangChain"
-    style={{
-      marginTop: "20px",
-      marginBottom: "20px",
-      height: "auto",
-      maxHeight: "800px",
-    }}
-  />
-</div>
+<ImageDisplayer id="diagrams/in-house/attacks/encoding-enhancement" />
 
 ### One-shot
 
 One-shot attack enhancements utilize an LLM to creatively **modify the baseline attack in a single pass**. These enhancements disguise or restructure the attack in ways that evade detection, making them more creative and adaptable to different contexts. The LLM applies the enhancement, which adds an element of unpredictability, making these attacks harder to detect with traditional methods.
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }}
->
-  <img
-    src="https://confident-bucket.s3.amazonaws.com/attack_enhancements_one_shot.svg"
-    alt="LangChain"
-    style={{
-      marginTop: "20px",
-      marginBottom: "40px",
-      height: "auto",
-      maxHeight: "800px",
-    }}
-  />
-</div>
+<ImageDisplayer id="diagrams/in-house/attacks/one-shot-enhancement" />
 
 Unlike encoding-based enhancements, which are deterministic, one-shot enhancements are non-deterministic and variable. This means there is a chance of non-compliance by the LLM, and in such cases, the enhancement can be retried up to 5 times.
 
@@ -181,23 +147,7 @@ There are a total of 14 single-turn attacks available on `deepteam`:
 
 Multi-turn progressions are **iterative** red-teaming flows that start from a base attack taken from a known vulnerability and adapt this attack across conversational turns. Each turn uses the **target model's previous reply to refine** the attack by rephrasing, changing persona, or escalating intensity. This technique allows you to probe weaknesses gradually instead of requesting a single direct exploit.
 
-<div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }}
->
-  <img
-    src="https://confident-bucket.s3.amazonaws.com/attack_enhancements_dialogue.svg"
-    alt="LangChain"
-    style={{
-      margin: "40px",
-      height: "auto",
-      maxHeight: "800px",
-    }}
-  />
-</div>
+<ImageDisplayer id="diagrams/in-house/attacks/dialogue-enhancement" />
 
 The flow continues until the model produces a harmful output or the configured turn/depth limits are reached; this *bounded* approach makes tests repeatable and reduces risk. Because each turn builds on prior context, multi-turn attacks are especially effective at revealing subtle failure modes such as inconsistent refusals, context leakage, and escalation vulnerabilities.
 

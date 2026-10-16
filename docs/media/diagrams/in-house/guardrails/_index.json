@@ -1,0 +1,16 @@
+{
+  "images": [
+    {
+      "file": "input-output-guards.svg",
+      "title": "Input and output guards",
+      "alt": "User input passes through input guards such as a privacy guard before reaching the LLM application, and its output passes through toxicity, hallucination and data leakage guards before the response is returned",
+      "width": 1373,
+      "height": 474,
+      "source": {
+        "urls": [
+          "https://confident-bucket.s3.amazonaws.com/guardrails.svg"
+        ]
+      }
+    }
+  ]
+}

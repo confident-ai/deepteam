@@ -3,8 +3,6 @@ title: Red Teaming Foundational LLMs
 sidebar_label: Foundational Models
 ---
 
-import { ASSETS } from "@site/src/assets";
-
 Every AI application is ultimately powered by a model. Before you evaluate RAG pipelines, agents, or conversational systems, the model itself needs to be tested — does it resist harmful prompts? Does it leak its system prompt? Does it produce biased, toxic, or illegal content when pushed?
 
 Model-level red teaming is the foundation that the rest of your safety stack builds on. If the model fails here, no amount of application-level guardrails will reliably save you.
@@ -450,8 +448,7 @@ Running `red_team()` locally works for development, but model safety is not a on
 Connect your model via an AI Connection (a one-time HTTP endpoint setup), select a framework like OWASP Top 10, and assessments run on a schedule without maintaining local test infrastructure. Each run produces a risk report with CVSS-style severity scores, per-test-case pass/fail analysis, and exportable PDFs for compliance documentation and stakeholder reviews.
 
 <ImageDisplayer
-  src={ASSETS.confidentRedTeamingRiskAssessment}
-  alt="Risk assessment dashboard in Confident AI"
+  id="platform/red-teaming/risk-assessment"
 />
 
 The comparison view across runs is where the value compounds — when you swap from GPT-4o-mini to GPT-4o, or update a system prompt, you can see exactly which vulnerabilities improved and which regressed, test case by test case.

@@ -3,8 +3,6 @@ title: Risk Assessment
 sidebar_label: Risk Assessment
 ---
 
-import { ASSETS } from "@site/src/assets";
-
 ## Quick Summary
 
 In `deepteam`, after red teaming an LLM with your [adversarial attacks](/docs/red-teaming-adversarial-attacks) and [vulnerabilities](/docs/red-teaming-vulnerabilities), you receive a `RiskAssessment` object as the return value of the `red_team()` function. Here's an example walkthrough:
@@ -45,7 +43,7 @@ The `RiskAssessment` object is the return value the `red_team()` method, when yo
 
 These test cases are then used to build a complete red teaming report, encapsulated in a `RiskAssessment` object.
 
-<ImageDisplayer src={ASSETS.redTeamingRiskAssessment} alt="Red Teaming Risk Assessment" />
+<ImageDisplayer id="diagrams/in-house/red-teaming/risk-assessment-structure" />
 
 The `RiskAssessment` is constructed by categorizing test cases in two ways:
 
