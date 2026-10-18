@@ -633,6 +633,7 @@ class RedTeamer:
                     model_response.retrieval_context
                 )
                 red_teaming_test_case.tools_called = model_response.tools_called
+                red_teaming_test_case.metadata = model_response.metadata
                 metric.measure(red_teaming_test_case)
                 red_teaming_test_case.score = metric.score
                 red_teaming_test_case.reason = metric.reason
@@ -722,6 +723,7 @@ class RedTeamer:
                     model_response.retrieval_context
                 )
                 red_teaming_test_case.tools_called = model_response.tools_called
+                red_teaming_test_case.metadata = model_response.metadata
                 await metric.a_measure(red_teaming_test_case)
                 red_teaming_test_case.score = metric.score
                 red_teaming_test_case.reason = metric.reason
