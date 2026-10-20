@@ -11,6 +11,13 @@
           "https://confident-bucket.s3.amazonaws.com/guardrails.svg"
         ]
       }
+    },
+    {
+      "file": "msj-prompt-defenses.webp",
+      "title": "Prompt-level defenses against a 205-shot attack",
+      "alt": "Attack success rate of a 205-shot many-shot jailbreak on the deception category: 61% with no defense, 54% with the In-Context Defense, and 2% with the Cautionary Warning Defense.",
+      "width": 2136,
+      "height": 1050
     }
   ]
 }
