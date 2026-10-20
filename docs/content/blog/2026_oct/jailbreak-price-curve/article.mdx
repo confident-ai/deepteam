@@ -1,5 +1,5 @@
 ---
-title: "Your Model Doesn't Have a Jailbreak Rate. It Has a Price Curve."
+title: "Your Model Doesn't Have a Jailbreak Rate. It Has a Price Tag."
 description: "Attack success rises predictably with an attacker's budget: more retries, more shots, more turns. What the research on jailbreak scaling laws means for how you red team LLMs."
 authors: [penguine]
 date: 2026-10-20
@@ -83,9 +83,9 @@ A straight line on a log-log plot is the kind of thing you can extrapolate. The 
 
 <ImageDisplayer id="diagrams/external/reference/best-of-n-power-law-forecast" caption="Figure 4 of Hughes et al. (2024): power laws fitted to the first 1,000 attempts (shaded) forecast the final attack success rate (crosses) at roughly ten times the budget. Reproduced under CC BY 4.0." />
 
-### We checked this ourselves
+### Re-fitting the paper's own numbers
 
-That's a strong claim, so we tried it on the paper's own published numbers. Using only the five rows of Table 3 at or below 1,000 attempts, we fit $a$ and $b$ by least squares on the linearized form above, then asked the fit what would happen at 10,000 attempts.
+That's a strong claim, so we re-fit the power law ourselves on the paper's published results, without running any new attacks. Using only the five rows of Table 3 at or below 1,000 attempts, we fit $a$ and $b$ by least squares on the linearized form above, then asked the fit what would happen at 10,000 attempts.
 
 For Claude 3.5 Sonnet the fit is $a = 3.28$, $b = 0.282$, and it predicts 78.3%. The observed number is 78.0%.
 
