@@ -1,4 +1,3 @@
-import path from "node:path";
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -15,8 +14,6 @@ import {
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import { baseOptions } from "@/lib/layout.shared";
 import { getMDXComponents } from "@/components/mdx";
-import { createFrameComponents } from "@/components/frames";
-import { loadFrameData } from "@/lib/frames/store";
 import { gitConfig } from "@/lib/shared";
 import { getPageContributors } from "@/lib/contributors";
 import { getPageDescription } from "@/lib/source";
@@ -213,9 +210,6 @@ export function createSection(config: SectionConfig) {
           <MDX
             components={getMDXComponents({
               a: createRelativeLink(source, page),
-              ...createFrameComponents(
-                loadFrameData(path.join(process.cwd(), contentDir, page.path)),
-              ),
             })}
           />
         </DocsBody>
