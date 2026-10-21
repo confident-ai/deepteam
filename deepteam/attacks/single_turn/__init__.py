@@ -3,6 +3,7 @@ from .adversarial_poetry import AdversarialPoetry
 from .base64 import Base64
 from .gray_box import GrayBox
 from .leetspeak import Leetspeak
+from .lsb_image_stego import LSBImageStego
 from .math_problem import MathProblem
 from .multilingual import Multilingual
 from .prompt_injection import PromptInjection
@@ -31,6 +32,7 @@ __all__ = [
     "Base64",
     "GrayBox",
     "Leetspeak",
+    "LSBImageStego",
     "MathProblem",
     "Multilingual",
     "PromptInjection",
