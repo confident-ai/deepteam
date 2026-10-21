@@ -191,6 +191,76 @@
           "content/blog/images/contextual-chains.png"
         ]
       }
+    },
+    {
+      "file": "bon-loop.webp",
+      "title": "The Best-of-N jailbreaking loop",
+      "alt": "A harmful request is randomly augmented, sent to the target model, and graded by a harm classifier. If the response is harmful, or the attempt budget N is spent, the loop stops. Otherwise it draws a new random augmentation and tries again.",
+      "width": 2136,
+      "height": 1953
+    },
+    {
+      "file": "bon-asr-by-attempts.webp",
+      "title": "Attack success keeps climbing with every order of magnitude of attempts",
+      "alt": "Best-of-N attack success rate against the number of attempts, from 50 to 10,000 on a log scale, for six models. Every model climbs steadily: GPT-4o goes from 42% at 50 attempts to 89% at 10,000; Claude 3.5 Sonnet from 34% to 78%; Gemini 1.5 Pro from 8% to 50%.",
+      "width": 2136,
+      "height": 1605
+    },
+    {
+      "file": "bon-sonnet-forecast.webp",
+      "title": "Five data points, one equation, ten times the budget",
+      "alt": "The power law fitted to Claude 3.5 Sonnet's Best-of-N results at 1,000 attempts or fewer, extended to 10,000 attempts. It forecasts 78.3% at 10,000 attempts; the observed value is 78%.",
+      "width": 2136,
+      "height": 1368
+    },
+    {
+      "file": "bon-forecast-vs-observed.webp",
+      "title": "Forecast versus observed attack success at 10,000 attempts",
+      "alt": "For six models, the attack success rate forecast at 10,000 attempts from a power law fitted on 1,000 attempts or fewer, next to the observed rate. The two are within 1.6 percentage points for every model: GPT-4o 87.1% forecast versus 88.7% observed, Gemini 1.5 Pro 50.3% versus 49.7%.",
+      "width": 2136,
+      "height": 1380
+    },
+    {
+      "file": "bon-resample-reliability.webp",
+      "title": "How often a successful jailbreak works again",
+      "alt": "When a successful Best-of-N jailbreak is resent unchanged, it succeeds again only 15% to 52% of the time. At temperature 1: Claude 3.5 Sonnet 46%, Claude 3 Opus 44.7%, GPT-4o 24.3%, GPT-4o-mini 26.4%, Gemini 1.5 Flash 15.5%, Gemini 1.5 Pro 14.9%. At temperature 0 the rates are slightly higher.",
+      "width": 2136,
+      "height": 1713
+    },
+    {
+      "file": "msj-intercept-vs-slope.webp",
+      "title": "Training moves the line up, not flatter",
+      "alt": "Two lines of log negative log-likelihood of a harmful answer against log2 of the number of shots. Before safety training, the line crosses the jailbreak threshold at 32 shots. After more safety training, the line starts higher but has the same slope, so it crosses the threshold at 128 shots: four times the shots, but it still crosses.",
+      "width": 2136,
+      "height": 1446
+    },
+    {
+      "file": "crescendo-sequence.webp",
+      "title": "How a Crescendo attack escalates",
+      "alt": "An attacker asks a harmless related question, then asks the model to expand on its own answer, escalating a step at a time. When the model refuses, the attacker backtracks and rephrases, and the model complies by building on its own earlier answers.",
+      "width": 2136,
+      "height": 1506
+    },
+    {
+      "file": "crescendo-vs-baselines.webp",
+      "title": "Average attack success: Crescendo versus single-turn baselines",
+      "alt": "Average attack success rate on 50 AdvBench tasks. Crescendo: 56.2% on GPT-4 and 82.6% on Gemini Pro. PAIR: 40% and 33%. Many-shot: 37% and 35.4%.",
+      "width": 2136,
+      "height": 1353
+    },
+    {
+      "file": "mhj-human-vs-automated.webp",
+      "title": "Defenses that hold against single-turn automation fall to multi-turn humans",
+      "alt": "Attack success rate on HarmBench against four defenses on Llama-3-8B. Circuit breakers (RR): 8.3% for the best automated single-turn attack versus 51.7% for human multi-turn red teamers. LAT: 10% versus 75.4%. DERTA: 68.3% versus 87.9%. Cygnet: 0% versus 70.4%.",
+      "width": 2136,
+      "height": 1533
+    },
+    {
+      "file": "bon-composition.webp",
+      "title": "Combining budgets moves the whole curve",
+      "alt": "Final attack success rate for Best-of-N alone versus Best-of-N combined with a prefix jailbreak: GPT-4o text from 86% to 97%, Claude 3.5 Sonnet vision from 32% to 70%, Gemini 1.5 Pro audio from 59% to 87%.",
+      "width": 2136,
+      "height": 987
     }
   ]
 }
