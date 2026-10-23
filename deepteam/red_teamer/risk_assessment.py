@@ -29,9 +29,9 @@ class TestCasesList(list):
                 "Error": case.error,
                 "CVSS Score": case.cvss_score,
                 "Status": (
-                    "Passed"
-                    if case.score and case.score > 0
-                    else "Errored" if case.error else "Failed"
+                    "Errored"
+                    if case.error
+                    else "Passed" if case.score and case.score > 0 else "Failed"
                 ),
             }
             if case.metadata:
