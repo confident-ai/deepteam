@@ -28,7 +28,7 @@
  *
  * `utm_campaign` and `utm_term` come from the visitor's stored last_touch
  * (captured from the URL when they first landed). This lets a Google ad
- * campaign survive the deepeval-docs hop into app.confident-ai.com.
+ * campaign survive the deepeval-docs hop into cloud.confident-ai.com.
  *
  * Programmatic hosts (api.*, eu.api.*, au.api.*, deepeval.*, eu.deepeval.*,
  * au.deepeval.*, otel.*, eu.otel.*, au.otel.*) are intentionally excluded
@@ -45,7 +45,7 @@ export const CONFIDENT_HOSTS_BY_NAME = {
   /** Marketing site + cloud docs. The default for nearly every link. */
   WWW: 'https://www.confident-ai.com',
   /** App dashboard / sign-up. */
-  APP: 'https://app.confident-ai.com',
+  APP: 'https://cloud.confident-ai.com',
   /** Marketing root (no `www.` prefix). */
   ROOT: 'https://confident-ai.com',
 } as const;

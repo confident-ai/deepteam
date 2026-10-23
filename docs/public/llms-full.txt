@@ -2411,7 +2411,7 @@ and iterate on LLM (applications) and was built with the following principles in
 - Metrics are simple to customize and covers all use cases.
 - Red team, safety scan LLM applications for security vulnerabilities.
 
-DeepEval also integrates natively with [Confident AI](https://app.confident-ai.com/), an AI quality platform with observability, evals, and monitoring for LLM applications.
+DeepEval also integrates natively with [Confident AI](https://cloud.confident-ai.com/), an AI quality platform with observability, evals, and monitoring for LLM applications.
 
 Delivered by
 
@@ -2447,7 +2447,7 @@ deepeval login
 
 tip
 
-Confident AI is free and allows you to keep all evaluation results on the cloud. Sign up [here.](https://app.confident-ai.com/)
+Confident AI is free and allows you to keep all evaluation results on the cloud. Sign up [here.](https://cloud.confident-ai.com/)
 
 ## Create Your First Test Run [​](https://deepeval.com/docs/getting-started\#create-your-first-test-run "Direct link to Create Your First Test Run")
 
@@ -2503,7 +2503,7 @@ You'll need to set your `OPENAI_API_KEY` as an environment variable before runni
 
 ### Save Results On Cloud [​](https://deepeval.com/docs/getting-started\#save-results-on-cloud "Direct link to Save Results On Cloud")
 
-It is **highly recommended** to save results on Confident AI — an AI quality platform `deepeval` integrates with natively — to make your evaluation life easier. Run `deepeval login` (or [click here](https://app.confident-ai.com/)) in the CLI to get your API key.
+It is **highly recommended** to save results on Confident AI — an AI quality platform `deepeval` integrates with natively — to make your evaluation life easier. Run `deepeval login` (or [click here](https://cloud.confident-ai.com/)) in the CLI to get your API key.
 
 ```codeBlockLines_e6Vv
 deepeval login
@@ -2898,7 +2898,7 @@ This section is just an overview of Confident AI. If Confident AI sounds interes
 
 ### Login [​](https://deepeval.com/docs/getting-started\#login "Direct link to Login")
 
-Confident AI integrates 100% with `deepeval`. All you need to do is [create an account here](https://app.confident-ai.com/), or run the following command to login:
+Confident AI integrates 100% with `deepeval`. All you need to do is [create an account here](https://cloud.confident-ai.com/), or run the following command to login:
 
 ```codeBlockLines_e6Vv
 deepeval login
@@ -4581,7 +4581,7 @@ For companies that need additional security compliance
 
 ![no](https://deepeval.com/icons/cross.svg)
 
-Confident AI is also self-served, meaning you don't have to talk to us to try it out. Sign up [here.](https://app.confident-ai.com/)
+Confident AI is also self-served, meaning you don't have to talk to us to try it out. Sign up [here.](https://cloud.confident-ai.com/)
 
 ## Conclusion [​](https://deepeval.com/blog/deepeval-vs-trulens\#conclusion "Direct link to Conclusion")
 
@@ -6466,7 +6466,7 @@ For companies that need additional security compliance
 
 ![no](https://deepeval.com/icons/cross.svg)
 
-Confident AI is also self-served, meaning you don't have to talk to us to try it out. Sign up [here.](https://app.confident-ai.com/)
+Confident AI is also self-served, meaning you don't have to talk to us to try it out. Sign up [here.](https://cloud.confident-ai.com/)
 
 ## Conclusion [​](https://deepeval.com/blog/deepeval-vs-ragas\#conclusion "Direct link to Conclusion")
 
@@ -9670,7 +9670,7 @@ Your LLM system should provide a balanced perspective without showing favoritism
 ## Confident AI Documentation
 [Skip to Content](https://www.confident-ai.com/docs/#nextra-skip-nav)
 
-Confident AI is [free to try](https://app.confident-ai.com/auth/signup). No credit card required.
+Confident AI is [free to try](https://cloud.confident-ai.com/auth/signup). No credit card required.
 
 Welcome
 
@@ -12988,7 +12988,7 @@ For companies that need additional security compliance
 
 ![no](https://deepeval.com/icons/cross.svg)
 
-Confident AI is also self-served, meaning you don't have to talk to us to try it out. Sign up [here.](https://app.confident-ai.com/)
+Confident AI is also self-served, meaning you don't have to talk to us to try it out. Sign up [here.](https://cloud.confident-ai.com/)
 
 ## Conclusion [​](https://deepeval.com/blog/tags/comparisons\#conclusion "Direct link to Conclusion")
 
@@ -13715,7 +13715,7 @@ For companies that need additional security compliance
 
 ![no](https://deepeval.com/icons/cross.svg)
 
-Confident AI is also self-served, meaning you don't have to talk to us to try it out. Sign up [here.](https://app.confident-ai.com/)
+Confident AI is also self-served, meaning you don't have to talk to us to try it out. Sign up [here.](https://cloud.confident-ai.com/)
 
 ## Conclusion [​](https://deepeval.com/blog/tags/comparisons\#conclusion "Direct link to Conclusion")
 
@@ -16078,7 +16078,7 @@ Since `expected_output`, `context`, `retrieval_context`, `tools_called`, and `ex
 
 tip
 
-Before we begin, we highly recommend [logging into Confident AI](https://app.confident-ai.com/) to keep track of all evaluation results created by `deepeval` on the cloud:
+Before we begin, we highly recommend [logging into Confident AI](https://cloud.confident-ai.com/) to keep track of all evaluation results created by `deepeval` on the cloud:
 
 ```codeBlockLines_e6Vv
 deepeval login
@@ -20753,7 +20753,7 @@ info
 
 Since `deepeval` is an LLM evaluation framework, the **`input` and `actual_output` are always mandatory.** However, this does not mean they are necessarily used for evaluation, and you can also add additional parameters such as the `tools_called` for each `LLMTestCase`.
 
-To get your own sharable testing report with `deepeval`, [sign up to Confident AI](https://app.confident-ai.com/), or run `deepeval login` in the CLI:
+To get your own sharable testing report with `deepeval`, [sign up to Confident AI](https://cloud.confident-ai.com/), or run `deepeval login` in the CLI:
 
 ```codeBlockLines_e6Vv
 deepeval login
