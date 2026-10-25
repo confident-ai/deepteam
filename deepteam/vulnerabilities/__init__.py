@@ -36,6 +36,9 @@ from .cross_context_retrieval.cross_context_retrieval import (
 from .system_reconnaissance.system_reconnaissance import SystemReconnaissance
 from .exploit_tool_agent.exploit_tool_agent import ExploitToolAgent
 from .external_system_abuse.external_system_abuse import ExternalSystemAbuse
+from .mcp_server_trust_exploitation.mcp_server_trust_exploitation import (
+    MCPServerTrustExploitation,
+)
 from .autonomous_agent_drift.autonomous_agent_drift import AutonomousAgentDrift
 from .competition.competition import Competition
 from .graphic_content.graphic_content import GraphicContent
@@ -79,6 +82,7 @@ __all__ = [
     "SystemReconnaissance",
     "ExploitToolAgent",
     "ExternalSystemAbuse",
+    "MCPServerTrustExploitation",
     "Competition",
     "GraphicContent",
     "PersonalSafety",

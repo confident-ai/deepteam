@@ -84,6 +84,12 @@ from deepteam.vulnerabilities.system_reconnaissance.types import (
 from deepteam.vulnerabilities.system_reconnaissance.template import (
     SystemReconnaissanceTemplate,
 )
+from deepteam.vulnerabilities.mcp_server_trust_exploitation.types import (
+    MCPServerTrustExploitationType,
+)
+from deepteam.vulnerabilities.mcp_server_trust_exploitation.template import (
+    MCPServerTrustExploitationTemplate,
+)
 
 # Import agentic vulnerability types
 from deepteam.vulnerabilities.goal_theft.types import GoalTheftType
@@ -122,6 +128,7 @@ VulnerabilityType = Union[
     ExternalSystemAbuseType,
     CrossContextRetrievalType,
     SystemReconnaissanceType,
+    MCPServerTrustExploitationType,
     # Restored vulnerability types
     RobustnessType,
     ExcessiveAgencyType,
@@ -156,4 +163,5 @@ TemplateType = Union[
     ExternalSystemAbuseTemplate,
     CrossContextRetrievalTemplate,
     SystemReconnaissanceTemplate,
+    MCPServerTrustExploitationTemplate,
 ]
