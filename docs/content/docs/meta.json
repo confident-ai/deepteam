@@ -10,6 +10,9 @@
     "red-teaming-yaml-cli",
     "(concepts)",
 
+    "---[Bot]Agentic Red Teaming---",
+    "agentic-red-teaming",
+
     "---[Crosshair]Adversarial Attacks---",
     "red-teaming-adversarial-attacks",
     "(single-turn)",
