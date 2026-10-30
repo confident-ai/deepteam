@@ -4,10 +4,14 @@ import os
 import socket
 import sys
 import uuid
-import sentry_sdk
 from enum import Enum
 import requests
 from posthog import Posthog
+
+try:
+    import sentry_sdk
+except ImportError:
+    sentry_sdk = None
 from typing import List
 
 
@@ -61,14 +65,15 @@ if not telemetry_opt_out():
         )
 
         anonymous_public_ip = get_anonymous_public_ip()
-        sentry_sdk.init(
-            dsn="https://5ef587d58109ee45d6544f3657efdd1f@o4506098477236224.ingest.sentry.io/4506098479136768",
-            profiles_sample_rate=1.0,
-            traces_sample_rate=1.0,  # For performance monitoring
-            send_default_pii=False,  # Don't send personally identifiable information
-            attach_stacktrace=False,  # Don't attach stack traces to messages
-            default_integrations=False,  # Disable Sentry's default integrations
-        )
+        if sentry_sdk is not None:
+            sentry_sdk.init(
+                dsn="https://5ef587...dd1f@o4506098477236224.ingest.sentry.io/4506098479136768",
+                profiles_sample_rate=1.0,
+                traces_sample_rate=1.0,  # For performance monitoring
+                send_default_pii=False,  # Don't send personally identifiable information
+                attach_stacktrace=False,  # Don't attach stack traces to messages
+                default_integrations=False,  # Disable Sentry's default integrations
+            )
 
         # Set up the Tracer Provider
         if (
@@ -116,7 +121,8 @@ if (
 
     def handle_exception(exc_type, exc_value, exc_traceback):
         print({"exc_type": exc_type, "exc_value": exc_value})
-        sentry_sdk.capture_exception(exc_value)
+        if sentry_sdk is not None:
+            sentry_sdk.capture_exception(exc_value)
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
     sys.excepthook = handle_exception
