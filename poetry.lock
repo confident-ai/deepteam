@@ -4651,4 +4651,4 @@ harnesses = ["claude-agent-sdk", "cursor-sdk", "openai-codex"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<3.14"
-content-hash = "f372cecf8e1d7449d16ba5992e62e0aab228c4a800c7f485238dccf33d4bf144"
+content-hash = "e18cfee660fe3c78ed560043de73bd511117d0254dc0e0734557670072f1ac96"
