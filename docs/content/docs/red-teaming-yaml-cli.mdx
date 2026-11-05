@@ -79,7 +79,7 @@ There are **TWO** optional parameters when creating models configuration:
 
 You can use custom for red teaming by using `deepeval`'s [integrations](https://deepeval.com/integrations/models/openai) or [custom LLM](https://deepeval.com/guides/guides-using-custom-llms).
 
-<Tabs items={["Custom", "OpenAI", "Azure", "Ollama", "Gemini", "Anthropic", "Bedrock", "Local", "Portkey"]} groupId="custom-llms">
+<Tabs items={["Custom", "OpenAI", "Azure", "Ollama", "Gemini", "Anthropic", "Bedrock", "Local", "OrcaRouter", "Portkey"]} groupId="custom-llms">
 <Tab value="Custom">
 ```yaml
 models:
@@ -179,6 +179,19 @@ models:
       temperature: 1
       base_url: "http://example:base-url"
       api_key: "<your-api-key>"
+  evaluation:
+    ...
+```
+</Tab>
+<Tab value="OrcaRouter">
+```yaml
+models:
+  simulator: 
+    model:
+      provider: orcarouter
+      model: "orcarouter/auto"
+      temperature: 1
+      api_key: "<your-orcarouter-api-key>" # or set ORCAROUTER_API_KEY
   evaluation:
     ...
 ```
