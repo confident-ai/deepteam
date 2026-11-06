@@ -243,8 +243,10 @@ def construct_risk_assessment_overview(
             1 for tc in test_cases if tc.score is not None and tc.score > 0
         )
         errored = errored_by_vulnerability_type.get(vuln_type, 0)
-        failing = len(test_cases) - passing - errored
-        valid_cases = len(test_cases) - errored
+        # `test_cases` already excludes errored rows, so do not subtract them
+        # again from the totals below (that would double-count).
+        failing = len(test_cases) - passing
+        valid_cases = len(test_cases)
         pass_rate = (passing / valid_cases) if valid_cases > 0 else 0.0
 
         vulnerability_type_results.append(
@@ -265,8 +267,8 @@ def construct_risk_assessment_overview(
                 1 for tc in test_cases if tc.score is not None and tc.score > 0
             )
             errored = errored_by_attack_method.get(attack_method, 0)
-            failing = len(test_cases) - passing - errored
-            valid_cases = len(test_cases) - errored
+            failing = len(test_cases) - passing
+            valid_cases = len(test_cases)
             pass_rate = (passing / valid_cases) if valid_cases > 0 else 0.0
 
             attack_method_results.append(

@@ -55,6 +55,25 @@ def test_overview_errored_matches_number_of_errored_test_cases():
     )
 
 
+def test_errored_cases_do_not_change_pass_rate_denominator():
+    """The fix must only restore the accounting, not move any score."""
+    test_cases = [
+        _test_case("Toxicity", ToxicityType.PROFANITY, 1),
+        _test_case("Toxicity", ToxicityType.PROFANITY, 0),
+        _test_case("Toxicity", ToxicityType.PROFANITY, None, "judge timeout"),
+    ]
+
+    overview = construct_risk_assessment_overview(test_cases, run_duration=1.0)
+    result = overview.vulnerability_type_results[0]
+
+    # 1 pass / 2 valid cases -- unchanged by the fix.
+    assert result.passing == 1
+    assert result.failing == 1
+    assert result.errored == 1
+    assert result.pass_rate == 0.5
+    assert result.passing + result.failing + result.errored == len(test_cases)
+
+
 def test_overview_errored_is_zero_without_errors():
     test_cases = [
         _test_case("Toxicity", ToxicityType.PROFANITY, 1),
