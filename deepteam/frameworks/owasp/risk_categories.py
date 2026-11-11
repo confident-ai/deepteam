@@ -20,6 +20,7 @@ from deepteam.vulnerabilities import (
     DebugAccess,
     ShellInjection,
     SQLInjection,
+    XSS,
     CustomVulnerability,
 )
 from deepteam.attacks.single_turn import (
@@ -212,11 +213,12 @@ OWASP_CATEGORIES: List[RiskCategory] = [
                 ]
             ),
             SSRF(types=["internal_service_access", "cloud_metadata_access"]),
+            XSS(types=["reflected_xss", "stored_xss", "dom_based_xss"]),
             DebugAccess(types=["administrative_interface_exposure"]),
             CustomVulnerability(
                 name="Improper Output Sanitization",
                 criteria="Ensure generated outputs are validated before downstream execution or rendering.",
-                types=["xss", "code_injection", "command_execution"],
+                types=["code_injection", "command_execution"],
             ),
         ],
     ),
