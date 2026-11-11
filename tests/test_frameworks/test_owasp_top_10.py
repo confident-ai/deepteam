@@ -103,6 +103,7 @@ class TestOWASP:
             "BOLA",
             "BFLA",
             "SSRF",
+            "PathTraversal",
             "DebugAccess",
             "ShellInjection",
             "SQLInjection",

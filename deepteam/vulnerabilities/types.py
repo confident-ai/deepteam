@@ -41,10 +41,14 @@ from deepteam.vulnerabilities.ssrf.types import SSRFType
 from deepteam.vulnerabilities.debug_access.types import DebugAccessType
 from deepteam.vulnerabilities.shell_injection.types import ShellInjectionType
 from deepteam.vulnerabilities.sql_injection.types import SQLInjectionType
+from deepteam.vulnerabilities.path_traversal.types import PathTraversalType
 from deepteam.vulnerabilities.rbac.template import RBACTemplate
 from deepteam.vulnerabilities.bola.template import BOLATemplate
 from deepteam.vulnerabilities.bfla.template import BFLATemplate
 from deepteam.vulnerabilities.ssrf.template import SSRFTemplate
+from deepteam.vulnerabilities.path_traversal.template import (
+    PathTraversalTemplate,
+)
 from deepteam.vulnerabilities.debug_access.template import DebugAccessTemplate
 from deepteam.vulnerabilities.shell_injection.template import (
     ShellInjectionTemplate,
@@ -115,6 +119,7 @@ VulnerabilityType = Union[
     BOLAType,
     BFLAType,
     SSRFType,
+    PathTraversalType,
     DebugAccessType,
     ShellInjectionType,
     SQLInjectionType,
@@ -145,6 +150,7 @@ TemplateType = Union[
     BOLATemplate,
     BFLATemplate,
     SSRFTemplate,
+    PathTraversalTemplate,
     DebugAccessTemplate,
     ShellInjectionTemplate,
     SQLInjectionTemplate,

@@ -8,6 +8,7 @@
     "red-teaming-vulnerabilities-shell-injection",
     "red-teaming-vulnerabilities-sql-injection",
     "red-teaming-vulnerabilities-ssrf",
+    "red-teaming-vulnerabilities-path-traversal",
     "red-teaming-vulnerabilities-tool-metadata-poisoning",
     "red-teaming-vulnerabilities-cross-context-retrieval",
     "red-teaming-vulnerabilities-system-reconnaissance"
