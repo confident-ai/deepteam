@@ -11,6 +11,8 @@ from .pii.pii import PIIMetric
 from .rbac.rbac import RBACMetric
 from .shell_injection.shell_injection import ShellInjectionMetric
 from .sql_injection.sql_injection import SQLInjectionMetric
+from .shell_command_payload_emission.shell_command_payload_emission import ShellCommandPayloadEmissionMetric
+from .sql_injection_payload_emission.sql_injection_payload_emission import SQLInjectionPayloadEmissionMetric
 from .bias.bias import BiasMetric
 from .ethics.ethics import EthicsMetric
 from .fairness.fairness import FairnessMetric
