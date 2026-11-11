@@ -1,4 +1,5 @@
 from typing import List, Optional
+from contextlib import nullcontext
 
 from deepeval.models import DeepEvalBaseLLM
 from deepteam.vulnerabilities import BaseVulnerability
@@ -8,6 +9,7 @@ from deepteam.red_teamer import RedTeamer
 from deepteam.attacks.attack_engine import AttackEngine
 from deepteam.frameworks.frameworks import RedTeamingFramework
 from deepteam.red_teamer.cvss import Level
+from deepteam.utils import progress_callback_context, ProgressCallback
 
 
 def red_team(
@@ -26,6 +28,7 @@ def red_team(
     identifier: Optional[str] = None,
     run_all_attacks: bool = False,
     exposure: Level = Level.MEDIUM,
+    on_progress: Optional[ProgressCallback] = None,
 ):
     red_teamer = RedTeamer(
         async_mode=async_mode,
@@ -36,17 +39,23 @@ def red_team(
         attack_engine=attack_engine,
         exposure=exposure,
     )
-    risk_assessment = red_teamer.red_team(
-        model_callback=model_callback,
-        vulnerabilities=vulnerabilities,
-        attacks=attacks,
-        simulator_model=simulator_model,
-        evaluation_model=evaluation_model,
-        framework=framework,
-        attacks_per_vulnerability_type=attacks_per_vulnerability_type,
-        ignore_errors=ignore_errors,
-        attack_engine=attack_engine,
-        identifier=identifier,
-        run_all_attacks=run_all_attacks,
+    ctx = (
+        progress_callback_context(on_progress)
+        if on_progress is not None
+        else nullcontext()
     )
+    with ctx:
+        risk_assessment = red_teamer.red_team(
+            model_callback=model_callback,
+            vulnerabilities=vulnerabilities,
+            attacks=attacks,
+            simulator_model=simulator_model,
+            evaluation_model=evaluation_model,
+            framework=framework,
+            attacks_per_vulnerability_type=attacks_per_vulnerability_type,
+            ignore_errors=ignore_errors,
+            attack_engine=attack_engine,
+            identifier=identifier,
+            run_all_attacks=run_all_attacks,
+        )
     return risk_assessment
