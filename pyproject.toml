@@ -1,10 +1,19 @@
 [tool.poetry]
 name = "deepteam"
 version = "1.0.10"
-description = "The LLM Red Teaming Framework"
+description = "The LLM Red Teaming Framework, built and maintained by Confident AI"
 authors = ["Jeffrey Ip <jeffreyip@confident-ai.com>"]
 license = "Apache-2.0"
 readme = "README.md"
+homepage = "https://trydeepteam.com"
+repository = "https://github.com/confident-ai/deepteam"
+documentation = "https://trydeepteam.com"
+keywords = ["llm", "red-teaming", "ai-red-teaming", "llm-security", "prompt-injection", "jailbreak", "owasp", "ai-agents"]
+classifiers = [
+  "Intended Audience :: Developers",
+  "Topic :: Security",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 packages = [{include = "deepteam"}]
 
 [tool.poetry.dependencies]
@@ -44,6 +53,7 @@ deepteam = "deepteam.cli.main:app"
 Repository = "https://github.com/confident-ai/deepteam"
 Documentation = "https://trydeepteam.com"
 Issues = "https://github.com/confident-ai/deepteam/issues"
+"Confident AI" = "https://www.confident-ai.com"
 
 [tool.black]
 line-length = 80

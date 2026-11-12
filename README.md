@@ -41,6 +41,8 @@
 
 **DeepTeam** is a simple-to-use, open-source red teaming framework for LLM systems. Think of it as penetration testing, but for LLMs.
 
+DeepTeam is built and maintained by [Confident AI](https://www.confident-ai.com?utm_source=deepteam&utm_medium=github&utm_content=attribution_line&ref_page=github/readme).
+
 DeepTeam simulates attacks — jailbreaking, prompt injection, multi-turn exploitation, and more — to uncover vulnerabilities like bias, PII leakage, and SQL injection in your AI agents, RAG pipelines, and chatbots. It also offers **guardrails** to prevent these issues in production.
 
 DeepTeam runs **locally on your machine** and is built on [DeepEval](https://github.com/confident-ai/deepeval), the open-source LLM evaluation framework.
