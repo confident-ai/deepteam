@@ -24,7 +24,7 @@ Here's how you can implement it with a YAML configuration:
 ```yaml title="config.yaml"
 # Red teaming models (separate from target)
 models:
-  simulator: gpt-3.5-turbo-0125
+  simulator: gpt-5.6-terra
   evaluation: gpt-4o
 
 # Target system configuration
@@ -66,13 +66,13 @@ The `models` section defines which LLMs to use for simulating attacks and evalua
 
 ```yaml
 models:
-  simulator: gpt-3.5-turbo-0125
+  simulator: gpt-5.6-terra
   evaluation: gpt-4o
 ```
 
 There are **TWO** optional parameters when creating models configuration:
 
-- [Optional] `simulator`: the LLM model used to generate and enhance adversarial attacks. Defaulted to `"gpt-3.5-turbo-0125"`.
+- [Optional] `simulator`: the LLM model used to generate and enhance adversarial attacks. Defaulted to `"gpt-5.6-terra"`.
 - [Optional] `evaluation`: the LLM model used to evaluate responses and determine vulnerability scores. Defaulted to `"gpt-4o"`.
 
 ### Using custom models
@@ -98,7 +98,7 @@ models:
 <Tab value="OpenAI">
 ```yaml
 models:
-  simulator: gpt-3.5-turbo-0125
+  simulator: gpt-5.6-terra
   evaluation: gpt-4o
 ```
 </Tab>
@@ -469,7 +469,7 @@ There are **THREE** optional command line flags:
 
 ```yaml title="quick-test.yaml"
 models:
-  simulator: gpt-3.5-turbo
+  simulator: gpt-5.6-terra
   evaluation: gpt-4o-mini
 
 target:
@@ -494,7 +494,7 @@ attacks:
 
 ```yaml title="production-test.yaml"
 models:
-  simulator: gpt-3.5-turbo-0125
+  simulator: gpt-5.6-terra
   evaluation: gpt-4o
 
 target:

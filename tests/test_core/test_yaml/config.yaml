@@ -1,6 +1,6 @@
 # Red teaming models (separate from target)
 models:
-  simulator: gpt-3.5-turbo-0125
+  simulator: gpt-5.6-terra
   evaluation: gpt-4o
 
 # Target system configuration

@@ -265,7 +265,7 @@ def run(
     # Parse red teaming models (moved out of target section)
     models_cfg = cfg.get("models", {})
 
-    simulator_model_spec = models_cfg.get("simulator", "gpt-3.5-turbo-0125")
+    simulator_model_spec = models_cfg.get("simulator", "gpt-5.6-terra")
     evaluation_model_spec = models_cfg.get("evaluation", "gpt-4o")
 
     simulator_model = None
