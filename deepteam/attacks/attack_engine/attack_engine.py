@@ -20,7 +20,7 @@ class AttackEngine:
         self,
         simulator_model: Optional[
             Union[str, DeepEvalBaseLLM]
-        ] = "gpt-3.5-turbo-0125",
+        ] = "gpt-5.6-terra",
         variations: int = 1,
         generation_guidelines: Optional[List[str]] = None,
         purpose: Optional[str] = None,

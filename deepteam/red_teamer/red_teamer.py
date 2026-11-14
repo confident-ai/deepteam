@@ -69,7 +69,7 @@ class RedTeamer:
         self,
         simulator_model: Optional[
             Union[str, DeepEvalBaseLLM]
-        ] = "gpt-3.5-turbo-0125",
+        ] = "gpt-5.6-terra",
         evaluation_model: Optional[Union[str, DeepEvalBaseLLM]] = "gpt-4o",
         target_purpose: Optional[str] = "",
         async_mode: bool = True,

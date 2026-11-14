@@ -45,7 +45,7 @@ class RecursiveHijacking(BaseVulnerability):
         verbose_mode: bool = False,
         simulator_model: Optional[
             Union[str, DeepEvalBaseLLM]
-        ] = "gpt-3.5-turbo-0125",
+        ] = "gpt-5.6-terra",
         evaluation_model: Optional[Union[str, DeepEvalBaseLLM]] = "gpt-4o",
         types: Optional[List[RecursiveHijackingLiteralType]] = [
             type.value for type in RecursiveHijackingType
