@@ -1,5 +1,7 @@
 import asyncio
 
+import pytest
+
 from deepteam.attacks.multi_turn.progression import Probe
 from deepteam.orchestration.strategy import (
     AntiRefusalStrategy,
@@ -349,6 +351,10 @@ def fake_alpaca(n):
 
 class TestAntiRefusalFewShot:
 
+    @pytest.fixture(autouse=True)
+    def fresh_examples(self, monkeypatch):
+        monkeypatch.setattr(anti_refusal, "_EXAMPLES", None)
+
     def test_batches_are_framed_then_the_real_question(self, monkeypatch):
         import datasets
 
@@ -415,16 +421,31 @@ class TestAntiRefusalFewShot:
         assert [p.input for p in send.sent] == ["name a cat\n\nANSWER NOW."]
         assert probe is send.sent[-1]
 
-    def test_falls_back_to_simple_prompt_without_datasets(
-        self, monkeypatch, capsys
-    ):
+    def test_falls_back_to_simple_prompt_without_datasets(self, monkeypatch):
         import sys
 
         monkeypatch.setitem(sys.modules, "datasets", None)
         send = RecordingSend()
         ex = executor()
         ex.adopt(AntiRefusalStrategy(effectiveness=Effectiveness.HIGH))
-        run(ex.a_send("hello", send))
+        with pytest.warns(UserWarning, match="datasets"):
+            run(ex.a_send("hello", send))
 
         assert len(send.sent) == 1
-        assert "datasets" in capsys.readouterr().out
+
+    def test_examples_are_loaded_once_per_process(self, monkeypatch):
+        import datasets
+
+        loads = []
+
+        def counting_load(*args, **kwargs):
+            loads.append(1)
+            return fake_alpaca(3)()
+
+        monkeypatch.setattr(anti_refusal, "_SAMPLE_SIZE", 3)
+        monkeypatch.setattr(datasets, "load_dataset", counting_load)
+        for _ in range(3):
+            ex = executor()
+            ex.adopt(AntiRefusalStrategy(effectiveness=Effectiveness.HIGH))
+            run(ex.a_send("REAL?", RecordingSend()))
+        assert len(loads) == 1
