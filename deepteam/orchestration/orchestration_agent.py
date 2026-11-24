@@ -41,6 +41,7 @@ from deepteam.orchestration.utils import (
     copy_turns,
 )
 from deepteam.test_case.test_case import RTTurn
+from deepteam.red_teamer.utils import validate_model_response
 
 AGENTS_PER_CRITERIA = 2
 RECON_TURNS = 3
@@ -342,7 +343,7 @@ class OrchestrationAgent:
         response = await asyncio.to_thread(self.model_callback, message, turns)
         if inspect.isawaitable(response):
             response = await response
-        return response
+        return validate_model_response(response)
 
     async def _a_recon_judge(
         self,

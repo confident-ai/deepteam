@@ -138,3 +138,15 @@ class TestModels:
         make_agent(max_turns=2).run()
         for schema in ("NextTurn", "BehaviorAnalysis", "SubAgentInstructions"):
             assert llm.models[schema] == {"model:gpt-4o-mini"}, schema
+
+
+class TestCallTarget:
+
+    def test_a_callback_returning_a_string_becomes_an_assistant_turn(
+        self, make_agent
+    ):
+        import asyncio
+
+        agent = make_agent(model_callback=lambda message, turns=None: "plain")
+        reply = asyncio.run(agent.a_call_target("hi", []))
+        assert reply == RTTurn(role="assistant", content="plain")

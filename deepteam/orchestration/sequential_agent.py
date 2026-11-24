@@ -15,6 +15,7 @@ from deepteam.orchestration.templates import SequentialTemplate
 from deepteam.orchestration.types import SequentialResult
 from deepteam.orchestration.utils import as_chat_history
 from deepteam.test_case.test_case import RTTurn
+from deepteam.red_teamer.utils import validate_model_response
 
 MAX_TURNS = 30
 OPEN_TURNS = 3
@@ -207,4 +208,4 @@ class SequentialAgent:
         response = await asyncio.to_thread(self.model_callback, message)
         if inspect.isawaitable(response):
             response = await response
-        return response
+        return validate_model_response(response)

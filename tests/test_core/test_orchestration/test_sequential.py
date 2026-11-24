@@ -225,3 +225,16 @@ def test_a_target_error_ends_the_run_gracefully(patch_gen):
 def test_rejects_empty_criteria(target):
     with pytest.raises(ValueError):
         SequentialAgent("t", "s", [], target)
+
+
+def test_a_callback_returning_a_string_is_accepted(patch_gen):
+    patch_gen(FakeGen([verdict([1], 1, n=1)]))
+
+    def callback(message):
+        return f"plain reply to {message}"
+
+    result = SequentialAgent("t", "s", ["c1"], callback, max_turns=1).run()
+    assert result.error is None
+    assert result.turns[1] == RTTurn(
+        role="assistant", content="plain reply to message-1"
+    )
