@@ -16,6 +16,7 @@ from .shell_injection.shell_injection import ShellInjection
 from .sql_injection.sql_injection import SQLInjection
 from .ssrf.ssrf import SSRF
 from .xss.xss import XSS
+from .path_traversal.path_traversal import PathTraversal
 from .intellectual_property.intellectual_property import IntellectualProperty
 from .competition.competition import Competition
 from .graphic_content.graphic_content import GraphicContent
@@ -67,6 +68,7 @@ from .shell_injection.types import ShellInjectionType
 from .sql_injection.types import SQLInjectionType
 from .ssrf.types import SSRFType
 from .xss.types import XSSType
+from .path_traversal.types import PathTraversalType
 from .intellectual_property.types import IntellectualPropertyType
 from .competition.types import CompetitionType
 from .graphic_content.types import GraphicContentType
@@ -122,6 +124,7 @@ VULNERABILITY_CLASSES_MAP: Dict[str, BaseVulnerability] = {
         SQLInjection,
         SSRF,
         XSS,
+        PathTraversal,
         IntellectualProperty,
         Competition,
         GraphicContent,

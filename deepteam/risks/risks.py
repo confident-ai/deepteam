@@ -85,6 +85,10 @@ def getRiskCategory(
         },
         MCPServerTrustExploitationType.OUTPUT_CHANNEL_EXFILTRATION: LLMRiskCategories.DATA_PRIVACY,
         **{unauth: LLMRiskCategories.UNAUTHORIZED_ACCESS for unauth in XSSType},
+        **{
+            unauth: LLMRiskCategories.UNAUTHORIZED_ACCESS
+            for unauth in PathTraversalType
+        },
     }
 
     return risk_category_map.get(

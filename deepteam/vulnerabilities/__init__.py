@@ -16,6 +16,7 @@ from .shell_injection.shell_injection import ShellInjection
 from .sql_injection.sql_injection import SQLInjection
 from .ssrf.ssrf import SSRF
 from .xss.xss import XSS
+from .path_traversal.path_traversal import PathTraversal
 from .intellectual_property.intellectual_property import IntellectualProperty
 from .indirect_instruction.indirect_instruction import IndirectInstruction
 from .tool_orchestration_abuse.tool_orchestration_abuse import (
@@ -72,6 +73,7 @@ __all__ = [
     "SQLInjection",
     "SSRF",
     "XSS",
+    "PathTraversal",
     "IntellectualProperty",
     "IndirectInstruction",
     "ToolOrchestrationAbuse",

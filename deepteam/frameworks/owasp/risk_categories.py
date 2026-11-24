@@ -17,6 +17,7 @@ from deepteam.vulnerabilities import (
     BOLA,
     BFLA,
     SSRF,
+    PathTraversal,
     DebugAccess,
     ShellInjection,
     SQLInjection,
@@ -214,6 +215,13 @@ OWASP_CATEGORIES: List[RiskCategory] = [
             ),
             SSRF(types=["internal_service_access", "cloud_metadata_access"]),
             XSS(types=["reflected_xss", "stored_xss", "dom_based_xss"]),
+            PathTraversal(
+                types=[
+                    "relative_path_traversal",
+                    "absolute_path_traversal",
+                    "encoded_path_traversal",
+                ]
+            ),
             DebugAccess(types=["administrative_interface_exposure"]),
             CustomVulnerability(
                 name="Improper Output Sanitization",
