@@ -13,6 +13,7 @@ from .roleplay import Roleplay
 from .rot13 import ROT13
 from .system_override import SystemOverride
 from .adversarial_poetry import AdversarialPoetry
+from .char_split import CharSplit
 from .character_stream import CharacterStream
 from .context_flooding import ContextFlooding
 from .embedded_instruction_json import EmbeddedInstructionJSON
@@ -31,6 +32,7 @@ SINGLE_TURN_ATTACK_CLASSES_MAP: Dict[str, BaseSingleTurnAttack] = {
     for v in [
         AdversarialPoetry,
         Base64,
+        CharSplit,
         CharacterStream,
         ContextFlooding,
         EmbeddedInstructionJSON,
