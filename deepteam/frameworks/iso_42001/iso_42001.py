@@ -8,14 +8,14 @@ the per-control vulnerability/attack mapping.
 from typing import List, Literal
 
 from deepteam.attacks import BaseAttack
-from deepteam.frameworks import AISafetyFramework
+from deepteam.frameworks.frameworks import RedTeamingFramework
 from deepteam.frameworks.iso_42001.risk_categories import (
     ISO_42001_CATEGORIES,
 )
 from deepteam.vulnerabilities import BaseVulnerability
 
 
-class ISO42001(AISafetyFramework):
+class ISO42001(RedTeamingFramework):
     name = "ISO/IEC 42001:2023 — AI Management Systems"
     description = (
         "Red-team evidence aligned to seven outcome-focused ISO/IEC "
