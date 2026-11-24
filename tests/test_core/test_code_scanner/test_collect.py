@@ -1,5 +1,9 @@
+import os
 import subprocess
+import sys
 from pathlib import Path
+
+import pytest
 
 from deepteam.code_scanner import collect_changed_files, collect_files
 
@@ -85,3 +89,59 @@ class TestCollectChangedFiles:
             )
         }
         assert changed == {"b.py", "c.py"}
+
+    def test_diff_mode_keeps_names_that_git_quotes(self, tmp_path):
+        def git(*args):
+            subprocess.run(
+                ["git", "-C", str(tmp_path), *args],
+                check=True,
+                capture_output=True,
+            )
+
+        names = ["café.py", "エージェント.py", "with space.py"]
+        git("init")
+        git("config", "user.email", "t@t.co")
+        git("config", "user.name", "t")
+        git("config", "core.quotePath", "true")
+        (tmp_path / "a.py").write_text("a = 1\n")
+        git("add", "-A")
+        git("commit", "-m", "base")
+        for name in names:
+            (tmp_path / name).write_text("b = eval(x)\n")
+        git("add", "-A")
+        git("commit", "-m", "change")
+
+        changed = {
+            c.file_path
+            for c in collect_changed_files(
+                str(tmp_path), base="HEAD~1", head="HEAD"
+            )
+        }
+        assert changed == set(names)
+
+    @pytest.mark.skipif(
+        sys.platform != "linux", reason="needs a byte-based file system"
+    )
+    def test_names_that_are_not_utf8(self, tmp_path):
+        def git(*args):
+            subprocess.run(
+                ["git", "-C", str(tmp_path), *args],
+                check=True,
+                capture_output=True,
+            )
+
+        git("init")
+        git("config", "user.email", "t@t.co")
+        git("config", "user.name", "t")
+        (tmp_path / "a.py").write_text("a = 1\n")
+        git("add", "-A")
+        git("commit", "-m", "base")
+        (tmp_path / os.fsdecode(b"caf\xe9.py")).write_text("b = eval(x)\n")
+        git("add", "-A")
+        git("commit", "-m", "change")
+
+        changed = collect_changed_files(
+            str(tmp_path), base="HEAD~1", head="HEAD"
+        )
+        assert [c.content for c in changed] == ["b = eval(x)\n"]
+        assert len(collect_files(str(tmp_path))) == 2
