@@ -12,7 +12,7 @@ from deepteam.guardrails.types import GuardType
 from deepteam.guardrails.guards.schema import SafetyLevelSchema
 
 
-class SafetyLevel(Enum):
+class SafetyLevel(str, Enum):
     SAFE = "safe"
     BORDERLINE = "borderline"
     UNSAFE = "unsafe"
