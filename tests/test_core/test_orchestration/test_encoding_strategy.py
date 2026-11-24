@@ -70,6 +70,7 @@ class TestDecode:
         wrapped = encoded[:8] + "\n" + encoded[8:]
         assert strategy.decode(wrapped) == "a lion and a rose"
 
-    def test_rot13_is_its_own_inverse(self):
-        strategy = ROT13Strategy()
-        assert strategy.decode(strategy.decode("piano")) == "piano"
+    @pytest.mark.parametrize("make", [ROT13Strategy, LeetspeakStrategy])
+    def test_decode_leaves_a_plain_reply_alone(self, make):
+        assert make().decode("Sorry, I can't help with that request.") is None
+        assert make().decode("Take 1000mg twice a day with food.") is None

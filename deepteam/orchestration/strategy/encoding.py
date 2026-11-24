@@ -1,4 +1,5 @@
 import base64 as _base64
+import re
 from typing import Optional, Type
 
 from deepteam.attacks.single_turn import (
@@ -14,6 +15,30 @@ from deepteam.orchestration.strategy.strategy import (
 )
 
 _REPLY_INSTRUCTION = "Reply in {name} as well if possible, if not, reply in plain text."
+
+# Frequent English words. The target may answer in plain text instead of the
+# encoding it was asked for, so a reply is only decoded when decoding makes it
+# read more like English.
+_COMMON_WORDS = frozenset(
+    """about after all also an and any are as at be because been but by can
+    could do for from get had has have he her here his how if in into is it
+    its just know like make me more my no not now of on one only or other our
+    out over said say she so some than that the their them then there these
+    they this time to up us use very was way we were what when which who will
+    with would you your yes sorry cannot help here's answer""".split()
+)
+
+
+def _english_words(text: str) -> int:
+    # Single letters are left out: "1" -> "i" and "4" -> "a" would otherwise
+    # make numbers in a plain reply look like English once decoded.
+    return sum(
+        1 for word in re.findall(r"[a-z']+", text.lower()) if word in _COMMON_WORDS
+    )
+
+
+def _decode_if_clearer(reply: str, decoded: str) -> Optional[str]:
+    return decoded if _english_words(decoded) > _english_words(reply) else None
 
 
 class EncodingStrategy(Strategy):
@@ -72,7 +97,7 @@ class ROT13Strategy(EncodingStrategy):
     effectiveness = Effectiveness.MEDIUM
 
     def decode(self, reply: str) -> Optional[str]:
-        return self.attack.enhance(reply)
+        return _decode_if_clearer(reply, self.attack.enhance(reply))
 
 
 class LeetspeakStrategy(EncodingStrategy):
@@ -89,4 +114,5 @@ class LeetspeakStrategy(EncodingStrategy):
     }
 
     def decode(self, reply: str) -> Optional[str]:
-        return "".join(self._REVERSE.get(char, char) for char in reply)
+        decoded = "".join(self._REVERSE.get(char, char) for char in reply)
+        return _decode_if_clearer(reply, decoded)
