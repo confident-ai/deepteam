@@ -3,7 +3,7 @@ from deepteam.attacks.base_attack import Exploitability
 
 
 class HexEncoding(BaseSingleTurnAttack):
-    name = "Hex"
+    name = "Hex Encoding"
     exploitability = Exploitability.HIGH
     description = "An encoding-based attack that converts the prompt into space-separated hexadecimal byte values to bypass text-based content filters while remaining trivially decodable by a capable model."
 

@@ -7,12 +7,12 @@ class TestHexEncoding:
     def test_hex_initialization(self):
         attack = HexEncoding()
         assert attack.weight == 1
-        assert attack.get_name() == "Hex"
+        assert attack.get_name() == "Hex Encoding"
 
     def test_hex_initialization_with_weight(self):
         attack = HexEncoding(weight=3)
         assert attack.weight == 3
-        assert attack.get_name() == "Hex"
+        assert attack.get_name() == "Hex Encoding"
 
     def test_hex_enhance_basic(self):
         attack = HexEncoding()

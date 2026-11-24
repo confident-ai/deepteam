@@ -7,12 +7,12 @@ class TestMorseCode:
     def test_morse_initialization(self):
         attack = MorseCode()
         assert attack.weight == 1
-        assert attack.get_name() == "Morse"
+        assert attack.get_name() == "Morse Code"
 
     def test_morse_initialization_with_weight(self):
         attack = MorseCode(weight=2)
         assert attack.weight == 2
-        assert attack.get_name() == "Morse"
+        assert attack.get_name() == "Morse Code"
 
     def test_morse_enhance_basic(self):
         attack = MorseCode()
@@ -43,13 +43,15 @@ class TestMorseCode:
 
     def test_morse_enhance_unmapped_chars_do_not_raise(self):
         # Punctuation, apostrophes, symbols and non-ASCII must never raise a
-        # KeyError mid-engagement — unmapped characters are skipped, mapped
-        # ones still encode.
+        # KeyError mid-engagement; unmapped characters are kept as they are.
         attack = MorseCode()
         for text in ["Don't do it!", "call 911 now.", "a@b#c$ 42%", "héllo"]:
             assert isinstance(attack.enhance(text), str)
-        # a genuinely unmapped character (é) is skipped; mapped letters still encode
-        assert attack.enhance("héllo") == attack.enhance("hllo")
+        assert attack.enhance("héllo") == ".... É .-.. .-.. ---"
+
+    def test_morse_enhance_preserves_line_breaks(self):
+        attack = MorseCode()
+        assert attack.enhance("hi\nme") == ".... ..\n-- ."
 
     def test_morse_enhance_empty_string(self):
         attack = MorseCode()

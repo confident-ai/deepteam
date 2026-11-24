@@ -20,7 +20,6 @@ from .homoglyph import Homoglyph
 from .zero_width import ZeroWidth
 from .hex_encoding import HexEncoding
 from .morse_code import MorseCode
-from .caesar import Caesar
 
 # Generic enhancement attacks (moved from agentic)
 from .system_override.system_override import SystemOverride
@@ -60,5 +59,4 @@ __all__ = [
     "ZeroWidth",
     "HexEncoding",
     "MorseCode",
-    "Caesar",
 ]
