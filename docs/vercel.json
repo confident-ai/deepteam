@@ -472,12 +472,12 @@
     },
     {
       "source": "/docs/code-scanning-github-bot",
-      "destination": "https://deepeval.com/docs/code-scanning-github-bot",
+      "destination": "https://deepeval.com/docs/red-teaming-introduction",
       "statusCode": 301
     },
     {
       "source": "/docs/code-scanning-introduction",
-      "destination": "https://deepeval.com/docs/code-scanning-introduction",
+      "destination": "https://deepeval.com/docs/red-teaming-introduction",
       "statusCode": 301
     },
     {
