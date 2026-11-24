@@ -93,8 +93,8 @@ class XSS(BaseVulnerability):
             rt_test_case = RTTestCase(
                 vulnerability=test_case.vulnerability,
                 vulnerability_type=vuln_type,
-                attackMethod=test_case.attack_method,
-                riskCategory=getRiskCategory(vuln_type),
+                attack_method=test_case.attack_method,
+                risk_category=getRiskCategory(vuln_type),
                 input=input_text,
                 actual_output=output,
             )
@@ -140,8 +140,8 @@ class XSS(BaseVulnerability):
             rt_test_case = RTTestCase(
                 vulnerability=test_case.vulnerability,
                 vulnerability_type=vuln_type,
-                attackMethod=test_case.attack_method,
-                riskCategory=getRiskCategory(vuln_type),
+                attack_method=test_case.attack_method,
+                risk_category=getRiskCategory(vuln_type),
                 input=input_text,
                 actual_output=output,
             )
@@ -197,8 +197,9 @@ class XSS(BaseVulnerability):
 
         for type in self.types:
             for prompt in templates[type]:
+                simulation_cost = 0 if self.using_native_model else None
                 if self.using_native_model:
-                    res, _ = self.simulator_model.generate(
+                    res, simulation_cost = self.simulator_model.generate(
                         prompt, schema=SyntheticDataList
                     )
                     local_attacks = [item.input for item in res.data]
@@ -213,12 +214,18 @@ class XSS(BaseVulnerability):
                         data = trimAndLoadJson(res)
                         local_attacks = [item["input"] for item in data["data"]]
 
+            per_attack_cost = (
+                simulation_cost / len(local_attacks)
+                if simulation_cost is not None and local_attacks
+                else simulation_cost
+            )
             simulated_test_cases.extend(
                 [
                     RTTestCase(
                         vulnerability=self.get_name(),
                         vulnerability_type=type,
                         input=local_attack,
+                        simulation_cost=per_attack_cost,
                     )
                     for local_attack in local_attacks
                 ]
@@ -251,9 +258,12 @@ class XSS(BaseVulnerability):
 
         for type in self.types:
             for prompt in templates[type]:
+                simulation_cost = 0 if self.using_native_model else None
                 if self.using_native_model:
-                    res, _ = await self.simulator_model.a_generate(
-                        prompt, schema=SyntheticDataList
+                    res, simulation_cost = (
+                        await self.simulator_model.a_generate(
+                            prompt, schema=SyntheticDataList
+                        )
                     )
                     local_attacks = [item.input for item in res.data]
                 else:
@@ -269,12 +279,18 @@ class XSS(BaseVulnerability):
                         data = trimAndLoadJson(res)
                         local_attacks = [item["input"] for item in data["data"]]
 
+            per_attack_cost = (
+                simulation_cost / len(local_attacks)
+                if simulation_cost is not None and local_attacks
+                else simulation_cost
+            )
             simulated_test_cases.extend(
                 [
                     RTTestCase(
                         vulnerability=self.get_name(),
                         vulnerability_type=type,
                         input=local_attack,
+                        simulation_cost=per_attack_cost,
                     )
                     for local_attack in local_attacks
                 ]
@@ -287,13 +303,14 @@ class XSS(BaseVulnerability):
     def _assess_trace(
         self,
         trace: Trace,
+        previous_detections: Optional[List[BatchFinding]] = None,
     ) -> List[BatchFinding]:
         """
         Evaluates an entire execution trace for XSS vulnerabilities using bottoms-up batching.
         """
         if self.async_mode:
             loop = get_or_create_event_loop()
-            return loop.run_until_complete(self._a_assess_trace(trace=trace))
+            return loop.run_until_complete(self._a_assess_trace(trace=trace, previous_detections=previous_detections))
 
         self.evaluation_model, self.using_native_model = initialize_model(
             self.evaluation_model
@@ -301,6 +318,7 @@ class XSS(BaseVulnerability):
         trace_scanner = TraceScanner(
             model=self.evaluation_model,
             template=XSSTemplate,
+            previous_detections=previous_detections,
         )
 
         findings = trace_scanner.process_trace(trace)
@@ -313,6 +331,7 @@ class XSS(BaseVulnerability):
     async def _a_assess_trace(
         self,
         trace: Trace,
+        previous_detections: Optional[List[BatchFinding]] = None,
     ) -> List[BatchFinding]:
         """
         Asynchronously evaluates an entire execution trace for XSS vulnerabilities.
@@ -324,6 +343,7 @@ class XSS(BaseVulnerability):
         trace_scanner = TraceScanner(
             model=self.evaluation_model,
             template=XSSTemplate,
+            previous_detections=previous_detections,
         )
 
         findings = await trace_scanner.a_process_trace(trace)

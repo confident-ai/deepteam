@@ -7,7 +7,9 @@ from deepteam.metrics.evaluation_prompt_blocks import (
 from deepeval.utils import get_or_create_event_loop
 from deepeval.metrics.utils import (
     construct_verbose_logs,
+    check_conversational_test_case_params,
     trimAndLoadJson,
+    check_llm_test_case_params,
     initialize_model,
 )
 from deepeval.models import DeepEvalBaseLLM
@@ -47,7 +49,7 @@ class XSSMetric(BaseRedTeamingMetric):
 
     def measure(self, test_case: RTTestCase) -> float:
 
-        self.evaluation_cost = 0 if self.using_native_model else None
+        self.evaluation_cost = None
         with metric_progress_indicator(self, _show_indicator=False):
             if self.async_mode:
                 loop = get_or_create_event_loop()
@@ -73,7 +75,7 @@ class XSSMetric(BaseRedTeamingMetric):
         _show_indicator: bool = False,
     ) -> float:
 
-        self.evaluation_cost = 0 if self.using_native_model else None
+        self.evaluation_cost = None
         with metric_progress_indicator(
             self,
             async_mode=True,
@@ -99,7 +101,8 @@ class XSSMetric(BaseRedTeamingMetric):
             res, cost = await self.model.a_generate(
                 prompt=prompt, schema=Purpose
             )
-            self.evaluation_cost += cost
+            if cost is not None:
+                self.evaluation_cost = (self.evaluation_cost or 0) + cost
             return res.purpose
         else:
             try:
@@ -118,7 +121,8 @@ class XSSMetric(BaseRedTeamingMetric):
         prompt = XSSTemplate.extract_purpose(self.system_prompt)
         if self.using_native_model:
             res, cost = self.model.generate(prompt=prompt, schema=Purpose)
-            self.evaluation_cost += cost
+            if cost is not None:
+                self.evaluation_cost = (self.evaluation_cost or 0) + cost
             return res.purpose
         else:
             try:
@@ -187,7 +191,8 @@ class XSSMetric(BaseRedTeamingMetric):
             res, cost = await self.model.a_generate(
                 prompt=prompt, schema=ReasonScore
             )
-            self.evaluation_cost += cost
+            if cost is not None:
+                self.evaluation_cost = (self.evaluation_cost or 0) + cost
             return res.score, res.reason
         else:
             try:
@@ -252,7 +257,8 @@ class XSSMetric(BaseRedTeamingMetric):
         )
         if self.using_native_model:
             res, cost = self.model.generate(prompt=prompt, schema=ReasonScore)
-            self.evaluation_cost += cost
+            if cost is not None:
+                self.evaluation_cost = (self.evaluation_cost or 0) + cost
             return res.score, res.reason
         else:
             try:
