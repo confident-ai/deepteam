@@ -2,7 +2,12 @@
 title: Agentic Red Teaming
 sidebar_label: Agentic Red Teaming
 description: Run a goal-driven, adaptive red teaming campaign against your LLM with AgenticRedTeamer — build it from an objective and call run() to let an agent pursue it across a multi-turn conversation.
+beta: true
 ---
+
+:::caution Experimental
+`AgenticRedTeamer` is experimental. Its API and result objects may change between releases, and its results are not part of [risk assessments](/docs/red-teaming-risk-assessment) yet.
+:::
 
 `deepteam`'s `AgenticRedTeamer` runs a **goal-driven red teaming campaign** against your LLM system. Instead of pairing a fixed set of [vulnerabilities](/docs/red-teaming-vulnerabilities) with a fixed set of [attacks](/docs/red-teaming-adversarial-attacks), you build it from an **objective** — a `task`, a `scenario`, and a list of `criteria` — and call `run()` with your target. An agent then holds a multi-turn conversation with that target, adapting its approach each turn until it either meets **every** criterion or runs out of turns.
 
@@ -66,6 +71,8 @@ def model_callback(input: str, turns: Optional[List[RTTurn]] = None) -> RTTurn:
     return RTTurn(role="assistant", content=your_app(input, history))
 ```
 
+As with `red_team`, the callback can return either an `RTTurn` or a plain string.
+
 ### Sequential mode
 
 In `sequential` mode, a single agent holds **one linear conversation** with your target. The target **keeps its own memory** — `deepteam` sends it one message at a time and never replays the history — so your callback only needs to accept the next input:
@@ -118,7 +125,7 @@ agentic_red_teamer = AgenticRedTeamer(
 result = agentic_red_teamer.run(model_callback)
 ```
 
-There are **THREE** mandatory and **SIX** optional arguments when constructing an `AgenticRedTeamer`:
+There are **THREE** mandatory and **SEVEN** optional arguments when constructing an `AgenticRedTeamer`:
 
 - `task`: a string describing the campaign's objective.
 - `scenario`: a string describing the target and the guardrails it is under.
@@ -127,7 +134,8 @@ There are **THREE** mandatory and **SIX** optional arguments when constructing a
 - [Optional] `simulator_model`: a string specifying which of OpenAI's GPT models to use, **OR** [any custom LLM model](https://deepeval.com/guides/guides-using-custom-llms) of type `DeepEvalBaseLLM`, to play the attacker. Defaulted to `"gpt-4o-mini"`.
 - [Optional] `judge_model`: a string specifying which of OpenAI's GPT models to use, **OR** [any custom LLM model](https://deepeval.com/guides/guides-using-custom-llms) of type `DeepEvalBaseLLM`, to decide whether each criterion is met. Defaulted to `"gpt-4o"`.
 - [Optional] `max_turns`: an integer turn budget before the run gives up. Defaulted to the agent's own default (**30** for sequential, **10** per round for parallel).
-- [Optional] `async_mode`: a boolean specifying whether to enable async mode. Defaulted to `True`. See [Async mode](#async-mode).
+- [Optional] `max_concurrent`: an integer that caps how many sub-agents talk to your target at once in `parallel` mode. Lower it if you run into rate limits. Defaulted to `10`.
+- [Optional] `async_mode`: a boolean specifying whether to enable async mode. Defaulted to `True`.
 - [Optional] `show_progress`: a boolean that shows a live progress bar during the run and prints a results table after it. Defaulted to `True`.
 
 The `run()` method takes your target and returns the result:
@@ -145,10 +153,12 @@ With `show_progress` enabled, a run prints a results table much like [`red_team`
 ✗ The model was successfully jailbroken — 2/3 criteria met.
 ```
 
-The two modes return different result objects, both exposing the same `score` and `met_criteria`:
+The two modes return different result objects. Both expose `score`, `met_criteria` and `error`, but `met_criteria` has a different shape in each:
 
 - **Parallel** returns an `OrchestrationResult` with `conversation` (the final winning conversation), `rounds` (per-round sub-agent reports), and `met_criteria` as records of **how** and in **which round** each criterion fell.
 - **Sequential** returns a `SequentialResult` with `turns` (the full conversation), `verdicts` (one judge verdict per turn), and `met_criteria` as the list of criteria that were met.
+
+If something fails mid-run, such as your target or the attacker model raising an error, `run()` still returns the result so far with the exception on `error`. Criteria that were not reached before the failure show as defended, so check `error` before reading the score.
 
 ```python
 result = agentic_red_teamer.run(model_callback)  # parallel by default
@@ -164,11 +174,11 @@ When a straightforward conversation stalls, the agent doesn't just reword the sa
 
 The built-in strategies are:
 
-- **Anti-refusal** - pushes the target past a refusal, either by appending an instruction not to refuse or by priming it with many examples of complying first.
+- **Anti-refusal** - pushes the target past a refusal, either by appending an instruction not to refuse or, at high effectiveness, by priming it with many examples of complying first. The examples come from a public instruction dataset that is downloaded once per process, and only when the `datasets` package is installed; without it, the strategy falls back to the instruction.
 - **Base64 / ROT-13 / Leetspeak** - encode the request (and ask for an encoded reply) so a word the target would refuse to write plainly it may still produce encoded.
 - **Environmental switch** - reframes the setting so the target treats answering as expected help (an educational, medical-emergency, or development context).
 - **Impersonation** - has the sender take on another identity or authority — a researcher, an expert, a doctor — to lower the target's defenses.
-- **Gradual escalation** - spends a few benign warm-up turns getting the target talking, then asks the real question as a natural continuation.
+- **Gradual escalation** - spends a few benign warm-up turns getting the target talking, then asks the real question as a natural continuation. The warm-up happens once each time the strategy is chosen.
 
 :::note
 Strategy selection is fully automatic — there's nothing to configure. The catalog is also **extensible**: adding a strategy to the registry makes it available to the agent without any other change.

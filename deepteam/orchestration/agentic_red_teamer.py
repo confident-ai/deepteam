@@ -27,6 +27,8 @@ def _accepts_turns(model_callback: CallbackType) -> bool:
 
 
 class AgenticRedTeamer:
+    """Goal-driven, adaptive red teaming. Experimental: the API may change."""
+
     def __init__(
         self,
         task: str,
