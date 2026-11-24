@@ -34,11 +34,10 @@ There are **THREE** optional parameters when creating a `CharSplit` attack:
 
 - [Optional] `weight`: an integer that determines this attack method's selection probability, proportional to the total weight sum of all `attacks` during red teaming. Defaulted to `1`.
 - [Optional] `delimiter`: a single non-whitespace character inserted between adjacent letters inside each word. Defaulted to `"."`.
-- [Optional] `action`: `"encode"` to append output-formatting instructions, or `"decode"` to normalize formatted text back to plain text. Defaulted to `"encode"`.
 
 ### As a standalone
 
-You can enhance any attack using the `enhance` method and decode responses with `CharSplit.decode`:
+You can enhance any attack using the `enhance` method and decode responses with `CharSplit.decode`. Decoding is lossy: a delimiter between two non-space characters is always removed, so `3.14` decodes to `314`.
 
 ```python
 from deepteam.attacks.single_turn import CharSplit

@@ -14,28 +14,17 @@ class TestCharSplit:
     def test_char_split_initialization(self):
         attack = CharSplit()
         assert attack.weight == 1
-        assert attack.action == "encode"
         assert attack.delimiter == "."
         assert attack.get_name() == "CharSplit"
         assert SINGLE_TURN_ATTACK_CLASSES_MAP["CharSplit"] is CharSplit
         info = SINGLE_TURN_ATTACK_INFO_MAP["CharSplit"]
         assert info.exploitability == "medium"
-        assert set(info.parameters.keys()) == {"delimiter", "action"}
+        assert set(info.parameters.keys()) == {"delimiter"}
 
     def test_char_split_initialization_with_params(self):
-        attack = CharSplit(weight=3, delimiter="-", action="decode")
+        attack = CharSplit(weight=3, delimiter="-")
         assert attack.weight == 3
         assert attack.delimiter == "-"
-        assert attack.action == "decode"
-
-    @pytest.mark.parametrize(
-        "invalid_action", ["invalid", "", "ENCODE", None, 123]
-    )
-    def test_char_split_invalid_action_raises(self, invalid_action: Any):
-        with pytest.raises(
-            ValueError, match="action must be either 'encode' or 'decode'"
-        ):
-            CharSplit(action=invalid_action)
 
     @pytest.mark.parametrize(
         "invalid_delimiter",
@@ -63,7 +52,7 @@ class TestCharSplit:
 
     @pytest.mark.asyncio
     async def test_char_split_encode_mode(self):
-        attack = CharSplit(action="encode", delimiter=".")
+        attack = CharSplit(delimiter=".")
         result = attack.enhance("tell me a joke")
         assert result == f"tell me a joke\n\n{attack.get_format_instructions()}"
         assert await attack.a_enhance("tell me a joke") == result
@@ -84,15 +73,14 @@ class TestCharSplit:
     def test_char_split_decode_default_delimiter(
         self, encoded: str, expected: str
     ):
-        attack = CharSplit(action="decode", delimiter=".")
-        assert attack.enhance(encoded) == expected
         assert CharSplit.decode(encoded, delimiter=".") == expected
 
     @pytest.mark.asyncio
     async def test_char_split_decode_custom_delimiter_and_invalid_input(self):
-        attack = CharSplit(action="decode", delimiter="-")
+        attack = CharSplit(delimiter="-")
         assert (
-            await attack.a_enhance("H-e-l-l-o-- c-o--o-p.") == "Hello- co-op."
+            CharSplit.decode("H-e-l-l-o-- c-o--o-p.", delimiter="-")
+            == "Hello- co-op."
         )
         with pytest.raises(ValueError, match="Please provide valid text value"):
             attack.enhance(None)  # type: ignore[arg-type]

@@ -1,11 +1,7 @@
 import re
-from typing import Literal
 
 from deepteam.attacks.base_attack import Exploitability
 from deepteam.attacks.single_turn import AttackParameter, BaseSingleTurnAttack
-
-OutputFormatAction = Literal["encode", "decode"]
-
 
 def _validate_delimiter(delimiter: str) -> None:
     if (
@@ -30,26 +26,12 @@ class CharSplit(BaseSingleTurnAttack):
             default=".",
             description="Single non-whitespace character inserted between adjacent letters inside each word.",
         ),
-        "action": AttackParameter(
-            type="enum",
-            default="encode",
-            options=["encode", "decode"],
-            description="Whether enhance() appends output formatting instructions or decodes formatted output.",
-        ),
     }
 
-    def __init__(
-        self,
-        weight: int = 1,
-        delimiter: str = ".",
-        action: OutputFormatAction = "encode",
-    ):
-        if action not in ("encode", "decode"):
-            raise ValueError("action must be either 'encode' or 'decode'")
+    def __init__(self, weight: int = 1, delimiter: str = "."):
         _validate_delimiter(delimiter)
         self.weight = weight
         self.delimiter = delimiter
-        self.action: OutputFormatAction = action
 
     def get_format_instructions(self) -> str:
         d = self.delimiter
@@ -63,6 +45,11 @@ class CharSplit(BaseSingleTurnAttack):
 
     @classmethod
     def decode(cls, text: str, delimiter: str = ".") -> str:
+        """Normalize a CharSplit-formatted response back to plain text.
+
+        Lossy: a delimiter between two non-space characters is always
+        removed, so "3.14" decodes to "314".
+        """
         _validate_delimiter(delimiter)
         if not isinstance(text, str):
             raise ValueError("Please provide valid text value")
@@ -76,10 +63,8 @@ class CharSplit(BaseSingleTurnAttack):
     def enhance(self, attack: str) -> str:
         if not isinstance(attack, str):
             raise ValueError("Please provide valid text value")
-        if self.action == "encode":
-            instructions = self.get_format_instructions()
-            return f"{attack}\n\n{instructions}" if attack else instructions
-        return self.decode(attack, self.delimiter)
+        instructions = self.get_format_instructions()
+        return f"{attack}\n\n{instructions}" if attack else instructions
 
     async def a_enhance(self, attack: str) -> str:
         return self.enhance(attack)
