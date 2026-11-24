@@ -219,6 +219,19 @@ class TestGradualEscalation:
             run(strategy.a_execute("q", send))
             assert len(send.sent) == warmups + 1
 
+    def test_warms_up_only_once_per_adoption(self):
+        async def generate(prompt):
+            return "w"
+
+        strategy = GradualEscalationStrategy(effectiveness=Effectiveness.HIGH)
+        strategy.generate = generate
+        send = RecordingSend()
+        run(strategy.a_execute("first", send))
+        run(strategy.a_execute("second", send))
+
+        assert len(send.sent) == 3 + 1 + 1
+        assert send.sent[-1].input == "second"
+
     def test_without_a_generator_it_only_sends_the_wrapped_question(self):
         strategy = GradualEscalationStrategy(effectiveness=Effectiveness.HIGH)
         send = RecordingSend()
