@@ -38,12 +38,16 @@ class RoundResult(BaseModel):
 
 
 class OrchestrationResult(BaseModel):
-    recon: ProgressionResult
-    analysis: str
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    # None when the run failed during recon; see `error`.
+    recon: Optional[ProgressionResult] = None
+    analysis: str = ""
     criteria: List[str] = []
     rounds: List[RoundResult] = []
     met_criteria: List[MetCriteria] = []
     conversation: List[RTTurn] = []
+    error: Optional[Exception] = None
 
     @property
     def score(self) -> float:

@@ -150,3 +150,53 @@ class TestCallTarget:
         agent = make_agent(model_callback=lambda message, turns=None: "plain")
         reply = asyncio.run(agent.a_call_target("hi", []))
         assert reply == RTTurn(role="assistant", content="plain")
+
+
+class TestRunErrors:
+
+    def test_a_failure_during_recon_returns_a_result_with_the_error(
+        self, make_agent
+    ):
+        def broken_target(message, turns=None):
+            raise RuntimeError("target is down")
+
+        result = make_agent(model_callback=broken_target).run()
+        assert isinstance(result.error, RuntimeError)
+        assert result.met_criteria == []
+        assert result.rounds == []
+
+
+class TestConcurrency:
+
+    def test_rejects_a_non_positive_limit(self, make_agent):
+        with pytest.raises(ValueError):
+            make_agent(max_concurrent=0)
+
+    def test_sub_agents_in_a_round_respect_max_concurrent(
+        self, make_agent, make_target
+    ):
+        import asyncio
+
+        active = 0
+        peak = 0
+        target = make_target()
+
+        async def counting_target(message, turns=None):
+            nonlocal active, peak
+            active += 1
+            peak = max(peak, active)
+            try:
+                await asyncio.sleep(0.01)
+                return await target(message, turns)
+            finally:
+                active -= 1
+
+        agent = make_agent(
+            criteria=["c1", "c2", "c3"],
+            agents_per_criteria=2,
+            max_turns=2,
+            max_concurrent=2,
+            model_callback=counting_target,
+        )
+        agent.run()
+        assert 1 <= peak <= 2

@@ -44,6 +44,7 @@ from deepteam.test_case.test_case import RTTurn
 from deepteam.red_teamer.utils import validate_model_response
 
 AGENTS_PER_CRITERIA = 2
+MAX_CONCURRENT = 10
 RECON_TURNS = 3
 MAX_TURNS = 10
 ESCALATION_THRESHOLD = 0.6
@@ -73,6 +74,7 @@ class OrchestrationAgent:
         max_turns: int = MAX_TURNS,
         escalation_threshold: float = ESCALATION_THRESHOLD,
         escalation_cooldown: int = ESCALATION_COOLDOWN,
+        max_concurrent: int = MAX_CONCURRENT,
     ):
         if not criteria:
             raise ValueError("At least one criterion is required.")
@@ -82,6 +84,8 @@ class OrchestrationAgent:
             raise ValueError("'recon_turns' must be at least 1.")
         if max_turns < 1:
             raise ValueError("'max_turns' must be at least 1.")
+        if max_concurrent < 1:
+            raise ValueError("'max_concurrent' must be at least 1.")
 
         self.task = task
         self.scenario = scenario
@@ -92,6 +96,7 @@ class OrchestrationAgent:
         self.max_turns = max_turns
         self.escalation_threshold = escalation_threshold
         self.escalation_cooldown = escalation_cooldown
+        self.max_concurrent = max_concurrent
 
         self.simulator_model, _ = initialize_model(simulator_model)
         self.judge_model, _ = initialize_model(judge_model)
@@ -119,13 +124,21 @@ class OrchestrationAgent:
         return loop.run_until_complete(self.a_run())
 
     async def a_run(self) -> OrchestrationResult:
-        analysis = await self.a_recon()
-        await self.a_create_sub_agents(analysis)
-        while True:
-            winner = await self._a_play_round()
-            if winner is None or not self.remaining_criteria:
-                break
-            await self.a_create_sub_agents_from_criteria(winner)
+        # Sub agents already stop on their own errors. This catches the
+        # orchestrator's own calls (recon, analysis, planning a round) so a
+        # failure returns what was found so far, as the sequential mode does.
+        analysis = ""
+        error: Optional[Exception] = None
+        try:
+            analysis = await self.a_recon()
+            await self.a_create_sub_agents(analysis)
+            while True:
+                winner = await self._a_play_round()
+                if winner is None or not self.remaining_criteria:
+                    break
+                await self.a_create_sub_agents_from_criteria(winner)
+        except Exception as exc:
+            error = exc
         return OrchestrationResult(
             recon=self.recon_result,
             analysis=analysis,
@@ -133,6 +146,7 @@ class OrchestrationAgent:
             rounds=self.rounds,
             met_criteria=self.met_criteria,
             conversation=self.conversation,
+            error=error,
         )
 
     def recon(self) -> str:
@@ -401,8 +415,14 @@ class OrchestrationAgent:
         self.winner = None
 
     async def _a_play_round(self) -> Optional[SubAgentReport]:
+        semaphore = asyncio.Semaphore(self.max_concurrent)
+
+        async def bounded(sub_agent: SubAgent) -> None:
+            async with semaphore:
+                await sub_agent.a_probe()
+
         await asyncio.gather(
-            *(sub_agent.a_probe() for sub_agent in self.round_sub_agents)
+            *(bounded(sub_agent) for sub_agent in self.round_sub_agents)
         )
         number = len(self.rounds) + 1
         self.rounds.append(

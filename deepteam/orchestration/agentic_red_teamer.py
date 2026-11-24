@@ -36,6 +36,7 @@ class AgenticRedTeamer:
         simulator_model: Optional[Union[str, DeepEvalBaseLLM]] = "gpt-4o-mini",
         judge_model: Optional[Union[str, DeepEvalBaseLLM]] = "gpt-4o",
         max_turns: Optional[int] = None,
+        max_concurrent: int = 10,
         async_mode: bool = True,
         show_progress: bool = True,
     ):
@@ -48,6 +49,7 @@ class AgenticRedTeamer:
         self.simulator_model = simulator_model
         self.judge_model = judge_model
         self.max_turns = max_turns
+        self.max_concurrent = max_concurrent
         self.async_mode = async_mode
         self.show_progress = show_progress
 
@@ -91,7 +93,9 @@ class AgenticRedTeamer:
                     "callback(input, turns=None). Use mode='sequential' for a "
                     "target that keeps its own memory."
                 )
-            agent = OrchestrationAgent(**kwargs)
+            agent = OrchestrationAgent(
+                **kwargs, max_concurrent=self.max_concurrent
+            )
             label = "Agentic red team (parallel)"
 
             def status():
@@ -166,6 +170,14 @@ def _print_result_table(result, label):
 
     console.print("\n")
     console.print(table)
+
+    error = getattr(result, "error", None)
+    if error is not None:
+        console.print(
+            f"\n[bold rgb(255,171,0)]⚠ The run stopped early: "
+            f"{type(error).__name__}: {error}. Criteria marked DEFENDED may "
+            "not have been fully tested.[/bold rgb(255,171,0)]"
+        )
 
     met = len(result.met_criteria)
     total = len(result.criteria)
