@@ -31,6 +31,9 @@ from .agent_identity_abuse.agent_identity_abuse import AgentIdentityAbuse
 from .tool_metadata_poisoning.tool_metadata_poisoning import (
     ToolMetadataPoisoning,
 )
+from .mcp_server_trust_exploitation.mcp_server_trust_exploitation import (
+    MCPServerTrustExploitation,
+)
 from .unexpected_code_execution.unexpected_code_execution import (
     UnexpectedCodeExecution,
 )
@@ -128,6 +131,7 @@ VULNERABILITY_CLASSES_MAP: Dict[str, BaseVulnerability] = {
         ToolOrchestrationAbuse,
         AgentIdentityAbuse,
         ToolMetadataPoisoning,
+        MCPServerTrustExploitation,
         UnexpectedCodeExecution,
         InsecureInterAgentCommunication,
         AutonomousAgentDrift,
