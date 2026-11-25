@@ -1,3 +1,8 @@
+> [!WARNING]
+> **DeepTeam has moved into DeepEval.** Everything in this package now lives in the `deepeval.red_team` module of [DeepEval](https://github.com/confident-ai/deepeval), and `deepteam` will be deprecated on **January 30, 2027**.
+>
+> **You lose no functionality by moving.** Every vulnerability, attack, safety framework and guardrail, along with the YAML CLI and code scanning, is in `deepeval.red_team` with the same API. Only the install and the import path change. See [how to migrate](#-deepteam-has-moved-to-deepevalred_team) below.
+
 <p align="center">
     <picture>
         <source media="(prefers-color-scheme: dark)" srcset="assets/hero/wordmark-dark-v2.svg">
@@ -53,6 +58,35 @@ DeepTeam runs **locally on your machine** and is built on [DeepEval](https://git
 </p>
 
 > Want to talk LLM security, need help picking attacks, or just to say hi? [Come join our discord.](https://discord.com/invite/3SEyvpgu2f)
+
+&nbsp;
+
+# 📦 DeepTeam Has Moved to `deepeval.red_team`
+
+DeepTeam is now the `deepeval.red_team` module of [DeepEval](https://github.com/confident-ai/deepeval), available from `deepeval` 4.3.6. The `deepteam` package will be deprecated on **January 30, 2027**, so please migrate before then.
+
+**No functionality is lost.** All vulnerabilities, attacks, safety frameworks, guardrails, risk assessments, the YAML CLI and code scanning moved over as they are, and results still upload to the same place on Confident AI. Your red teaming code keeps working once the import path is updated:
+
+|                 | `deepteam`                                  | `deepeval`                                           |
+| --------------- | ------------------------------------------- | ---------------------------------------------------- |
+| Install         | `pip install -U deepteam`                   | `pip install -U deepeval`                            |
+| Top-level       | `from deepteam import red_team`             | `from deepeval.red_team import red_team`             |
+| Everything else | `from deepteam.vulnerabilities import Bias` | `from deepeval.red_team.vulnerabilities import Bias` |
+| Login           | `deepteam login`                            | `deepeval login`                                     |
+| YAML config run | `deepteam run config.yaml`                  | `deepeval red-team config.yaml`                      |
+| Code scanning   | `deepteam scan .`                           | `deepeval red-team --scan .`                         |
+
+In short, replace `deepteam` with `deepeval.red_team` in your imports:
+
+```python
+from deepeval.red_team import red_team
+from deepeval.red_team.vulnerabilities import Bias
+from deepeval.red_team.attacks.single_turn import PromptInjection
+
+red_team(model_callback=model_callback, vulnerabilities=[Bias(types=["race"])], attacks=[PromptInjection()])
+```
+
+Existing `DEEPTEAM_*` environment variables are still read. The documentation now lives at [deepeval.com/docs/red-teaming-introduction](https://deepeval.com/docs/red-teaming-introduction).
 
 &nbsp;
 
