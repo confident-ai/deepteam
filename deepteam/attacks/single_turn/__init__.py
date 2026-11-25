@@ -1,5 +1,6 @@
 from .base_single_turn_attack import BaseSingleTurnAttack, AttackParameter
 from .adversarial_poetry import AdversarialPoetry
+from .ascii_art import AsciiArt
 from .base64 import Base64
 from .gray_box import GrayBox
 from .leetspeak import Leetspeak
@@ -59,4 +60,5 @@ __all__ = [
     "ZeroWidth",
     "HexEncoding",
     "MorseCode",
+    "AsciiArt",
 ]

@@ -3,6 +3,7 @@
   "pages": [
     "red-teaming-adversarial-attacks-adversarial-poetry",
     "red-teaming-adversarial-attacks-authority-escalation",
+    "red-teaming-adversarial-attacks-ascii-art",
     "red-teaming-adversarial-attacks-base64-encoding",
     "red-teaming-adversarial-attacks-char-split",
     "red-teaming-adversarial-attacks-character-stream",
