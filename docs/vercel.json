@@ -1,10 +1,669 @@
 {
-    "redirects": [
-      {
-        "source": "/docs/guides-rag-evaluation",
-        "destination": "/guides/guides-rag-evaluation",
-        "statusCode": 301
-      }
-    ]
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "https://deepeval.com/docs/red-teaming-introduction",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs",
+      "destination": "https://deepeval.com/docs/red-teaming-introduction",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides",
+      "destination": "https://deepeval.com/guides/guide-agentic-ai-red-teaming",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog",
+      "destination": "https://deepeval.com/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/enterprise",
+      "destination": "https://deepeval.com/enterprise",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/guides-rag-evaluation",
+      "destination": "https://deepeval.com/guides/guides-rag-evaluation",
+      "statusCode": 301
+    },
+    {
+      "source": "/llms.txt",
+      "destination": "https://deepeval.com/llms.txt",
+      "statusCode": 301
+    },
+    {
+      "source": "/llms-full.txt",
+      "destination": "https://deepeval.com/llms-full.txt",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/ai-safety-paradox-deepteam",
+      "destination": "https://deepeval.com/blog/ai-safety-paradox",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/claude-sonnet-4-defense-analysis-deepteam-v2",
+      "destination": "https://deepeval.com/blog/claude-sonnet-4-defense-analysis",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/multi-turn-jailbreaking-analysis-deepteam",
+      "destination": "https://deepeval.com/blog/multi-turn-jailbreaking-analysis",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/breaking-gemini-pro-deepteam",
+      "destination": "https://deepeval.com/blog/breaking-gemini-pro",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/shakespeare-claude-jailbreak-deepteam",
+      "destination": "https://deepeval.com/blog/shakespeare-claude-jailbreak",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/jailbreak-price-curve",
+      "destination": "https://deepeval.com/blog/jailbreak-price-curve",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-agentic-vulnerabilities-goal-theft",
+      "destination": "https://deepeval.com/docs/red-teaming-agentic-vulnerabilities-goal-theft",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-agentic-vulnerabilities-recursive-hijacking",
+      "destination": "https://deepeval.com/docs/red-teaming-agentic-vulnerabilities-recursive-hijacking",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-agent-identity-abuse",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-agent-identity-abuse",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-autonomous-agent-drift",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-autonomous-agent-drift",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-excessive-agency",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-excessive-agency",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-exploit-tool-agent",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-exploit-tool-agent",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-external-system-abuse",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-external-system-abuse",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-indirect-instruction",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-indirect-instruction",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-inter-agent-communication-compromise",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-inter-agent-communication-compromise",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-robustness",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-robustness",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-tool-orchestration-abuse",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-tool-orchestration-abuse",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-competition",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-competition",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-intellectual-property",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-intellectual-property",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-misinformation",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-misinformation",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-risk-assessment",
+      "destination": "https://deepeval.com/docs/red-teaming-risk-assessment",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-test-case",
+      "destination": "https://deepeval.com/docs/red-teaming-test-case",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/guardrails-cybersecurity-guard",
+      "destination": "https://deepeval.com/docs/guardrails-cybersecurity-guard",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/guardrails-hallucination-guard",
+      "destination": "https://deepeval.com/docs/guardrails-hallucination-guard",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/guardrails-illegal-guard",
+      "destination": "https://deepeval.com/docs/guardrails-illegal-guard",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/guardrails-privacy-guard",
+      "destination": "https://deepeval.com/docs/guardrails-privacy-guard",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/guardrails-prompt-injection-guard",
+      "destination": "https://deepeval.com/docs/guardrails-prompt-injection-guard",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/guardrails-topical-guard",
+      "destination": "https://deepeval.com/docs/guardrails-topical-guard",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/guardrails-toxicity-guard",
+      "destination": "https://deepeval.com/docs/guardrails-toxicity-guard",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-bad-likert-judge",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-bad-likert-judge",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-crescendo-jailbreaking",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-crescendo-jailbreaking",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-linear-jailbreaking",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-linear-jailbreaking",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-sequential-jailbreaking",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-sequential-jailbreaking",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-tree-jailbreaking",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-tree-jailbreaking",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/frameworks-owasp-top-10-for-agentic-applications",
+      "destination": "https://deepeval.com/docs/frameworks-owasp-top-10-for-agentic-applications",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/frameworks-owasp-top-10-for-llms",
+      "destination": "https://deepeval.com/docs/frameworks-owasp-top-10-for-llms",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-bias",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-bias",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-child-protection",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-child-protection",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-ethics",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-ethics",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-fairness",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-fairness",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-toxicity",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-toxicity",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-graphic-content",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-graphic-content",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-illegal-activity",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-illegal-activity",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-personal-safety",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-personal-safety",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-unexpected-code-execution",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-unexpected-code-execution",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-bfla",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-bfla",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-bola",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-bola",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-cross-context-retrieval",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-cross-context-retrieval",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-debug-access",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-debug-access",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-mcp-server-trust-exploitation",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-mcp-server-trust-exploitation",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-path-traversal",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-path-traversal",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-rbac",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-rbac",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-shell-injection",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-shell-injection",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-sql-injection",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-sql-injection",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-ssrf",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-ssrf",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-system-reconnaissance",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-system-reconnaissance",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-tool-metadata-poisoning",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-tool-metadata-poisoning",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-xss",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-xss",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-adversarial-poetry",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-adversarial-poetry",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-authority-escalation",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-authority-escalation",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-base64-encoding",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-base64-encoding",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-char-split",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-char-split",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-character-stream",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-character-stream",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-context-flooding",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-context-flooding",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-embedded-instruction-json",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-embedded-instruction-json",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-emotional-manipulation",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-emotional-manipulation",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-gray-box-attack",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-gray-box-attack",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-hex-encoding",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-hex-encoding",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-homoglyph",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-homoglyph",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-leetspeak",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-leetspeak",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-math-problem",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-math-problem",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-morse-code",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-morse-code",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-multilingual",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-multilingual",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-prompt-injection",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-prompt-injection",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-roleplay",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-roleplay",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-rot13-encoding",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-rot13-encoding",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-synthetic-context-injection",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-synthetic-context-injection",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks-zero-width",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks-zero-width",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-agentic-attacks-context-poisoning",
+      "destination": "https://deepeval.com/docs/red-teaming-agentic-attacks-context-poisoning",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-agentic-attacks-input-bypass",
+      "destination": "https://deepeval.com/docs/red-teaming-agentic-attacks-input-bypass",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-agentic-attacks-permission-escalation",
+      "destination": "https://deepeval.com/docs/red-teaming-agentic-attacks-permission-escalation",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-agentic-attacks-semantic-manipulation",
+      "destination": "https://deepeval.com/docs/red-teaming-agentic-attacks-semantic-manipulation",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-agentic-attacks-system-override",
+      "destination": "https://deepeval.com/docs/red-teaming-agentic-attacks-system-override",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-pii-leakage",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-pii-leakage",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities-prompt-leakage",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities-prompt-leakage",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/agentic-red-teaming",
+      "destination": "https://deepeval.com/docs/agentic-red-teaming",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/code-scanning-github-bot",
+      "destination": "https://deepeval.com/docs/red-teaming-introduction",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/code-scanning-introduction",
+      "destination": "https://deepeval.com/docs/red-teaming-introduction",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/data-privacy",
+      "destination": "https://deepeval.com/docs/data-privacy",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/frameworks-aegis",
+      "destination": "https://deepeval.com/docs/frameworks-aegis",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/frameworks-beavertails",
+      "destination": "https://deepeval.com/docs/frameworks-beavertails",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/frameworks-eu-ai-act",
+      "destination": "https://deepeval.com/docs/frameworks-eu-ai-act",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/frameworks-introduction",
+      "destination": "https://deepeval.com/docs/frameworks-introduction",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/frameworks-iso-42001",
+      "destination": "https://deepeval.com/docs/frameworks-iso-42001",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/frameworks-mitre-atlas",
+      "destination": "https://deepeval.com/docs/frameworks-mitre-atlas",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/frameworks-nist-ai-rmf",
+      "destination": "https://deepeval.com/docs/frameworks-nist-ai-rmf",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/getting-started",
+      "destination": "https://deepeval.com/docs/red-teaming-quickstart",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/guardrails-introduction",
+      "destination": "https://deepeval.com/docs/guardrails-introduction",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-adversarial-attacks",
+      "destination": "https://deepeval.com/docs/red-teaming-adversarial-attacks",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-custom-vulnerability",
+      "destination": "https://deepeval.com/docs/red-teaming-custom-vulnerability",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-introduction",
+      "destination": "https://deepeval.com/docs/red-teaming-introduction",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-vulnerabilities",
+      "destination": "https://deepeval.com/docs/red-teaming-vulnerabilities",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/red-teaming-yaml-cli",
+      "destination": "https://deepeval.com/docs/red-teaming-yaml-cli",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/what-is-llm-red-teaming",
+      "destination": "https://deepeval.com/blog/what-is-llm-red-teaming",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-agentic-ai-red-teaming",
+      "destination": "https://deepeval.com/guides/guide-agentic-ai-red-teaming",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-red-teaming-agentic-rag",
+      "destination": "https://deepeval.com/guides/guide-red-teaming-agentic-rag",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-red-teaming-conversational-agents",
+      "destination": "https://deepeval.com/guides/guide-red-teaming-conversational-agents",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-custom-attacks",
+      "destination": "https://deepeval.com/guides/guide-custom-attacks",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-custom-red-teaming-pipelines",
+      "destination": "https://deepeval.com/guides/guide-custom-red-teaming-pipelines",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-custom-vulnerability",
+      "destination": "https://deepeval.com/guides/guide-custom-vulnerability",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-safety-frameworks",
+      "destination": "https://deepeval.com/guides/guide-safety-frameworks",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-deploying-guardrails",
+      "destination": "https://deepeval.com/guides/guide-deploying-guardrails",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-red-teaming-anthropic",
+      "destination": "https://deepeval.com/guides/guide-red-teaming-anthropic",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-red-teaming-fine-tuned",
+      "destination": "https://deepeval.com/guides/guide-red-teaming-fine-tuned",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-red-teaming-gemini",
+      "destination": "https://deepeval.com/guides/guide-red-teaming-gemini",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-red-teaming-llama",
+      "destination": "https://deepeval.com/guides/guide-red-teaming-llama",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-red-teaming-mistral",
+      "destination": "https://deepeval.com/guides/guide-red-teaming-mistral",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-red-teaming-models",
+      "destination": "https://deepeval.com/guides/guide-red-teaming-models",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-red-teaming-open-weight",
+      "destination": "https://deepeval.com/guides/guide-red-teaming-open-weight",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-red-teaming-openai",
+      "destination": "https://deepeval.com/guides/guide-red-teaming-openai",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-cli-yaml",
+      "destination": "https://deepeval.com/guides/guide-cli-yaml",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/guide-responsible-ai",
+      "destination": "https://deepeval.com/guides/guide-responsible-ai",
+      "statusCode": 301
+    },
+    {
+      "source": "/docs/:path*",
+      "destination": "https://deepeval.com/docs/red-teaming-introduction",
+      "statusCode": 301
+    },
+    {
+      "source": "/guides/:path*",
+      "destination": "https://deepeval.com/guides/guide-agentic-ai-red-teaming",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/:path*",
+      "destination": "https://deepeval.com/blog",
+      "statusCode": 301
+    }
+  ]
 }
-  
