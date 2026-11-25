@@ -76,22 +76,27 @@ def wrap_model_callback(model_callback, async_mode):
         for p in params
     )
 
+    # Keyword-only and **kwargs slots reject a second positional argument.
+    pass_turns_by_keyword = len(params) > 1 and params[1].kind in (
+        inspect.Parameter.KEYWORD_ONLY,
+        inspect.Parameter.VAR_KEYWORD,
+    )
+
+    def invoke_callback(input, turns):
+        if not accepts_turns:
+            return model_callback(input)
+        if pass_turns_by_keyword:
+            return model_callback(input, turns=turns)
+        return model_callback(input, turns)
+
     @wraps(model_callback)
     def get_sync_model_callback(input: str, turns: List[RTTurn] = None):
-        if accepts_turns:
-            response = model_callback(input, turns)
-        else:
-            response = model_callback(input)
-
+        response = invoke_callback(input, turns)
         return validate_model_response(response)
 
     @wraps(model_callback)
     async def get_async_model_callback(input: str, turns: List[RTTurn] = None):
-        if accepts_turns:
-            response = await model_callback(input, turns)
-        else:
-            response = await model_callback(input)
-
+        response = await invoke_callback(input, turns)
         return validate_model_response(response)
 
     return get_async_model_callback if async_mode else get_sync_model_callback
