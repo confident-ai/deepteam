@@ -2,6 +2,7 @@ from typing import Dict
 from pydantic import BaseModel, Field
 
 from .base_single_turn_attack import BaseSingleTurnAttack, AttackParameter
+from .ascii_art import AsciiArt
 from .base64 import Base64
 from .gray_box import GrayBox
 from .leetspeak import Leetspeak
@@ -35,6 +36,7 @@ SINGLE_TURN_ATTACK_CLASSES_MAP: Dict[str, BaseSingleTurnAttack] = {
     v.name: v
     for v in [
         AdversarialPoetry,
+        AsciiArt,
         Base64,
         CharSplit,
         CharacterStream,
