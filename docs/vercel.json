@@ -42,27 +42,27 @@
     },
     {
       "source": "/blog/ai-safety-paradox-deepteam",
-      "destination": "https://deepeval.com/blog/ai-safety-paradox-deepteam",
+      "destination": "https://deepeval.com/blog/ai-safety-paradox",
       "statusCode": 301
     },
     {
       "source": "/blog/claude-sonnet-4-defense-analysis-deepteam-v2",
-      "destination": "https://deepeval.com/blog/claude-sonnet-4-defense-analysis-deepteam-v2",
+      "destination": "https://deepeval.com/blog/claude-sonnet-4-defense-analysis",
       "statusCode": 301
     },
     {
       "source": "/blog/multi-turn-jailbreaking-analysis-deepteam",
-      "destination": "https://deepeval.com/blog/multi-turn-jailbreaking-analysis-deepteam",
+      "destination": "https://deepeval.com/blog/multi-turn-jailbreaking-analysis",
       "statusCode": 301
     },
     {
       "source": "/blog/breaking-gemini-pro-deepteam",
-      "destination": "https://deepeval.com/blog/breaking-gemini-pro-deepteam",
+      "destination": "https://deepeval.com/blog/breaking-gemini-pro",
       "statusCode": 301
     },
     {
       "source": "/blog/shakespeare-claude-jailbreak-deepteam",
-      "destination": "https://deepeval.com/blog/shakespeare-claude-jailbreak-deepteam",
+      "destination": "https://deepeval.com/blog/shakespeare-claude-jailbreak",
       "statusCode": 301
     },
     {
