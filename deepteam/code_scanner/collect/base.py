@@ -169,4 +169,6 @@ def _chunk_path(
     text = _read_text(abs_path, max_file_bytes)
     if text is None:
         return []
+    # A name that is not valid UTF-8 has surrogates, which CodeChunk rejects.
+    rel_path = rel_path.encode("utf-8", "replace").decode("utf-8")
     return _chunk_text(rel_path, text, language, max_chunk_chars)

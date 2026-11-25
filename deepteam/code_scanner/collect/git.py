@@ -1,3 +1,4 @@
+import os
 import subprocess
 from pathlib import Path
 from typing import List, Optional
@@ -15,14 +16,15 @@ def _git_changed_files(root: Path, base: str, head: Optional[str]) -> List[str]:
     ref = f"{base}..{head}" if head else base
     try:
         out = subprocess.run(
-            ["git", "-C", str(root), "diff", "--name-only", ref],
+            ["git", "-C", str(root), "diff", "--name-only", "-z", ref],
             capture_output=True,
-            text=True,
             check=True,
         ).stdout
     except (subprocess.CalledProcessError, FileNotFoundError) as e:
         raise RuntimeError(f"git diff --name-only {ref} failed: {e}") from e
-    return [line.strip() for line in out.splitlines() if line.strip()]
+    # With -z the names come as they are. Without it git quotes and escapes
+    # names that have non-ASCII characters, quotes or backslashes.
+    return [os.fsdecode(name) for name in out.split(b"\0") if name]
 
 
 def collect_changed_files(
