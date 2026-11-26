@@ -102,3 +102,84 @@ class TestModelCallbackVariations:
             ignore_errors=False,
         )
         assert risk_assessment is not None
+
+
+def _build_turns_callback(style, async_mode, captured):
+    """Build a callback that records the turns it receives under `style`."""
+
+    def record(received_turns):
+        captured["turns"] = received_turns
+        return "response"
+
+    if style == "var-keyword":
+
+        if async_mode:
+
+            async def cb(input, **kwargs):
+                return record(kwargs.get("turns"))
+
+        else:
+
+            def cb(input, **kwargs):
+                return record(kwargs.get("turns"))
+
+    elif style == "keyword-only":
+
+        if async_mode:
+
+            async def cb(input, *, turns=None):
+                return record(turns)
+
+        else:
+
+            def cb(input, *, turns=None):
+                return record(turns)
+
+    else:  # positional-or-keyword
+
+        if async_mode:
+
+            async def cb(input, turns=None):
+                return record(turns)
+
+        else:
+
+            def cb(input, turns=None):
+                return record(turns)
+
+    return cb
+
+
+TURNS_CALLBACK_STYLES = [
+    pytest.param("var-keyword", id="var-keyword"),
+    pytest.param("keyword-only", id="keyword-only"),
+    pytest.param("positional-or-keyword", id="positional-or-keyword"),
+]
+
+
+@pytest.mark.parametrize("style", TURNS_CALLBACK_STYLES)
+def test_sync_wrapper_forwards_turns_by_supported_signature(style):
+    captured = {}
+    callback = _build_turns_callback(style, False, captured)
+    wrapped = wrap_model_callback(callback, False)
+    turns = [RTTurn(role="user", content="hello")]
+
+    response = wrapped("prompt", turns)
+
+    assert isinstance(response, RTTurn)
+    assert response.role == "assistant"
+    assert captured["turns"] is turns
+
+
+@pytest.mark.parametrize("style", TURNS_CALLBACK_STYLES)
+def test_async_wrapper_forwards_turns_by_supported_signature(style):
+    captured = {}
+    callback = _build_turns_callback(style, True, captured)
+    wrapped = wrap_model_callback(callback, True)
+    turns = [RTTurn(role="user", content="hello")]
+
+    response = asyncio.run(wrapped("prompt", turns))
+
+    assert isinstance(response, RTTurn)
+    assert response.role == "assistant"
+    assert captured["turns"] is turns
