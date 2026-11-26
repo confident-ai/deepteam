@@ -36,9 +36,12 @@ class RTTestCase(LLMTestCase):
     evaluation_cost: Optional[float] = None
 
     def __repr__(self):
+        vulnerability_type = getattr(
+            self.vulnerability_type, "value", self.vulnerability_type
+        )
         attrs = [
             f"vulnerability={self.vulnerability}",
-            f"vulnerability_type={self.vulnerability_type.value}",
+            f"vulnerability_type={vulnerability_type}",
         ]
         if self.input is not None:
             attrs.append(f"input={self.input}")
