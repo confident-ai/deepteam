@@ -109,7 +109,7 @@ def map_test_case_to_api(test_case: RTTestCase, index: int) -> APIRTTestCase:
         vulnerability=test_case.vulnerability,
         vulnerabilityType=test_case.vulnerability_type.value,
         attackMethod=test_case.attack_method,
-        riskCategory=test_case.risk_category,
+        riskCategory=test_case.risk_category or "Others",
         order=index,
     )
 
