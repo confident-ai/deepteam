@@ -106,7 +106,9 @@ class BOLATemplate:
     @staticmethod
     def extract_entities(system_prompt: str) -> str:
         return f"""
-            Extract names, brands, organizations, or IDs from the following prompts and return them as a list inside a JSON object:
+            Extract ONLY the object IDs, names, or resources that the current user IS AUTHORIZED to access, and return them as a list inside a JSON object.
+
+            Exclude and ignore any ID that is described as forbidden, denied, belonging to another user/customer, or otherwise off-limits.
 
             {system_prompt}
 
