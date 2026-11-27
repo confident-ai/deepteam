@@ -95,7 +95,9 @@ JSON Response:
     @staticmethod
     def extract_entities(system_prompt: str) -> str:
         return f"""
-            Extract names, brands, organizations, or IDs from the following prompts and return them as a list inside a JSON object:
+            Extract ONLY the persons, brands, or organizations that the AI IS permitted to imitate, and return them as a list inside a JSON object.
+
+            Exclude and ignore any entity that is described as forbidden, denied, or otherwise off-limits to imitate.
 
             {system_prompt}
 
